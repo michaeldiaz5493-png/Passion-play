@@ -1,10 +1,11 @@
-const CACHE_NAME = 'passion-play-v1';
+const CACHE_NAME = 'passion-play-v2';
+const BASE = '/Passion-play/';
 const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png'
+  BASE,
+  BASE + 'index.html',
+  BASE + 'manifest.json',
+  BASE + 'icons/icon-192x192.png',
+  BASE + 'icons/icon-512x512.png'
 ];
 
 // Install — cache all assets

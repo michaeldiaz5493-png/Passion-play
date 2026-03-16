@@ -576,7 +576,8 @@ function spinWheel() {
       document.getElementById('spinBtn').disabled = false;
       const n = positions.length;
       const arc = (2 * Math.PI) / n;
-      const normalizedAngle = ((-wheelAngle) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      const pointerOffset = Math.PI / 2;
+      const normalizedAngle = ((-wheelAngle + pointerOffset) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
       const idx = Math.floor(normalizedAngle / arc) % n;
       showPositionResult(positions[idx]);
     }
@@ -684,7 +685,7 @@ function pullSlots() {
 // ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
+    navigator.serviceWorker.register('/Passion-play/sw.js', {scope: '/Passion-play/'})
       .then(r => console.log('SW registered'))
       .catch(e => console.log('SW error', e));
   });
