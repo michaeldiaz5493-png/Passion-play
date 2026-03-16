@@ -756,6 +756,227 @@
   .achievements-bar { width:100%; height:6px; background:var(--border); border-radius:3px; margin-top:10px; overflow:hidden; }
   .achievements-bar-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--rose)); border-radius:3px; transition:width .8s ease; }
 
+
+  /* ── MATCH DE FANTASÍAS REDISEÑADO ── */
+  #fantasy { padding:0; }
+  .fantasy-container { padding:0 0 100px; }
+
+  /* Intro card con seguridad emocional */
+  .fantasy-safety-card {
+    margin:16px 16px 0;
+    background:linear-gradient(135deg,rgba(155,109,255,0.1),rgba(232,132,154,0.07));
+    border:1px solid rgba(155,109,255,0.25);
+    border-radius:20px; padding:18px 20px; text-align:center;
+  }
+  .fantasy-safety-title {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.3rem; color:var(--gold); font-style:italic; margin-bottom:6px;
+  }
+  .fantasy-safety-rule {
+    font-size:0.65rem; color:var(--rose2); letter-spacing:1px;
+    background:rgba(232,132,154,0.1); border-radius:10px;
+    padding:6px 12px; display:inline-block; margin-bottom:8px;
+  }
+  .fantasy-safety-sub {
+    font-size:0.62rem; color:var(--muted); line-height:1.6;
+  }
+
+  /* Tabs de categorías */
+  .fantasy-cat-tabs {
+    display:flex; overflow-x:auto; gap:8px;
+    padding:14px 16px 4px; scrollbar-width:none;
+  }
+  .fantasy-cat-tabs::-webkit-scrollbar { display:none; }
+  .fantasy-cat-tab {
+    flex-shrink:0; padding:8px 14px; border-radius:20px;
+    border:1px solid var(--border); background:var(--card);
+    color:var(--muted); font-size:0.65rem; letter-spacing:1px;
+    cursor:pointer; transition:all .25s; white-space:nowrap;
+    display:flex; align-items:center; gap:6px;
+  }
+  .fantasy-cat-tab.active {
+    background:rgba(155,109,255,0.15);
+    border-color:rgba(155,109,255,0.5); color:#c084fc;
+  }
+
+  /* Indicador de persona activa */
+  .fantasy-person-bar {
+    display:flex; gap:10px; padding:12px 16px 8px;
+    align-items:center;
+  }
+  .fantasy-person-pill {
+    padding:6px 14px; border-radius:20px; font-size:0.62rem;
+    letter-spacing:1px; text-transform:uppercase; font-weight:600;
+    transition:all .3s;
+  }
+  .fantasy-person-pill.active {
+    background:linear-gradient(135deg,var(--rose),var(--rose2));
+    color:#080810;
+  }
+  .fantasy-person-pill.done {
+    background:rgba(100,200,100,0.15); color:#6dc86d;
+    border:1px solid rgba(100,200,100,0.25);
+  }
+  .fantasy-person-pill.waiting {
+    background:var(--card); color:var(--muted);
+    border:1px solid var(--border);
+  }
+  .fantasy-person-arrow {
+    font-size:0.8rem; color:var(--muted);
+  }
+
+  /* Grid de fantasías */
+  .fantasy-items-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:10px; padding:8px 16px 16px;
+  }
+  .fantasy-item-new {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:14px 12px; cursor:pointer;
+    transition:all .25s; text-align:center; position:relative;
+  }
+  .fantasy-item-new.selected {
+    border-color:var(--rose); background:rgba(232,132,154,0.1);
+  }
+  .fantasy-item-new:active { transform:scale(0.96); }
+  .fantasy-item-new .fi-check {
+    position:absolute; top:8px; right:8px;
+    width:18px; height:18px; border-radius:50%;
+    background:var(--rose); color:#080810;
+    font-size:0.55rem; font-weight:bold;
+    display:none; align-items:center; justify-content:center;
+  }
+  .fantasy-item-new.selected .fi-check { display:flex; }
+  .fi-icon { font-size:1.5rem; display:block; margin-bottom:6px; }
+  .fi-name { font-size:0.62rem; color:var(--text); line-height:1.3; }
+  .fi-badge {
+    font-size:0.48rem; color:var(--muted); letter-spacing:1px;
+    text-transform:uppercase; margin-top:4px; display:block;
+  }
+
+  /* Footer de acción */
+  .fantasy-action-footer {
+    position:sticky; bottom:70px;
+    padding:12px 16px; background:rgba(8,8,16,0.95);
+    backdrop-filter:blur(10px); border-top:1px solid var(--border);
+    display:flex; gap:10px; align-items:center; z-index:10;
+  }
+  .fantasy-count-badge {
+    font-size:0.65rem; color:var(--muted); flex:1; letter-spacing:1px;
+  }
+  .fantasy-action-btn {
+    padding:12px 20px; border-radius:14px; border:none;
+    background:linear-gradient(135deg,var(--rose),var(--rose2));
+    color:#080810; font-family:'Montserrat',sans-serif;
+    font-size:0.72rem; font-weight:600; letter-spacing:2px;
+    cursor:pointer; opacity:.4; pointer-events:none; transition:all .3s;
+    white-space:nowrap;
+  }
+  .fantasy-action-btn.ready { opacity:1; pointer-events:auto; }
+
+  /* Pantalla de reveal animado */
+  .fantasy-reveal-screen {
+    padding:20px 16px 100px;
+    display:none;
+  }
+  .fantasy-reveal-screen.show { display:block; }
+  .fantasy-reveal-header {
+    text-align:center; margin-bottom:20px;
+  }
+  .fantasy-reveal-title {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.8rem; color:var(--gold); font-style:italic; margin-bottom:4px;
+  }
+  .fantasy-reveal-sub {
+    font-size:0.62rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase;
+  }
+
+  /* Categoría de match */
+  .fantasy-match-category {
+    margin-bottom:16px;
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:20px; overflow:hidden;
+    animation:slideUp .4s ease both;
+  }
+  .fantasy-match-cat-header {
+    padding:14px 16px; display:flex; align-items:center; gap:10px;
+    border-bottom:1px solid var(--border);
+    background:rgba(155,109,255,0.06);
+  }
+  .fantasy-match-cat-icon { font-size:1.3rem; }
+  .fantasy-match-cat-name {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1rem; color:var(--gold); font-style:italic; flex:1;
+  }
+  .fantasy-match-count {
+    font-size:0.58rem; color:var(--rose2);
+    background:rgba(232,132,154,0.15); padding:3px 10px;
+    border-radius:10px; letter-spacing:1px;
+  }
+  .fantasy-match-items { padding:12px 16px; display:flex; flex-direction:column; gap:10px; }
+  .fantasy-match-item-new {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:12px; background:var(--card); border-radius:14px;
+    border:1px solid rgba(232,132,154,0.2);
+    animation:slideUp .3s ease both;
+  }
+  .fmi-icon { font-size:1.4rem; flex-shrink:0; }
+  .fmi-name {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1rem; color:var(--rose2); font-style:italic; margin-bottom:3px;
+  }
+  .fmi-desc { font-size:0.62rem; color:var(--muted); line-height:1.4; }
+
+  /* No match */
+  .fantasy-no-match-new {
+    text-align:center; padding:30px 16px;
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:20px; margin-bottom:16px;
+  }
+
+  /* Siguiente paso post-match */
+  .fantasy-next-step {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:18px; padding:16px; margin-bottom:12px;
+  }
+  .fantasy-next-step-title {
+    font-size:0.58rem; color:var(--gold); letter-spacing:2px;
+    text-transform:uppercase; margin-bottom:10px;
+  }
+  .fantasy-next-step-desc {
+    font-size:0.72rem; color:var(--text); line-height:1.6; margin-bottom:12px;
+  }
+  .fantasy-next-step-btn {
+    width:100%; padding:12px; border-radius:12px; border:none;
+    background:linear-gradient(135deg,var(--gold),var(--gold2));
+    color:#080810; font-family:'Montserrat',sans-serif;
+    font-size:0.72rem; font-weight:600; letter-spacing:2px; cursor:pointer;
+  }
+
+  /* Ronda siguiente / replay */
+  .fantasy-replay-btn {
+    width:100%; padding:14px; border-radius:14px;
+    border:1px solid var(--border); background:transparent;
+    color:var(--muted); font-size:0.65rem; letter-spacing:2px;
+    cursor:pointer; text-transform:uppercase; margin-top:4px;
+  }
+
+  /* Historial de matches guardados */
+  .fantasy-history-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:14px 16px; margin-bottom:8px;
+  }
+  .fantasy-history-date {
+    font-size:0.55rem; color:var(--muted); letter-spacing:2px;
+    text-transform:uppercase; margin-bottom:8px;
+  }
+  .fantasy-history-tags { display:flex; flex-wrap:wrap; gap:6px; }
+  .fantasy-history-tag {
+    padding:3px 10px; border-radius:10px; font-size:0.58rem;
+    background:rgba(155,109,255,0.1); color:#c084fc;
+    border:1px solid rgba(155,109,255,0.2);
+  }
+
 </style>
 </head>
 <body>
@@ -1656,92 +1877,252 @@ function skipAmbienteSplash() {
 }
 
 
-// ── MATCH DE FANTASÍAS ──
-let fantasySelectionsA = [];
-let fantasySelectionsB = [];
+
+// ── MATCH DE FANTASÍAS REDISEÑADO ──
+let fantasyPersonA = {}; // { catId: [idxs] }
+let fantasyPersonB = {};
+let fantasyCurrentPerson = 'A';
+let fantasyCurrentCat = 0;
+let fantasyMatchHistory = [];
 
 function initFantasy() {
-  fantasySelectionsA = [];
-  fantasySelectionsB = [];
-  document.querySelectorAll('.fantasy-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('fantasyStep1').classList.add('active');
-  renderFantasyGrid('fantasyGridA', 'A');
-  renderFantasyGrid('fantasyGridB', 'B');
-  document.getElementById('fantasyNextBtn').classList.remove('ready');
-  document.getElementById('fantasyRevealBtn').classList.remove('ready');
+  fantasyPersonA = {};
+  fantasyPersonB = {};
+  fantasyCurrentPerson = 'A';
+  fantasyCurrentCat = 0;
+
+  // Mostrar pantalla de selección, ocultar reveal
+  const selScreen = document.getElementById('fantasySelectionScreen');
+  const revScreen = document.getElementById('fantasyRevealScreen');
+  if (selScreen) selScreen.style.display = 'block';
+  if (revScreen) revScreen.classList.remove('show');
+
+  renderFantasyPersonBar();
+  renderFantasyCategoryTabs();
+  renderFantasyGrid();
+  updateFantasyActionBtn();
 }
 
-function renderFantasyGrid(gridId, person) {
-  const grid = document.getElementById(gridId);
-  grid.innerHTML = FANTASIES.map((f, i) => `
-    <div class="fantasy-item" onclick="toggleFantasy(${i},'${person}',this)">
-      <div class="check">✓</div>
-      <span class="fantasy-item-icon">${f.icon}</span>
-      <div class="fantasy-item-name">${f.name}</div>
+function renderFantasyPersonBar() {
+  const bar = document.getElementById('fantasyPersonBar');
+  if (!bar) return;
+  const aCount = Object.values(fantasyPersonA).flat().length;
+  const bCount = Object.values(fantasyPersonB).flat().length;
+  const aStatus = fantasyCurrentPerson === 'A' ? 'active' : (aCount > 0 ? 'done' : 'waiting');
+  const bStatus = fantasyCurrentPerson === 'B' ? 'active' : (bCount > 0 ? 'done' : 'waiting');
+  bar.innerHTML = `
+    <div class="fantasy-person-pill ${aStatus}">
+      ${aStatus === 'done' ? '✓' : '👤'} Persona 1 ${aCount > 0 ? '('+aCount+')' : ''}
+    </div>
+    <span class="fantasy-person-arrow">→</span>
+    <div class="fantasy-person-pill ${bStatus}">
+      ${bStatus === 'done' ? '✓' : '👤'} Persona 2 ${bCount > 0 ? '('+bCount+')' : ''}
+    </div>
+  `;
+}
+
+function renderFantasyCategoryTabs() {
+  const tabs = document.getElementById('fantasyCatTabs');
+  if (!tabs) return;
+  tabs.innerHTML = FANTASY_CATEGORIES.map((cat, i) => `
+    <div class="fantasy-cat-tab ${i === fantasyCurrentCat ? 'active' : ''}"
+         onclick="switchFantasyCategory(${i})">
+      ${cat.icon} ${cat.name}
     </div>
   `).join('');
 }
 
-function toggleFantasy(idx, person, btn) {
-  const list = person === 'A' ? fantasySelectionsA : fantasySelectionsB;
-  const pos = list.indexOf(idx);
-  if (pos === -1) { list.push(idx); btn.classList.add('selected'); }
-  else { list.splice(pos,1); btn.classList.remove('selected'); }
-  const count = list.length;
-  const countEl = document.getElementById('fantasyCount' + person);
-  countEl.textContent = count === 0 ? 'Elige al menos 1' : `${count} elegida${count>1?'s':''}`;
-  const btnEl = person === 'A' ? document.getElementById('fantasyNextBtn') : document.getElementById('fantasyRevealBtn');
-  if (count > 0) btnEl.classList.add('ready'); else btnEl.classList.remove('ready');
+function switchFantasyCategory(idx) {
+  fantasyCurrentCat = idx;
+  renderFantasyCategoryTabs();
+  renderFantasyGrid();
 }
 
-function nextFantasyStep() {
-  if (fantasySelectionsA.length === 0) return;
-  document.getElementById('fantasyStep1').classList.remove('active');
-  document.getElementById('fantasyStep2').classList.add('active');
+function renderFantasyGrid() {
+  const grid = document.getElementById('fantasyItemsGrid');
+  if (!grid) return;
+  const cat = FANTASY_CATEGORIES[fantasyCurrentCat];
+  const items = cat.items[currentHeat] || cat.items.romantico;
+  const person = fantasyCurrentPerson;
+  const selected = (person === 'A' ? fantasyPersonA : fantasyPersonB)[cat.id] || [];
+
+  grid.innerHTML = items.map((item, i) => `
+    <div class="fantasy-item-new ${selected.includes(i) ? 'selected' : ''}"
+         onclick="toggleFantasyNew('${cat.id}', ${i}, this)">
+      <div class="fi-check">✓</div>
+      <span class="fi-icon">${item.icon}</span>
+      <div class="fi-name">${item.name}</div>
+      <span class="fi-badge">${cat.name}</span>
+    </div>
+  `).join('');
+
+  updateFantasyActionBtn();
 }
 
-function revealFantasyMatch() {
-  if (fantasySelectionsB.length === 0) return;
-  const matches = fantasySelectionsA.filter(i => fantasySelectionsB.includes(i));
-  document.getElementById('fantasyStep2').classList.remove('active');
-  document.getElementById('fantasyStep3').classList.add('active');
+function toggleFantasyNew(catId, idx, el) {
+  const person = fantasyCurrentPerson;
+  const store = person === 'A' ? fantasyPersonA : fantasyPersonB;
+  if (!store[catId]) store[catId] = [];
+  const pos = store[catId].indexOf(idx);
+  if (pos === -1) { store[catId].push(idx); el.classList.add('selected'); }
+  else { store[catId].splice(pos, 1); el.classList.remove('selected'); }
+  updateFantasyActionBtn();
+  renderFantasyPersonBar();
+}
 
-  const results = document.getElementById('fantasyResults');
-  if (matches.length === 0) {
-    results.innerHTML = `
-      <div class="fantasy-result-title">Sin coincidencias esta vez</div>
-      <div class="fantasy-result-sub">¡Pero eso es una oportunidad para aprender!</div>
-      <div class="fantasy-no-match">
-        <span class="fantasy-no-match-icon">💛</span>
-        <div class="fantasy-no-match-text">Diferentes deseos hoy. Hablen sobre lo que cada uno eligió — la conversación es el mejor juego de todos.</div>
-      </div>
-      <div style="margin-top:16px;padding:14px;background:var(--card);border-radius:14px;border:1px solid var(--border);text-align:left;">
-        <div style="font-size:0.58rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">💡 ¿Qué hacer ahora?</div>
-        <div style="font-size:0.72rem;color:var(--text);line-height:1.6;">Cada uno comparte <strong>una</strong> de sus fantasías elegidas. Escuchen sin juzgar. Puede que encuentren más en común de lo que creen.</div>
-      </div>`;
+function updateFantasyActionBtn() {
+  const btn = document.getElementById('fantasyActionBtn');
+  const badge = document.getElementById('fantasyCountBadge');
+  if (!btn) return;
+  const person = fantasyCurrentPerson;
+  const store = person === 'A' ? fantasyPersonA : fantasyPersonB;
+  const total = Object.values(store).flat().length;
+
+  if (total > 0) {
+    btn.classList.add('ready');
+    if (person === 'A') {
+      btn.textContent = `LISTO → PERSONA 2`;
+      badge.textContent = `${total} elegida${total>1?'s':''}`;
+    } else {
+      btn.textContent = `✨ REVELAR MATCHES`;
+      badge.textContent = `${total} elegida${total>1?'s':''}`;
+    }
   } else {
-    results.innerHTML = `
-      <div class="fantasy-result-title">✨ ${matches.length} match${matches.length>1?'es':''}</div>
-      <div class="fantasy-result-sub">¡Los dos desean esto esta noche!</div>
-      ${matches.map(i => `
-        <div class="fantasy-match-item">
-          <span class="fantasy-match-icon">${FANTASIES[i].icon}</span>
-          <div>
-            <div class="fantasy-match-name">${FANTASIES[i].name}</div>
-            <div class="fantasy-match-desc">${FANTASIES[i].desc}</div>
-          </div>
-        </div>`).join('')}
-      <div style="margin-top:16px;padding:14px;background:var(--card);border-radius:14px;border:1px solid var(--border);text-align:left;">
-        <div style="font-size:0.58rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">🎯 Siguiente paso</div>
-        <div style="font-size:0.72rem;color:var(--text);line-height:1.6;margin-bottom:12px;">Tienen ${matches.length} deseo${matches.length>1?'s':''} en común. Usen la <strong>Ruleta</strong> para encontrar la posición perfecta para esta noche.</div>
-        <button onclick="goTo('ruleta')" style="width:100%;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#080810;font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:2px;cursor:pointer;">🎡 IR A LA RULETA</button>
-      </div>`;
+    btn.classList.remove('ready');
+    btn.textContent = person === 'A' ? 'ELIGE AL MENOS 1' : 'ELIGE AL MENOS 1';
+    badge.textContent = 'Toca para elegir';
   }
 }
 
-function resetFantasy() { initFantasy(); }
+function fantasyAction() {
+  if (fantasyCurrentPerson === 'A') {
+    const total = Object.values(fantasyPersonA).flat().length;
+    if (total === 0) return;
+    // Pasar a Persona B
+    fantasyCurrentPerson = 'B';
+    // Reset categoría
+    fantasyCurrentCat = 0;
+    renderFantasyPersonBar();
+    renderFantasyCategoryTabs();
+    renderFantasyGrid();
+    updateFantasyActionBtn();
+    // Scroll arriba
+    document.getElementById('fantasy').scrollTop = 0;
+  } else {
+    const total = Object.values(fantasyPersonB).flat().length;
+    if (total === 0) return;
+    revealFantasyMatchNew();
+  }
+}
 
-// ── EL AMBIENTE ──
+function revealFantasyMatchNew() {
+  document.getElementById('fantasySelectionScreen').style.display = 'none';
+  const revScreen = document.getElementById('fantasyRevealScreen');
+  revScreen.classList.add('show');
+
+  // Calcular matches por categoría
+  let totalMatches = 0;
+  const matchesByCat = [];
+
+  FANTASY_CATEGORIES.forEach(cat => {
+    const aSelected = fantasyPersonA[cat.id] || [];
+    const bSelected = fantasyPersonB[cat.id] || [];
+    const matches = aSelected.filter(i => bSelected.includes(i));
+    if (matches.length > 0) {
+      const items = cat.items[currentHeat] || cat.items.romantico;
+      matchesByCat.push({
+        cat,
+        matches: matches.map(i => items[i])
+      });
+      totalMatches += matches.length;
+    }
+  });
+
+  // Guardar en historial
+  if (totalMatches > 0) {
+    const history = storageGet('fantasy_history') || [];
+    const entry = {
+      date: new Date().toLocaleDateString('es', {day:'numeric',month:'short'}),
+      matches: matchesByCat.map(m => m.matches.map(i => i.name)).flat(),
+      level: currentHeat
+    };
+    history.unshift(entry);
+    if (history.length > 5) history.pop();
+    storageSet('fantasy_history', history);
+  }
+
+  const container = document.getElementById('fantasyRevealContainer');
+
+  if (totalMatches === 0) {
+    container.innerHTML = `
+      <div class="fantasy-no-match-new">
+        <div style="font-size:3rem;margin-bottom:12px;">💛</div>
+        <div class="fantasy-reveal-title">Sin matches esta vez</div>
+        <div style="font-size:0.72rem;color:var(--muted);line-height:1.7;margin:12px 0;">
+          Tienen deseos diferentes hoy — y eso es completamente normal. La diferencia también es una invitación a conocerse más.
+        </div>
+        <div style="padding:14px;background:var(--card);border-radius:14px;text-align:left;margin-top:12px;">
+          <div style="font-size:0.58rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">💡 ¿Qué hacer ahora?</div>
+          <div style="font-size:0.72rem;color:var(--text);line-height:1.6;">Cada uno comparte <strong>una</strong> de sus fantasías elegidas. Escuchen sin juzgar — la conversación que viene puede ser la más íntima que hayan tenido.</div>
+        </div>
+      </div>
+    `;
+  } else {
+    // Reveal animado por categoría con delay
+    let html = `
+      <div class="fantasy-reveal-header">
+        <div style="font-size:3rem;margin-bottom:12px;animation:resultPop .6s ease;">✨</div>
+        <div class="fantasy-reveal-title">${totalMatches} match${totalMatches>1?'es':''} encontrados</div>
+        <div class="fantasy-reveal-sub">¡Los dos desean esto esta noche!</div>
+      </div>
+    `;
+
+    matchesByCat.forEach((catMatch, ci) => {
+      html += `
+        <div class="fantasy-match-category" style="animation-delay:${ci * 0.15}s">
+          <div class="fantasy-match-cat-header">
+            <span class="fantasy-match-cat-icon">${catMatch.cat.icon}</span>
+            <span class="fantasy-match-cat-name">${catMatch.cat.name}</span>
+            <span class="fantasy-match-count">${catMatch.matches.length} match${catMatch.matches.length>1?'es':''}</span>
+          </div>
+          <div class="fantasy-match-items">
+            ${catMatch.matches.map((item, mi) => `
+              <div class="fantasy-match-item-new" style="animation-delay:${(ci * 0.15) + (mi * 0.1)}s">
+                <span class="fmi-icon">${item.icon}</span>
+                <div>
+                  <div class="fmi-name">${item.name}</div>
+                  <div class="fmi-desc">${item.desc}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+      <div class="fantasy-next-step">
+        <div class="fantasy-next-step-title">🎯 Siguiente paso</div>
+        <div class="fantasy-next-step-desc">
+          Tienen <strong>${totalMatches} deseo${totalMatches>1?'s':''}</strong> en común.
+          ${totalMatches >= 3 ? '¡Tienen mucho para explorar esta noche!' : 'Empiecen por aquí esta noche.'}
+          La Ruleta puede darles la posición perfecta para comenzar.
+        </div>
+        <button class="fantasy-next-step-btn" onclick="goTo('ruleta')">🎡 IR A LA RULETA</button>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+  trackEvent('fantasy');
+}
+
+function resetFantasy() {
+  initFantasy();
+}
+
+
+// ── EL AMBIENTE ───
 let checkinA = null;
 let checkinB = null;
 
@@ -1875,20 +2256,154 @@ function skipCheckin() {
 
 // ── DESAFÍO 7 DÍAS ──
 
-const FANTASIES = [
-  { icon:"💆", name:"Masaje erótico completo", desc:"Explorar todo el cuerpo lentamente con las manos" },
-  { icon:"🎭", name:"Roleplay y fantasía", desc:"Interpretar personajes o situaciones imaginarias" },
-  { icon:"🪢", name:"Dominación suave", desc:"Uno guía completamente, el otro recibe" },
-  { icon:"🪟", name:"Fuera de la cama", desc:"Explorar otros lugares de la casa" },
-  { icon:"🕯️", name:"Ambiente especial", desc:"Velas, música, toda una experiencia sensorial" },
-  { icon:"👁️", name:"Mirarnos al espejo", desc:"Mantener contacto visual durante el encuentro" },
-  { icon:"🎲", name:"Juegos y retos", desc:"Dados, cartas, ruleta — dejar que el azar decida" },
-  { icon:"🌊", name:"Baño o ducha juntos", desc:"Exploración íntima con agua y calor" },
-  { icon:"🌙", name:"Toda la noche", desc:"Sin límites de tiempo, disfrutar sin apuros" },
-  { icon:"💌", name:"Susurros y palabras", desc:"Hablar durante el encuentro, describir todo" },
-  { icon:"🎵", name:"Con música especial", desc:"Una playlist que marque el ritmo de la noche" },
-  { icon:"🍓", name:"Juegos con comida", desc:"Frutas, chocolate, crema — mezclar sabores e intimidad" },
+
+const FANTASY_CATEGORIES = [
+  {
+    id: 'sensorial', icon: '🌊', name: 'Sensorial',
+    desc: 'Lo que se siente en el cuerpo',
+    items: {
+      romantico: [
+        { icon:'💆', name:'Masaje de cuerpo entero', desc:'Explorar todo el cuerpo lentamente, sin apuros ni objetivos' },
+        { icon:'🛁', name:'Baño o ducha juntos', desc:'Compartir el agua, el jabón y la intimidad del baño' },
+        { icon:'🤲', name:'Solo con las manos', desc:'Explorar durante 10 minutos únicamente con los dedos' },
+        { icon:'🌸', name:'Caricias sin destino', desc:'Recorrer el cuerpo sin un destino fijo, solo siguiendo el tacto' },
+      ],
+      picante: [
+        { icon:'🧊', name:'Juego de temperatura', desc:'Alternar hielo y calor sobre la piel para multiplicar las sensaciones' },
+        { icon:'👁️‍🗨️', name:'Vendas en los ojos', desc:'Eliminar la vista para potenciar todos los demás sentidos' },
+        { icon:'💋', name:'Solo con la boca', desc:'Explorar el cuerpo usando únicamente los labios y la lengua' },
+        { icon:'🪶', name:'Cosquillas y rozones', desc:'Usar plumas u objetos suaves para despertar cada centímetro de piel' },
+      ],
+      hot: [
+        { icon:'🎭', name:'Privación sensorial total', desc:'Tapaojos, sonido apagado — solo el tacto existe en el mundo' },
+        { icon:'⚡', name:'Estimulación al límite', desc:'Llevar al borde una y otra vez sin llegar al final' },
+        { icon:'🔥', name:'Temperatura extrema', desc:'Jugar con el contraste máximo de sensaciones en el cuerpo' },
+        { icon:'🌡️', name:'Cada zona explorada', desc:'Recorrer absolutamente cada parte del cuerpo sin excepción' },
+      ]
+    }
+  },
+  {
+    id: 'lugar', icon: '🗺️', name: 'Lugar',
+    desc: 'Dónde y cuándo',
+    items: {
+      romantico: [
+        { icon:'🕯️', name:'Con velas y música', desc:'Crear un ambiente completamente especial en casa' },
+        { icon:'🏨', name:'En un hotel', desc:'La aventura de una noche fuera de la rutina habitual' },
+        { icon:'🌅', name:'Al amanecer', desc:'Aprovechar ese momento especial antes de que empiece el día' },
+        { icon:'🛏️', name:'En la cama perfecta', desc:'Sábanas limpias, almohadas perfectas, nada de prisas' },
+      ],
+      picante: [
+        { icon:'🚿', name:'En la ducha', desc:'El agua caliente, el vapor, y el cuerpo del otro' },
+        { icon:'🍳', name:'En la cocina', desc:'Un lugar inesperado que cambia todo' },
+        { icon:'🚗', name:'En el auto', desc:'La adrenalina de un espacio pequeño y diferente' },
+        { icon:'🌿', name:'Al aire libre', desc:'La naturaleza como escenario íntimo' },
+      ],
+      hot: [
+        { icon:'🏢', name:'Fuera de casa', desc:'Un lugar semi-público donde el riesgo sea parte del juego' },
+        { icon:'🪞', name:'Frente al espejo', desc:'Verse mientras sucede — una experiencia completamente diferente' },
+        { icon:'🌙', name:'Al aire libre de noche', desc:'La oscuridad y las estrellas como testigos' },
+        { icon:'🛗', name:'En movimiento', desc:'Un ascensor, un cuarto de hotel, donde el tiempo es limitado' },
+      ]
+    }
+  },
+  {
+    id: 'rol', icon: '🎭', name: 'Rol',
+    desc: 'Jugar a ser alguien más',
+    items: {
+      romantico: [
+        { icon:'💌', name:'Reencontrarse como extraños', desc:'Fingir que se conocen por primera vez en un bar o café' },
+        { icon:'🎬', name:'Primera vez ficticia', desc:'Recrear o inventar un primer encuentro romántico' },
+        { icon:'💍', name:'Noche de bodas', desc:'Actuar como si fuera la primera noche juntos como pareja oficial' },
+        { icon:'📖', name:'Protagonistas de una historia', desc:'Elegir un escenario romántico y vivirlo juntos' },
+      ],
+      picante: [
+        { icon:'👔', name:'Jefe y empleado/a', desc:'Dinámica de poder en el trabajo con tensión acumulada' },
+        { icon:'🩺', name:'Médico/a y paciente', desc:'Un examen que va más allá de lo profesional' },
+        { icon:'📚', name:'Profesor y alumno/a', desc:'Una lección que ninguno de los dos olvidará' },
+        { icon:'🏋️', name:'Entrenador y cliente', desc:'El ejercicio como excusa para el contacto físico' },
+      ],
+      hot: [
+        { icon:'🌑', name:'Extraños que se encuentran', desc:'Sin pasado, sin futuro — solo esa noche y esos dos cuerpos' },
+        { icon:'👑', name:'Poder total', desc:'Uno con autoridad absoluta, el otro cediendo completamente' },
+        { icon:'🎪', name:'Fantasía de poder', desc:'Un escenario de dominación y sumisión completamente consentida' },
+        { icon:'🕵️', name:'Identidades secretas', desc:'Jugar a ser versiones completamente distintas de uno mismo' },
+      ]
+    }
+  },
+  {
+    id: 'poder', icon: '🎀', name: 'Poder',
+    desc: 'Quién decide',
+    items: {
+      romantico: [
+        { icon:'🌹', name:'Uno lidera toda la noche', desc:'Una persona toma todas las decisiones con ternura y cuidado' },
+        { icon:'🤍', name:'El otro solo recibe', desc:'Rendirse completamente al placer sin tener que hacer nada' },
+        { icon:'🐢', name:'Ritmo muy lento', desc:'Quien lidera decide no acelerar nunca, sin importar el deseo' },
+        { icon:'💞', name:'Turnarse el control', desc:'Cada 5 minutos el control pasa a la otra persona' },
+      ],
+      picante: [
+        { icon:'🗣️', name:'Instrucciones susurradas', desc:'Decir exactamente qué quieres que haga el otro, en voz baja' },
+        { icon:'🎀', name:'Inmovilización suave', desc:'Manos atadas con algo suave — sin moverse hasta que se diga' },
+        { icon:'📋', name:'Órdenes que obedecer', desc:'Una lista de indicaciones que el otro debe seguir al pie de la letra' },
+        { icon:'🚦', name:'Sistema de colores', desc:'Verde, amarillo, rojo — comunicación total durante el juego' },
+      ],
+      hot: [
+        { icon:'⛓️', name:'Dominación completa', desc:'Control total durante toda la sesión — consensuado y acordado' },
+        { icon:'🙇', name:'Sumisión voluntaria', desc:'Entregarse completamente a lo que el otro decida hacer' },
+        { icon:'🎯', name:'Sin poder negarse', desc:'Todo lo que se proponga se acepta — dentro de los límites acordados' },
+        { icon:'🃏', name:'Cartas de mando', desc:'Escribir 5 deseos cada uno — el otro debe cumplirlos todos' },
+      ]
+    }
+  },
+  {
+    id: 'tiempo', icon: '⏳', name: 'Tiempo',
+    desc: 'Cómo se vive el momento',
+    items: {
+      romantico: [
+        { icon:'🌅', name:'Sin apuros, toda la tarde', desc:'Empezar a media tarde y que no haya hora de terminar' },
+        { icon:'🐌', name:'Empezar muy despacio', desc:'Los primeros 20 minutos solo abrazarse y respirar juntos' },
+        { icon:'☕', name:'El tiempo del café', desc:'Una sesión corta, intensa y memorable antes del día' },
+        { icon:'🌙', name:'Hasta dormirse juntos', desc:'Que el final sea quedarse dormidos en brazos del otro' },
+      ],
+      picante: [
+        { icon:'🎭', name:'Tensión acumulada', desc:'No tocarse en todo el día y reservar toda la energía para la noche' },
+        { icon:'🔁', name:'Parar y reiniciar', desc:'Llegar al límite, parar completamente, reiniciar desde cero' },
+        { icon:'⏱️', name:'Con el temporizador', desc:'Cada 5 minutos cambia la actividad — el timer manda' },
+        { icon:'📲', name:'Mensajes durante el día', desc:'Construir la tensión durante horas antes de verse' },
+      ],
+      hot: [
+        { icon:'🌃', name:'Toda la noche', desc:'Sin dormir, sin pausar — que el sol encuentre a los dos despiertos' },
+        { icon:'🏃', name:'Múltiples rondas', desc:'Descansar lo mínimo y volver a empezar, una y otra vez' },
+        { icon:'⚡', name:'Velocidad máxima', desc:'Todo al límite, sin pausas, sin frenos — pura intensidad' },
+        { icon:'🌊', name:'Olas de intensidad', desc:'Subir al máximo, bajar casi al mínimo, subir de nuevo' },
+      ]
+    }
+  },
+  {
+    id: 'palabras', icon: '💬', name: 'Palabras',
+    desc: 'Lo que se dice y cómo',
+    items: {
+      romantico: [
+        { icon:'💌', name:'Decirse cosas bonitas', desc:'Solo palabras de amor y admiración durante todo el encuentro' },
+        { icon:'🎵', name:'Con una playlist especial', desc:'Elegir música que marque el ritmo y el ambiente de la noche' },
+        { icon:'👀', name:'Solo miradas', desc:'Sin palabras — solo contacto visual profundo durante todo el encuentro' },
+        { icon:'📖', name:'Describir lo que sienten', desc:'Narrar en voz alta las sensaciones mientras suceden' },
+      ],
+      picante: [
+        { icon:'🤫', name:'Susurrar antes de hacer', desc:'Decir exactamente lo que se va a hacer, antes de hacerlo' },
+        { icon:'🎙️', name:'Describir todo en voz alta', desc:'Una persona narra todo lo que está pasando en tiempo real' },
+        { icon:'🙏', name:'Pedir permiso', desc:'Preguntar antes de cada acción — la espera es parte del placer' },
+        { icon:'💬', name:'Fantasías en voz alta', desc:'Contarse fantasías mientras sucede el encuentro' },
+      ],
+      hot: [
+        { icon:'🔓', name:'Sin filtros', desc:'Decir exactamente lo que se siente y quiere, sin censura' },
+        { icon:'📣', name:'Volumen sin límite', desc:'Sin preocuparse por el volumen — dejarse llevar completamente' },
+        { icon:'🖊️', name:'Palabras acordadas', desc:'Elegir palabras que normalmente no se dirían — solo para esta noche' },
+        { icon:'🗣️', name:'Pedir lo que se quiere', desc:'Ser completamente específico sobre cada deseo, sin vergüenza' },
+      ]
+    }
+  }
 ];
+
 
 const CHALLENGES = {romantico: [
     { title:"Masaje Sensorial",    why:"El tacto libera oxitocina, la hormona del vínculo. Un masaje sin expectativas reduce el estrés y aumenta la confianza mutua.",    desc:"Dediquen 10 minutos a un masaje completo sin hablar. Solo con las manos y la respiración. Luego intercambien." },
@@ -2561,32 +3076,40 @@ if ('serviceWorker' in navigator) {
     <div class="screen-title">Match de Fantasías</div>
   </div>
   <div class="fantasy-container">
-    <div class="fantasy-intro">
-      <div class="fantasy-intro-title">✦ El Juego del Deseo</div>
-      <div class="fantasy-intro-sub">Cada uno elige en secreto sus fantasías. Solo se revelan las que ambos eligieron. Sin juicios, solo descubrimientos.</div>
+
+    <!-- PANTALLA DE SELECCIÓN -->
+    <div id="fantasySelectionScreen">
+
+      <!-- Card de seguridad emocional -->
+      <div class="fantasy-safety-card">
+        <div class="fantasy-safety-title">✦ El Juego del Deseo</div>
+        <div class="fantasy-safety-rule">🔒 Lo que no coincide, nunca se revela</div>
+        <div class="fantasy-safety-sub">Cada uno elige en secreto. Sin juicios, sin presión. Solo se muestran los deseos que ambos comparten.</div>
+      </div>
+
+      <!-- Barra de persona activa -->
+      <div class="fantasy-person-bar" id="fantasyPersonBar"></div>
+
+      <!-- Tabs de categorías -->
+      <div class="fantasy-cat-tabs" id="fantasyCatTabs"></div>
+
+      <!-- Grid de fantasías -->
+      <div class="fantasy-items-grid" id="fantasyItemsGrid"></div>
+
+      <!-- Footer de acción sticky -->
+      <div class="fantasy-action-footer">
+        <div class="fantasy-count-badge" id="fantasyCountBadge">Toca para elegir</div>
+        <button class="fantasy-action-btn" id="fantasyActionBtn" onclick="fantasyAction()">ELIGE AL MENOS 1</button>
+      </div>
+
     </div>
 
-    <!-- PASO 1: Persona A -->
-    <div class="fantasy-step active" id="fantasyStep1">
-      <div class="fantasy-player-label">👤 Persona 1 — elige en secreto</div>
-      <div class="fantasy-count" id="fantasyCountA">Elige al menos 1</div>
-      <div class="fantasy-grid" id="fantasyGridA"></div>
-      <button class="fantasy-next-btn" id="fantasyNextBtn" onclick="nextFantasyStep()">LISTO, SIGUIENTE →</button>
+    <!-- PANTALLA DE REVEAL -->
+    <div class="fantasy-reveal-screen" id="fantasyRevealScreen">
+      <div id="fantasyRevealContainer"></div>
+      <button class="fantasy-replay-btn" onclick="resetFantasy()">↺ Jugar otra ronda</button>
     </div>
 
-    <!-- PASO 2: Persona B -->
-    <div class="fantasy-step" id="fantasyStep2">
-      <div class="fantasy-player-label">👤 Persona 2 — elige en secreto</div>
-      <div class="fantasy-count" id="fantasyCountB">Elige al menos 1</div>
-      <div class="fantasy-grid" id="fantasyGridB"></div>
-      <button class="fantasy-reveal-btn" id="fantasyRevealBtn" onclick="revealFantasyMatch()">✨ REVELAR MATCHES</button>
-    </div>
-
-    <!-- PASO 3: Resultado -->
-    <div class="fantasy-step" id="fantasyStep3">
-      <div class="fantasy-results" id="fantasyResults"></div>
-      <button class="fantasy-reset-btn" onclick="resetFantasy()">↺ Jugar de nuevo</button>
-    </div>
   </div>
     <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
