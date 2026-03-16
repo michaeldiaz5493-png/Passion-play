@@ -8,8 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Passion Play">
 <meta name="description" content="Juegos íntimos para parejas">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-192x192.png">
 <title>Passion Play ✦</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -556,14 +556,44 @@ function spinWheel() {
   wheelSpinning = true;
   document.getElementById('spinBtn').disabled = true;
   document.getElementById('resultCard').classList.remove('show');
+
   const positions = DATA.positions[currentHeat];
-  const extraSpins = (5 + Math.random() * 5) * 2 * Math.PI;
-  const randomAngle = Math.random() * 2 * Math.PI;
-  const totalRotation = extraSpins + randomAngle;
+  const n = positions.length;
+  const arc = (2 * Math.PI) / n;
+
+  // STEP 1: Pick the winning segment FIRST (guaranteed correct)
+  const winIdx = Math.floor(Math.random() * n);
+
+  // STEP 2: Canvas draws segments starting at angle 0 = RIGHT (3 o'clock).
+  // Our pointer is at TOP (12 o'clock) = -Math.PI/2 in canvas coords.
+  // Segment i occupies angles: [i*arc, (i+1)*arc] relative to wheelAngle=0.
+  // We want the CENTER of the winning segment to land under the pointer.
+  // Under pointer means: wheelAngle + segmentCenter = -PI/2 (mod 2PI)
+  // => targetWheelAngle = -PI/2 - segmentCenter
+  const segmentCenter = winIdx * arc + arc / 2;
+  const pointerAngle = -Math.PI / 2; // top of wheel in canvas coords
+
+  // Raw target angle (could be negative)
+  let rawTarget = pointerAngle - segmentCenter;
+
+  // Normalize so rawTarget is in [0, 2PI)
+  rawTarget = ((rawTarget % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
+  // Add full spins (min 5) from current wheelAngle, spinning clockwise (positive)
+  // We need to find the next occurrence of rawTarget that is > current wheelAngle
+  const currentNorm = ((wheelAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  let delta = rawTarget - currentNorm;
+  if (delta < 0) delta += 2 * Math.PI;   // ensure forward spin
+  const extraSpins = (5 + Math.floor(Math.random() * 5)) * 2 * Math.PI;
+  const totalRotation = extraSpins + delta;
+  const targetAngle = wheelAngle + totalRotation;
+
   const duration = 4000;
   const start = performance.now();
   const startAngle = wheelAngle;
+
   function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
+
   function animate(now) {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
@@ -572,14 +602,11 @@ function spinWheel() {
     if (progress < 1) {
       requestAnimationFrame(animate);
     } else {
+      wheelAngle = targetAngle; // snap exactly to target
+      drawWheel(wheelAngle);
       wheelSpinning = false;
       document.getElementById('spinBtn').disabled = false;
-      const n = positions.length;
-      const arc = (2 * Math.PI) / n;
-      const pointerOffset = Math.PI / 2;
-      const normalizedAngle = ((-wheelAngle + pointerOffset) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-      const idx = Math.floor(normalizedAngle / arc) % n;
-      showPositionResult(positions[idx]);
+      showPositionResult(positions[winIdx]); // use pre-selected winner
     }
   }
   requestAnimationFrame(animate);
@@ -685,7 +712,7 @@ function pullSlots() {
 // ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/Passion-play/sw.js', {scope: '/Passion-play/'})
+    navigator.serviceWorker.register('./sw.js')
       .then(r => console.log('SW registered'))
       .catch(e => console.log('SW error', e));
   });
