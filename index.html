@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#080810">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Passion Play">
+<meta name="description" content="Juegos íntimos para parejas">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+<title>Passion Play ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080810;
+    --bg2: #0f0f1e;
+    --card: #12121f;
+    --card2: #1a1a2e;
+    --gold: #c9a96e;
+    --gold2: #e8d5a3;
+    --rose: #e8849a;
+    --rose2: #ffb3c6;
+    --purple: #9b6dff;
+    --text: #f0e6d3;
+    --muted: #666680;
+    --border: rgba(201,169,110,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(201,169,110,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(232,132,154,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(155,109,255,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen { display: none; flex-direction: column; min-height: 100vh; position: relative; z-index: 1; }
+  .screen.active { display: flex; }
+
+  /* ── SPLASH ── */
+  #splash {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 30px;
+    animation: fadeIn 1s ease;
+  }
+  .splash-ornament { font-size: 2.5rem; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .splash-title { font-family:'Cormorant Garamond',serif; font-size:3.2rem; font-weight:300; color:var(--gold); letter-spacing:4px; line-height:1; margin-bottom:6px; }
+  .splash-subtitle { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--muted); letter-spacing:6px; text-transform:uppercase; margin-bottom:50px; }
+
+  .heat-selector { width:100%; margin-bottom:40px; }
+  .heat-label { font-size:0.65rem; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; }
+  .heat-options { display:flex; gap:8px; justify-content:center; }
+  .heat-btn { flex:1; padding:10px 4px; border-radius:12px; border:1px solid var(--border); background:var(--card); color:var(--muted); font-family:'Montserrat',sans-serif; font-size:0.6rem; letter-spacing:1px; cursor:pointer; transition:all .3s; text-align:center; }
+  .heat-btn .heat-icon { font-size:1.2rem; display:block; margin-bottom:4px; }
+  .heat-btn.active { border-color:var(--gold); background:rgba(201,169,110,0.1); color:var(--gold); }
+
+  .btn-primary { width:100%; padding:18px; border-radius:16px; border:none; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all .3s; }
+  .btn-primary:active { transform:scale(0.97); opacity:.9; }
+  .privacy-note { font-size:0.6rem; color:var(--muted); margin-top:16px; letter-spacing:1px; }
+
+  /* ── MENU ── */
+  .menu-header { padding:50px 24px 24px; display:flex; align-items:center; justify-content:space-between; }
+  .menu-title { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; color:var(--gold); letter-spacing:2px; }
+  .heat-badge { padding:4px 12px; border-radius:20px; border:1px solid var(--border); font-size:0.6rem; color:var(--gold); letter-spacing:2px; }
+
+  .games-grid { padding:10px 16px 100px; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .game-card { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:22px 16px; cursor:pointer; transition:all .3s; text-align:center; position:relative; overflow:hidden; }
+  .game-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); opacity:0; transition:opacity .3s; }
+  .game-card:active { transform:scale(0.96); }
+  .game-card:active::before { opacity:1; }
+  .game-card.wide { grid-column:span 2; }
+  .game-icon { font-size:2.2rem; margin-bottom:10px; display:block; }
+  .game-name { font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:var(--gold); font-style:italic; margin-bottom:4px; }
+  .game-desc { font-size:0.6rem; color:var(--muted); letter-spacing:1px; line-height:1.4; }
+
+  /* ── SCREEN HEADER ── */
+  .screen-header { padding:50px 24px 20px; display:flex; align-items:center; gap:16px; }
+  .back-btn { width:36px; height:36px; border-radius:50%; border:1px solid var(--border); background:var(--card); color:var(--gold); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .screen-title { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:300; color:var(--gold); letter-spacing:2px; }
+
+  /* ── RULETA ── */
+  .wheel-container { display:flex; flex-direction:column; align-items:center; padding:10px 24px 30px; }
+  .wheel-wrapper { position:relative; width:300px; height:300px; margin-bottom:20px; }
+  .wheel-pointer { position:absolute; top:-16px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent; border-top:22px solid var(--gold); z-index:10; filter:drop-shadow(0 0 6px var(--gold)); }
+  #wheelCanvas { border-radius:50%; box-shadow:0 0 40px rgba(201,169,110,0.2),0 0 0 3px rgba(201,169,110,0.3); }
+  .wheel-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:44px; height:44px; border-radius:50%; background:var(--bg); border:3px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:1.2rem; z-index:5; box-shadow:0 0 20px rgba(201,169,110,0.4); }
+
+  .spin-btn { width:100%; padding:18px; border-radius:16px; border:none; background:linear-gradient(135deg,var(--rose),var(--rose2)); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all .3s; margin-bottom:16px; }
+  .spin-btn:active { transform:scale(0.97); }
+  .spin-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+  .result-card { width:100%; background:var(--card2); border:1px solid var(--border); border-radius:20px; padding:20px; display:none; animation:slideUp .5s ease; }
+  .result-card.show { display:block; }
+  @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  .result-level-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .result-name { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--gold); font-style:italic; margin-bottom:6px; }
+  .result-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .meta-tag { padding:3px 10px; border-radius:20px; font-size:0.58rem; letter-spacing:1px; text-transform:uppercase; }
+  .tag-easy { background:rgba(100,200,100,0.1); color:#6dc86d; border:1px solid rgba(100,200,100,0.2); }
+  .tag-med  { background:rgba(255,180,0,0.1); color:#f0b429; border:1px solid rgba(255,180,0,0.2); }
+  .tag-hard { background:rgba(255,80,80,0.1); color:#ff6b6b; border:1px solid rgba(255,80,80,0.2); }
+  .result-divider { height:1px; background:var(--border); margin:12px 0; }
+  .result-row { display:flex; gap:10px; margin-bottom:8px; align-items:flex-start; }
+  .result-row-label { font-size:0.58rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; min-width:70px; padding-top:2px; }
+  .result-row-value { font-size:0.78rem; color:var(--text); line-height:1.5; flex:1; }
+  .intensity-dots { display:flex; gap:4px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); }
+  .dot.filled { background:var(--rose); }
+
+  /* ── DADOS ── */
+  .dice-container { padding:20px 24px 30px; display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .dice-row { display:flex; gap:16px; justify-content:center; }
+  .die { width:90px; height:90px; border-radius:18px; background:var(--card2); border:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:all .3s; }
+  .die.rolling { animation:diceRoll .6s ease; }
+  @keyframes diceRoll { 0%{transform:rotate(0) scale(1)} 25%{transform:rotate(10deg) scale(.9)} 50%{transform:rotate(-8deg) scale(1.1)} 75%{transform:rotate(5deg) scale(.95)} 100%{transform:rotate(0) scale(1)} }
+  .die-icon { font-size:1.8rem; }
+  .die-label { font-size:0.5rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-top:4px; }
+  .die-value { font-family:'Cormorant Garamond',serif; font-size:0.85rem; color:var(--gold); font-style:italic; margin-top:2px; text-align:center; padding:0 6px; line-height:1.2; }
+
+  .dice-result-card { width:100%; background:var(--card2); border:1px solid var(--border); border-radius:20px; padding:20px; text-align:center; display:none; animation:slideUp .4s ease; }
+  .dice-result-card.show { display:block; }
+  .dice-combination { font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--gold); font-style:italic; line-height:1.5; margin-bottom:8px; }
+  .dice-desc { font-size:0.72rem; color:var(--muted); line-height:1.6; }
+
+  .roll-all-btn { width:100%; padding:18px; border-radius:16px; border:1px solid var(--border); background:var(--card); color:var(--gold); font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:500; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all .3s; }
+  .roll-all-btn:active { transform:scale(0.97); background:var(--card2); }
+
+  /* ── TRUTH OR DARE ── */
+  .tod-container { padding:20px 24px 30px; display:flex; flex-direction:column; gap:16px; }
+  .tod-tabs { display:flex; gap:8px; }
+  .tod-tab { flex:1; padding:12px; border-radius:12px; border:1px solid var(--border); background:var(--card); color:var(--muted); font-family:'Montserrat',sans-serif; font-size:0.7rem; letter-spacing:2px; cursor:pointer; transition:all .3s; text-align:center; }
+  .tod-tab.active { background:rgba(201,169,110,0.1); border-color:var(--gold); color:var(--gold); }
+  .tod-card { background:var(--card2); border:1px solid var(--border); border-radius:24px; padding:30px 24px; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; position:relative; overflow:hidden; }
+  .tod-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(201,169,110,0.06) 0%,transparent 70%); pointer-events:none; }
+  .tod-type-badge { font-size:0.6rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+  .tod-question { font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--text); font-style:italic; line-height:1.5; margin-bottom:16px; }
+  .tod-intensity { display:flex; gap:4px; }
+  .next-btn { width:100%; padding:18px; border-radius:16px; border:none; background:linear-gradient(135deg,var(--purple),#c084fc); color:white; font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all .3s; }
+  .next-btn:active { transform:scale(0.97); }
+
+  /* ── SLOTS ── */
+  .slots-container { padding:20px 24px 30px; display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .slot-machine { width:100%; background:var(--card2); border:1px solid var(--border); border-radius:24px; padding:24px; position:relative; overflow:hidden; }
+  .slot-machine::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--gold),var(--rose),var(--purple)); }
+  .slots-row { display:flex; gap:10px; justify-content:center; margin-bottom:8px; }
+  .slot-reel { flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:16px 8px; text-align:center; min-height:90px; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; }
+  .slot-reel.spinning .slot-value { animation:slotSpin .5s linear infinite; }
+  @keyframes slotSpin { 0%{transform:translateY(0);opacity:1} 50%{transform:translateY(-10px);opacity:0} 51%{transform:translateY(10px);opacity:0} 100%{transform:translateY(0);opacity:1} }
+  .slot-icon { font-size:1.5rem; margin-bottom:4px; }
+  .slot-label { font-size:0.48rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
+  .slot-value { font-family:'Cormorant Garamond',serif; font-size:0.8rem; color:var(--gold); font-style:italic; line-height:1.3; text-align:center; }
+  .slots-result { width:100%; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; text-align:center; display:none; animation:slideUp .4s ease; }
+  .slots-result.show { display:block; }
+  .slots-combo { font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:var(--gold); font-style:italic; line-height:1.6; }
+  .pull-btn { width:100%; padding:18px; border-radius:16px; border:none; background:linear-gradient(135deg,#c9a96e,#e8d5a3); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all .3s; }
+  .pull-btn:active { transform:scale(0.97); }
+  .pull-btn:disabled { opacity:.5; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:rgba(8,8,16,0.95); backdrop-filter:blur(20px); border-top:1px solid var(--border); padding:10px 0 20px; display:none; z-index:100; }
+  .bottom-nav.show { display:flex; }
+  .nav-items { display:flex; width:100%; justify-content:space-around; }
+  .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:6px 16px; border-radius:12px; transition:all .2s; }
+  .nav-item.active { background:rgba(201,169,110,0.1); }
+  .nav-icon { font-size:1.3rem; }
+  .nav-label { font-size:0.5rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
+  .nav-item.active .nav-label { color:var(--gold); }
+
+  /* ── UTILS ── */
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .section-label { font-size:0.6rem; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+
+  /* ── INSTALL BANNER ── */
+  #installBanner { display:none; position:fixed; bottom:80px; left:50%; transform:translateX(-50%); width:calc(100% - 32px); max-width:400px; background:var(--card2); border:1px solid var(--border); border-radius:16px; padding:14px 16px; z-index:200; animation:slideUp .4s ease; }
+  #installBanner.show { display:flex; align-items:center; gap:12px; }
+  .install-text { flex:1; font-size:0.7rem; color:var(--text); line-height:1.4; }
+  .install-text strong { color:var(--gold); display:block; font-size:0.75rem; margin-bottom:2px; }
+  .install-btn { padding:8px 14px; border-radius:10px; border:none; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#080810; font-size:0.65rem; font-weight:600; letter-spacing:1px; cursor:pointer; white-space:nowrap; }
+  .install-close { background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; padding:4px; }
+</style>
+</head>
+<body>
+
+<!-- INSTALL BANNER -->
+<div id="installBanner">
+  <div class="install-text">
+    <strong>📲 Instalar App</strong>
+    Agrégala a tu pantalla de inicio para acceder sin internet
+  </div>
+  <button class="install-btn" onclick="installApp()">INSTALAR</button>
+  <button class="install-close" onclick="closeBanner()">✕</button>
+</div>
+
+<!-- ══ SPLASH ══ -->
+<div class="screen active" id="splash">
+  <div class="splash-ornament">✦</div>
+  <div class="splash-title">PASSION</div>
+  <div class="splash-title" style="color:var(--rose);margin-top:-8px;">PLAY</div>
+  <div class="splash-subtitle">Para Parejas</div>
+
+  <div class="heat-selector">
+    <div class="heat-label">✦ Elige tu nivel de intensidad</div>
+    <div class="heat-options">
+      <button class="heat-btn active" onclick="setHeat(this,'romantico')">
+        <span class="heat-icon">🌹</span>ROMÁNTICO
+      </button>
+      <button class="heat-btn" onclick="setHeat(this,'picante')">
+        <span class="heat-icon">🌶️</span>PICANTE
+      </button>
+      <button class="heat-btn" onclick="setHeat(this,'hot')">
+        <span class="heat-icon">🔥</span>HOT
+      </button>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="startApp()">COMENZAR ✦</button>
+  <div class="privacy-note">✦ Sin registro · Todo privado · Solo en tu dispositivo</div>
+</div>
+
+<!-- ══ MENU ══ -->
+<div class="screen" id="menu">
+  <div class="menu-header">
+    <div class="menu-title">Passion Play</div>
+    <div class="heat-badge" id="heatBadge">🌹 ROMÁNTICO</div>
+  </div>
+  <div class="games-grid">
+    <div class="game-card wide" onclick="goTo('ruleta')">
+      <span class="game-icon">🎡</span>
+      <div class="game-name">Ruleta de Posiciones</div>
+      <div class="game-desc">Gira y descubre tu próxima posición con instrucciones detalladas</div>
+    </div>
+    <div class="game-card" onclick="goTo('dados')">
+      <span class="game-icon">🎲</span>
+      <div class="game-name">Dados del Deseo</div>
+      <div class="game-desc">Combina acción, zona y ritmo</div>
+    </div>
+    <div class="game-card" onclick="goTo('truth')">
+      <span class="game-icon">🃏</span>
+      <div class="game-name">Truth or Dare</div>
+      <div class="game-desc">Verdad o reto para parejas</div>
+    </div>
+    <div class="game-card wide" onclick="goTo('slots')">
+      <span class="game-icon">🎰</span>
+      <div class="game-name">Slots de Pasión</div>
+      <div class="game-desc">Gira los reeles y descubre una combinación única</div>
+    </div>
+  </div>
+  <nav class="bottom-nav show"><div class="nav-items">
+    <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+  </div></nav>
+</div>
+
+<!-- ══ RULETA ══ -->
+<div class="screen" id="ruleta">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('menu')">←</button>
+    <div class="screen-title">Ruleta de Posiciones</div>
+  </div>
+  <div class="wheel-container">
+    <div class="wheel-wrapper">
+      <div class="wheel-pointer"></div>
+      <canvas id="wheelCanvas" width="300" height="300"></canvas>
+      <div class="wheel-center">✦</div>
+    </div>
+    <button class="spin-btn" id="spinBtn" onclick="spinWheel()">GIRAR ✦</button>
+    <div class="result-card" id="resultCard">
+      <div class="result-level-row">
+        <div class="result-name" id="resultName">—</div>
+        <span class="meta-tag tag-easy" id="resultDiff">FÁCIL</span>
+      </div>
+      <div class="result-meta" id="resultMeta"></div>
+      <div class="result-divider"></div>
+      <div class="result-row"><span class="result-row-label">📍 POSICIÓN</span><span class="result-row-value" id="resultPos">—</span></div>
+      <div class="result-row"><span class="result-row-label">👤 LIDERA</span><span class="result-row-value" id="resultLeads">—</span></div>
+      <div class="result-row"><span class="result-row-label">🎯 SENSACIÓN</span><span class="result-row-value" id="resultFeel">—</span></div>
+      <div class="result-row"><span class="result-row-label">⚡ INTENSIDAD</span><div class="intensity-dots" id="resultDots"></div></div>
+      <div class="result-divider"></div>
+      <div class="result-row"><span class="result-row-label">📖 CÓMO</span><span class="result-row-value" id="resultDesc">—</span></div>
+    </div>
+  </div>
+  <nav class="bottom-nav show"><div class="nav-items">
+    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item active" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+  </div></nav>
+</div>
+
+<!-- ══ DADOS ══ -->
+<div class="screen" id="dados">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('menu')">←</button>
+    <div class="screen-title">Dados del Deseo</div>
+  </div>
+  <div class="dice-container">
+    <div class="section-label">Toca cada dado para lanzarlo individualmente</div>
+    <div class="dice-row">
+      <div class="die" id="die1" onclick="rollDie(0)"><span class="die-icon">🫦</span><span class="die-label">ACCIÓN</span><span class="die-value" id="dieVal0">?</span></div>
+      <div class="die" id="die2" onclick="rollDie(1)"><span class="die-icon">💋</span><span class="die-label">ZONA</span><span class="die-value" id="dieVal1">?</span></div>
+      <div class="die" id="die3" onclick="rollDie(2)"><span class="die-icon">⏱️</span><span class="die-label">DURACIÓN</span><span class="die-value" id="dieVal2">?</span></div>
+    </div>
+    <button class="roll-all-btn" onclick="rollAll()">🎲 LANZAR TODOS</button>
+    <div class="dice-result-card" id="diceResult">
+      <div class="section-label" style="margin-bottom:10px;">TU COMBINACIÓN</div>
+      <div class="dice-combination" id="diceCombination">—</div>
+      <div class="dice-desc" id="diceDesc">—</div>
+    </div>
+  </div>
+  <nav class="bottom-nav show"><div class="nav-items">
+    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item active" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+  </div></nav>
+</div>
+
+<!-- ══ TRUTH OR DARE ══ -->
+<div class="screen" id="truth">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('menu')">←</button>
+    <div class="screen-title">Truth or Dare</div>
+  </div>
+  <div class="tod-container">
+    <div class="tod-tabs">
+      <button class="tod-tab active" onclick="setTodMode('truth',this)">🔍 VERDAD</button>
+      <button class="tod-tab" onclick="setTodMode('dare',this)">🎯 RETO</button>
+      <button class="tod-tab" onclick="setTodMode('both',this)">✦ ALEATORIO</button>
+    </div>
+    <div class="tod-card">
+      <div class="tod-type-badge" id="todTypeBadge">VERDAD</div>
+      <div class="tod-question" id="todQuestion">Presiona el botón para comenzar...</div>
+      <div class="tod-intensity" id="todIntensity"></div>
+    </div>
+    <button class="next-btn" onclick="nextTod()">SIGUIENTE ✦</button>
+  </div>
+  <nav class="bottom-nav show"><div class="nav-items">
+    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item active" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+  </div></nav>
+</div>
+
+<!-- ══ SLOTS ══ -->
+<div class="screen" id="slots">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('menu')">←</button>
+    <div class="screen-title">Slots de Pasión</div>
+  </div>
+  <div class="slots-container">
+    <div class="slot-machine">
+      <div class="slots-row">
+        <div class="slot-reel" id="reel1"><span class="slot-icon">🎭</span><span class="slot-label">ACCIÓN</span><span class="slot-value" id="reelVal1">?</span></div>
+        <div class="slot-reel" id="reel2"><span class="slot-icon">📍</span><span class="slot-label">LUGAR</span><span class="slot-value" id="reelVal2">?</span></div>
+        <div class="slot-reel" id="reel3"><span class="slot-icon">⏰</span><span class="slot-label">DURACIÓN</span><span class="slot-value" id="reelVal3">?</span></div>
+      </div>
+    </div>
+    <div class="slots-result" id="slotsResult">
+      <div class="section-label" style="margin-bottom:10px;">TU MISIÓN</div>
+      <div class="slots-combo" id="slotsCombo">—</div>
+    </div>
+    <button class="pull-btn" id="pullBtn" onclick="pullSlots()">🎰 GIRAR RULETA</button>
+  </div>
+  <nav class="bottom-nav show"><div class="nav-items">
+    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item active" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+  </div></nav>
+</div>
+
+<script>
+// ── DATA ──
+const DATA = {
+  positions: {
+    romantico: [
+      { name:"La Cuchara", diff:"easy", pos:"Lateral, ambos de lado", leads:"Él desde atrás", feel:"Íntimo y envolvente", intensity:2, desc:"Ella acostada de lado, él la abraza por detrás. Penetración suave con libertad de manos para explorar y besar el cuello.", tags:["LATERAL","ROMÁNTICO"] },
+      { name:"El Loto", diff:"easy", pos:"Sentados frente a frente", leads:"Ambos juntos", feel:"Conexión máxima", intensity:2, desc:"Ambos sentados, ella sobre él con piernas cruzadas detrás. Máximo contacto visual y corporal. Ideal para movimientos lentos y profundos.", tags:["SENTADOS","ÍNTIMO"] },
+      { name:"El Ángel", diff:"easy", pos:"Lateral abrazados", leads:"Ambos", feel:"Suave y seguro", intensity:1, desc:"Posición de cucharita pero más suave. Cuerpos completamente pegados, movimientos lentos y rítmicos. Perfecta para momentos románticos.", tags:["SUAVE","ABRAZO"] },
+      { name:"El Misionero", diff:"easy", pos:"Ella abajo, él arriba", leads:"Él", feel:"Clásico y cercano", intensity:2, desc:"Posición clásica con máximo contacto facial. Ella extiende las piernas o las eleva ligeramente para variar la sensación.", tags:["CLÁSICO","CARA A CARA"] },
+      { name:"La Silla", diff:"easy", pos:"Él sentado, ella encima", leads:"Ella", feel:"Control y cercanía", intensity:2, desc:"Él sentado en silla o borde de cama. Ella se sienta encima frente a él. Permite abrazarse y besarse mientras se mueven juntos.", tags:["SENTADOS","ELLA LIDERA"] },
+    ],
+    picante: [
+      { name:"La Amazona", diff:"med", pos:"Ella encima mirando hacia él", leads:"Ella", feel:"Control total de ritmo", intensity:3, desc:"Ella se sienta sobre él con rodillas a los lados. Controla profundidad y ritmo. Él puede ver su cuerpo y tocar libremente.", tags:["ELLA ARRIBA","CONTROL"] },
+      { name:"La Mariposa", diff:"easy", pos:"Ella acostada, él de pie o arrodillado", leads:"Él", feel:"Profundo e intenso", intensity:3, desc:"Ella acostada al borde de la cama, piernas elevadas sobre los hombros de él. Penetración profunda con control externo.", tags:["BORDE CAMA","PROFUNDO"] },
+      { name:"El Puente", diff:"med", pos:"Él arrodillado, ella abajo", leads:"Ambos", feel:"Intenso y visual", intensity:3, desc:"Él arrodillado entre sus piernas, ella eleva caderas hacia él. Permite ver todo el cuerpo y ajustar ritmo fácilmente.", tags:["VISUAL","MEDIO"] },
+      { name:"Doggy Style", diff:"easy", pos:"Ella en cuatro, él detrás", leads:"Él", feel:"Profundo y dominante", intensity:4, desc:"Ella apoyada en manos y rodillas, él detrás. Penetración profunda desde atrás. Permite variar ritmo e intensidad fácilmente.", tags:["DESDE ATRÁS","INTENSO"] },
+      { name:"La Escalera", diff:"med", pos:"En borde de cama o escalón", leads:"Ambos", feel:"Ángulo nuevo y excitante", intensity:3, desc:"Ella acostada con caderas al borde, él de pie. El ángulo permite estimulación de punto G de forma natural.", tags:["BORDE","PUNTO G"] },
+    ],
+    hot: [
+      { name:"La Amazona Inversa", diff:"med", pos:"Ella encima mirando hacia sus pies", leads:"Ella", feel:"Intenso y profundo", intensity:4, desc:"Ella sentada sobre él pero mirando hacia sus pies. Control total de la profundidad. Él tiene vista completa y puede guiar las caderas.", tags:["INVERTIDA","INTENSA"] },
+      { name:"El Trípode", diff:"hard", pos:"De pie, él levanta una pierna", leads:"Ambos", feel:"Dominante y apasionado", intensity:5, desc:"De pie, él levanta una pierna de ella envolviéndola en su torso. Requiere equilibrio. Ideal contra la pared para más estabilidad.", tags:["DE PIE","AVENTURERO"] },
+      { name:"El Bostezo", diff:"hard", pos:"Ella acostada, rodillas al pecho", leads:"Él", feel:"Máxima profundidad", intensity:5, desc:"Ella acostada lleva rodillas al pecho, piernas sobre los hombros de él. Penetración muy profunda. Ir despacio al principio.", tags:["PROFUNDO","INTENSO"] },
+      { name:"La Cobra", diff:"hard", pos:"Él encima con cuerpo elevado", leads:"Él", feel:"Dominante y poderoso", intensity:5, desc:"Como misionero pero él se eleva con los brazos en extensión. Cambia el ángulo de entrada significativamente.", tags:["ÁNGULO","DOMINANTE"] },
+      { name:"El Escorpión", diff:"hard", pos:"Ella boca abajo, piernas elevadas", leads:"Ambos", feel:"Exótico y profundo", intensity:5, desc:"Ella boca abajo con caderas elevadas sobre almohadas. Él desde atrás con ángulo descendente. Máxima profundidad.", tags:["EXÓTICO","MÁXIMO"] },
+    ]
+  },
+  dice: {
+    accion: {
+      romantico: ["Besa suavemente","Acaricia lentamente","Masajea con calma","Abraza con fuerza","Susurra al oído","Mueve caderas"],
+      picante:   ["Muerde suavemente","Lame despacio","Estimula con dedos","Mueve rítmico","Presiona firme","Gira las caderas"],
+      hot:       ["Domina el ritmo","Estimula profundo","Toma el control","Mueve intenso","Agarra fuerte","Acelera el ritmo"]
+    },
+    zona: {
+      romantico: ["el cuello","los labios","el pecho","la espalda","los hombros","el cabello"],
+      picante:   ["el cuello","el pecho","el abdomen","los muslos","la cadera","la espalda baja"],
+      hot:       ["el cuello","el pecho","los muslos","la cadera","el abdomen","la nuca"]
+    },
+    duracion: ["30 segundos","1 minuto","2 minutos","Hasta que el otro diga stop","3 minutos","Lo que quieras"]
+  },
+  truth: {
+    romantico: ["¿Qué parte de mi cuerpo es tu favorita?","¿Cuál ha sido tu momento más romántico conmigo?","¿Qué canción te recuerda a nosotros?","¿Qué es lo primero que notaste de mí?","¿Cuál es tu recuerdo favorito juntos?","¿Qué cosa pequeña que hago te pone muy feliz?","¿Dónde sueñas que viajemos juntos?","¿Cuándo fue la última vez que te sorprendí de buena manera?"],
+    picante:   ["¿Cuál es tu fantasía más recurrente?","¿Qué lugar inusual te gustaría intentar?","¿Qué parte de mi cuerpo te excita más?","¿Hay algo que siempre quisiste pedirme pero no te atreviste?","¿Cuál fue el momento más caliente que hemos tenido?","¿Qué prenda mía te resulta más sexi?","¿Qué hora del día prefieres para intimar?","¿Qué cosa nueva te gustaría probar esta semana?"],
+    hot:       ["¿Cuál es tu fantasía más atrevida que nunca me has contado?","¿Qué palabra o frase dicha en el momento te vuelve loco/a?","¿Prefieren que tome el control o que lo tomes tú?","¿Hay algún rol que siempre quisiste interpretar?","¿Qué objeto o accesorio te gustaría incorporar?","¿Cuál posición sientes que nunca hemos explotado al máximo?","¿Hay algo que hayas hecho antes que quisieras repetir conmigo?","¿Qué parte del cuerpo mío más te cuesta resistir?"]
+  },
+  dare: {
+    romantico: ["Dale un masaje de 2 minutos en los hombros.","Dile 3 cosas específicas que amas de su cuerpo.","Bésalo/a de la forma más apasionada que puedas por 30 segundos.","Escríbele un mensaje muy romántico y léeselo en voz alta.","Baila lento con él/ella sin música por 1 minuto.","Cuéntale tu momento favorito que han vivido juntos.","Dibuja corazones en su espalda con el dedo.","Míralo/a a los ojos sin hablar ni reír por 1 minuto."],
+    picante:   ["Dale un masaje en los pies por 3 minutos sin parar.","Susúrrale al oído qué quieres hacerle esta noche.","Quítale una prenda de ropa solo con los dientes.","Besa cada parte de su cuello durante 1 minuto.","Baila para él/ella de forma seductora por 1 minuto.","Descríbele en detalle tu fantasía más reciente.","Haz contacto visual intenso mientras le tocas la cara.","Dale un beso largo de 1 minuto sin manos."],
+    hot:       ["Realiza un striptease de al menos 2 prendas.","Susúrrale tus 3 fantasías más atrevidas sin parar.","Domina la siguiente posición que salga en la ruleta.","Elige una zona del cuerpo y explórala por 3 minutos.","Descríbele exactamente cómo quieres que te toque.","Toma el control total por los próximos 5 minutos.","Elige el próximo juego de esta app y lidera tú.","Improvisa un roleplay de 2 minutos sin previo aviso."]
+  },
+  slots: {
+    accion: {
+      romantico: ["Besarse","Acariciarse","Masajearse","Abrazarse","Susurrarse"],
+      picante:   ["Estimularse","Mordisquearse","Explorar con las manos","Moverse juntos","Provocarse"],
+      hot:       ["Dominarse","Explorar a fondo","Acelerar el ritmo","Tomarse el control","Rendirse al placer"]
+    },
+    lugar: {
+      romantico: ["en la cama","en el sofá","bajo las sábanas","junto a la ventana","bajo la luz de velas"],
+      picante:   ["en la ducha","en la cocina","en el auto","en el suelo","en el balcón"],
+      hot:       ["contra la pared","en el espejo","en la silla","de pie","donde los lleve el momento"]
+    },
+    duracion: ["por 5 minutos","sin límite de tiempo","hasta que ambos quieran parar","por 10 minutos","por 3 rondas","toda la noche"]
+  }
+};
+
+// ── STATE ──
+let currentHeat = 'romantico';
+let todMode = 'truth';
+let wheelSpinning = false;
+let usedTruth = [], usedDare = [];
+let dieValues = [null, null, null];
+let wheelAngle = 0;
+let deferredPrompt = null;
+
+// ── PWA INSTALL ──
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => document.getElementById('installBanner').classList.add('show'), 3000);
+});
+
+function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => { deferredPrompt = null; closeBanner(); });
+}
+
+function closeBanner() {
+  document.getElementById('installBanner').classList.remove('show');
+}
+
+// ── NAV ──
+function setHeat(btn, level) {
+  document.querySelectorAll('.heat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentHeat = level;
+}
+
+function startApp() {
+  const labels = { romantico:'🌹 ROMÁNTICO', picante:'🌶️ PICANTE', hot:'🔥 HOT' };
+  document.getElementById('heatBadge').textContent = labels[currentHeat];
+  goTo('menu');
+  drawWheel();
+}
+
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screen).classList.add('active');
+  window.scrollTo(0, 0);
+  if (screen === 'ruleta') drawWheel();
+}
+
+// ── RULETA ──
+const WHEEL_COLORS = ['#1a1a2e','#16213e','#1e1e3a','#141428','#1a1a2e','#16213e','#1e1e3a','#141428'];
+const WHEEL_ACCENT = ['#c9a96e','#e8d5a3','#c9a96e','#e8c4a0','#d4b886','#c9a96e','#e8d5a3','#d4b886'];
+
+function drawWheel(rotation = 0) {
+  const canvas = document.getElementById('wheelCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const positions = DATA.positions[currentHeat];
+  const n = positions.length;
+  const arc = (2 * Math.PI) / n;
+  const cx = 150, cy = 150, r = 145;
+  ctx.clearRect(0, 0, 300, 300);
+  for (let i = 0; i < n; i++) {
+    const angle = rotation + i * arc;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, angle, angle + arc);
+    ctx.closePath();
+    ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(201,169,110,0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = WHEEL_ACCENT[i % WHEEL_ACCENT.length];
+    ctx.font = 'italic 11px Cormorant Garamond, serif';
+    ctx.fillText(positions[i].name, r - 12, 4);
+    ctx.restore();
+  }
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  ctx.strokeStyle = 'rgba(201,169,110,0.5)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function spinWheel() {
+  if (wheelSpinning) return;
+  wheelSpinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('resultCard').classList.remove('show');
+  const positions = DATA.positions[currentHeat];
+  const extraSpins = (5 + Math.random() * 5) * 2 * Math.PI;
+  const randomAngle = Math.random() * 2 * Math.PI;
+  const totalRotation = extraSpins + randomAngle;
+  const duration = 4000;
+  const start = performance.now();
+  const startAngle = wheelAngle;
+  function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
+  function animate(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    wheelAngle = startAngle + totalRotation * easeOut(progress);
+    drawWheel(wheelAngle);
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      wheelSpinning = false;
+      document.getElementById('spinBtn').disabled = false;
+      const n = positions.length;
+      const arc = (2 * Math.PI) / n;
+      const normalizedAngle = ((-wheelAngle) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      const idx = Math.floor(normalizedAngle / arc) % n;
+      showPositionResult(positions[idx]);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function showPositionResult(pos) {
+  document.getElementById('resultName').textContent = pos.name;
+  document.getElementById('resultPos').textContent = pos.pos;
+  document.getElementById('resultLeads').textContent = pos.leads;
+  document.getElementById('resultFeel').textContent = pos.feel;
+  document.getElementById('resultDesc').textContent = pos.desc;
+  const diffEl = document.getElementById('resultDiff');
+  diffEl.textContent = pos.diff === 'easy' ? 'FÁCIL' : pos.diff === 'med' ? 'MEDIO' : 'INTENSO';
+  diffEl.className = 'meta-tag ' + (pos.diff === 'easy' ? 'tag-easy' : pos.diff === 'med' ? 'tag-med' : 'tag-hard');
+  const metaEl = document.getElementById('resultMeta');
+  metaEl.innerHTML = pos.tags.map(t => `<span class="meta-tag" style="background:rgba(201,169,110,0.08);color:var(--muted);border:1px solid var(--border)">${t}</span>`).join('');
+  const dotsEl = document.getElementById('resultDots');
+  dotsEl.innerHTML = Array.from({length:5},(_,i) => `<div class="dot ${i < pos.intensity ? 'filled' : ''}"></div>`).join('');
+  document.getElementById('resultCard').classList.add('show');
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ── DADOS ──
+function rollDie(index) {
+  const die = document.getElementById(`die${index+1}`);
+  die.classList.add('rolling');
+  const options = [DATA.dice.accion[currentHeat], DATA.dice.zona[currentHeat], DATA.dice.duracion];
+  setTimeout(() => {
+    die.classList.remove('rolling');
+    dieValues[index] = options[index][Math.floor(Math.random() * options[index].length)];
+    document.getElementById(`dieVal${index}`).textContent = dieValues[index];
+    checkDiceResult();
+  }, 650);
+}
+
+function rollAll() {
+  dieValues = [null, null, null];
+  document.getElementById('diceResult').classList.remove('show');
+  [0,1,2].forEach((i, idx) => setTimeout(() => rollDie(i), idx * 200));
+}
+
+function checkDiceResult() {
+  if (dieValues.every(v => v !== null)) {
+    document.getElementById('diceCombination').textContent = `${dieValues[0]} ${dieValues[1]} durante ${dieValues[2]}`;
+    document.getElementById('diceDesc').textContent = `Tu próximo reto: ${dieValues[0]} ${dieValues[1]} durante ${dieValues[2]}. ¡A disfrutar!`;
+    document.getElementById('diceResult').classList.add('show');
+  }
+}
+
+// ── TRUTH OR DARE ──
+function setTodMode(mode, btn) {
+  todMode = mode;
+  document.querySelectorAll('.tod-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function nextTod() {
+  const type = todMode === 'both' ? (Math.random() > 0.5 ? 'truth' : 'dare') : todMode;
+  let pool, used;
+  if (type === 'truth') {
+    pool = DATA.truth[currentHeat]; used = usedTruth;
+    document.getElementById('todTypeBadge').textContent = '🔍 VERDAD';
+  } else {
+    pool = DATA.dare[currentHeat]; used = usedDare;
+    document.getElementById('todTypeBadge').textContent = '🎯 RETO';
+  }
+  if (used.length >= pool.length) { if (type === 'truth') usedTruth = []; else usedDare = []; used.length = 0; }
+  let idx;
+  do { idx = Math.floor(Math.random() * pool.length); } while (used.includes(idx));
+  used.push(idx);
+  document.getElementById('todQuestion').textContent = pool[idx];
+  const lvl = { romantico:1, picante:2, hot:3 }[currentHeat];
+  const n = lvl + Math.floor(Math.random()*2);
+  document.getElementById('todIntensity').innerHTML = Array.from({length:5},(_,i) => `<div class="dot ${i < n ? 'filled' : ''}"></div>`).join('');
+}
+
+// ── SLOTS ──
+function pullSlots() {
+  const btn = document.getElementById('pullBtn');
+  btn.disabled = true;
+  document.getElementById('slotsResult').classList.remove('show');
+  const pools = [DATA.slots.accion[currentHeat], DATA.slots.lugar[currentHeat], DATA.slots.duracion];
+  const results = [];
+  const reels = ['reel1','reel2','reel3'].map(id => document.getElementById(id));
+  const valEls = ['reelVal1','reelVal2','reelVal3'].map(id => document.getElementById(id));
+  reels.forEach(r => r.classList.add('spinning'));
+  pools.forEach((pool, i) => {
+    setTimeout(() => {
+      reels[i].classList.remove('spinning');
+      results[i] = pool[Math.floor(Math.random() * pool.length)];
+      valEls[i].textContent = results[i];
+      if (i === 2) {
+        setTimeout(() => {
+          document.getElementById('slotsCombo').textContent = `${results[0]} ${results[1]} ${results[2]}`;
+          document.getElementById('slotsResult').classList.add('show');
+          btn.disabled = false;
+        }, 400);
+      }
+    }, 600 + i * 400);
+  });
+}
+
+// ── SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(r => console.log('SW registered'))
+      .catch(e => console.log('SW error', e));
+  });
+}
+</script>
+</body>
+</html>
