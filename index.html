@@ -590,6 +590,137 @@
   /* Transición suave al cambiar tema */
   body { transition: --gold .5s, background .5s; }
 
+
+  /* ── NUEVO SPLASH ── */
+  .splash-welcome {
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; min-height:100vh; padding:40px 24px;
+    text-align:center;
+  }
+
+  /* Animación de entrada escalonada */
+  .splash-welcome .splash-ornament  { animation: splashIn .6s ease both; animation-delay:.1s; }
+  .splash-welcome .splash-title     { animation: splashIn .6s ease both; animation-delay:.25s; }
+  .splash-welcome .splash-subtitle  { animation: splashIn .6s ease both; animation-delay:.4s; }
+  .splash-welcome .splash-body      { animation: splashIn .6s ease both; animation-delay:.55s; }
+  @keyframes splashIn {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* Indicador de pasos */
+  .splash-steps {
+    display:flex; gap:8px; justify-content:center;
+    margin-bottom:28px;
+  }
+  .splash-step-dot {
+    width:28px; height:4px; border-radius:2px;
+    background:var(--border); transition:all .4s ease;
+  }
+  .splash-step-dot.active { background:var(--gold); width:36px; }
+  .splash-step-dot.done   { background:var(--rose); }
+
+  /* Grid de selección lado a lado */
+  .ambient-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:12px; width:100%; margin-bottom:20px;
+  }
+  .ambient-col {
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .ambient-col-label {
+    font-size:0.58rem; color:var(--muted); letter-spacing:2px;
+    text-transform:uppercase; text-align:center; margin-bottom:4px;
+    font-weight:600;
+  }
+  .ambient-col-label.ready { color:var(--rose); }
+
+  /* Carta con flip 3D */
+  .ambient-level-btn {
+    height: 80px;
+    perspective: 600px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  .ambient-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform .55s cubic-bezier(.4,0,.2,1);
+    border-radius: 14px;
+  }
+  .ambient-level-btn.selected-hidden .ambient-card-inner {
+    transform: rotateY(180deg);
+  }
+  .ambient-card-front,
+  .ambient-card-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .ambient-card-front {
+    background: var(--card);
+    border: 1px solid var(--border);
+  }
+  .ambient-card-back {
+    background: linear-gradient(135deg, var(--rose), var(--rose2));
+    border: 1px solid var(--rose);
+    transform: rotateY(180deg);
+    font-size: 2rem;
+    color: #080810;
+  }
+  .ambient-level-icon { font-size:1.4rem; display:block; margin-bottom:4px; }
+  .ambient-level-name {
+    font-size:0.58rem; color:var(--text); line-height:1.3;
+    font-family:'Montserrat',sans-serif;
+  }
+
+  /* Botón revelar */
+  .ambient-reveal-btn {
+    width:100%; padding:16px; border-radius:16px; border:none;
+    background:linear-gradient(135deg,var(--rose),var(--rose2));
+    color:#080810; font-family:'Montserrat',sans-serif;
+    font-size:0.82rem; font-weight:600; letter-spacing:3px;
+    cursor:pointer; transition:all .3s;
+    opacity:.4; pointer-events:none;
+  }
+  .ambient-reveal-btn.ready { opacity:1; pointer-events:auto; }
+  .ambient-reveal-btn:active { transform:scale(0.97); }
+
+  /* Resultado con animación dramática */
+  .ambient-result {
+    display:none; flex-direction:column; align-items:center;
+    text-align:center; animation:splashIn .5s ease;
+  }
+  .ambient-result.show { display:flex; }
+  .ambient-result-icon {
+    font-size:4rem; margin-bottom:16px;
+    animation:resultPop .6s cubic-bezier(.32,1.3,.7,1);
+  }
+  @keyframes resultPop {
+    from { transform:scale(0); opacity:0; }
+    50%  { transform:scale(1.2); }
+    to   { transform:scale(1); opacity:1; }
+  }
+  .ambient-result-selections {
+    display:flex; gap:12px; justify-content:center;
+    margin-bottom:16px;
+  }
+  .ambient-result-person {
+    padding:6px 14px; border-radius:20px;
+    border:1px solid var(--border); background:var(--card);
+    font-size:0.62rem; color:var(--text); letter-spacing:1px;
+  }
+
 </style>
 </head>
 <body>
@@ -606,109 +737,42 @@
 
 <!-- ══ SPLASH ══ -->
 <div class="screen active" id="splash">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 28px;text-align:center;">
 
-  <!-- PASO 1: EL AMBIENTE EN SPLASH -->
-  <div id="splashAmbiente" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;text-align:center;animation:fadeIn .8s ease;">
-    <div class="splash-ornament">💞</div>
-    <div class="splash-title" style="font-size:2rem;">¿CÓMO ESTÁ</div>
-    <div class="splash-title" style="font-size:2rem;color:var(--rose);margin-top:-8px;">EL AMBIENTE?</div>
-    <div class="splash-subtitle" style="margin-bottom:32px;">Nivel de la noche</div>
+    <div class="splash-ornament" style="font-size:2.8rem;margin-bottom:20px;">✦</div>
 
-    <!-- PERSONA 1 -->
-    <div id="sintoniaSplashStep1" style="width:100%;">
-      <div style="font-size:0.65rem;color:var(--rose);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;font-weight:600;">👤 Persona 1 — elige tu nivel</div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
-        <button class="checkin-level-btn" onclick="splashSelectLevel(1,'A',this)">
-          <span class="checkin-level-icon">🌸</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Suave y romántico</div>
-            <div class="checkin-level-desc">Íntimo y tranquilo, mucho contacto y ternura</div>
-          </div>
-        </button>
-        <button class="checkin-level-btn" onclick="splashSelectLevel(2,'A',this)">
-          <span class="checkin-level-icon">🌶️</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Picante y divertido</div>
-            <div class="checkin-level-desc">Con energía para explorar y probar cosas nuevas</div>
-          </div>
-        </button>
-        <button class="checkin-level-btn" onclick="splashSelectLevel(3,'A',this)">
-          <span class="checkin-level-icon">🔥</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Hot e intenso</div>
-            <div class="checkin-level-desc">Lista/o para una noche sin límites</div>
-          </div>
-        </button>
-      </div>
-      <button class="btn-primary" id="sintoniaBtnA" style="opacity:.4;" onclick="ambienteSplashNext()">CONTINUAR →</button>
-      <span style="display:block;font-size:0.6rem;color:var(--muted);letter-spacing:2px;margin-top:14px;cursor:pointer;" onclick="skipAmbienteSplash()">Omitir y elegir nivel manualmente</span>
-    </div>
-
-    <!-- PERSONA 2 -->
-    <div id="sintoniaSplashStep2" style="width:100%;display:none;">
-      <div style="font-size:0.65rem;color:var(--rose);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;font-weight:600;">👤 Persona 2 — elige tu nivel</div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
-        <button class="checkin-level-btn" onclick="splashSelectLevel(1,'B',this)">
-          <span class="checkin-level-icon">🌸</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Suave y romántico</div>
-            <div class="checkin-level-desc">Íntimo y tranquilo, mucho contacto y ternura</div>
-          </div>
-        </button>
-        <button class="checkin-level-btn" onclick="splashSelectLevel(2,'B',this)">
-          <span class="checkin-level-icon">🌶️</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Picante y divertido</div>
-            <div class="checkin-level-desc">Con energía para explorar y probar cosas nuevas</div>
-          </div>
-        </button>
-        <button class="checkin-level-btn" onclick="splashSelectLevel(3,'B',this)">
-          <span class="checkin-level-icon">🔥</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Hot e intenso</div>
-            <div class="checkin-level-desc">Lista/o para una noche sin límites</div>
-          </div>
-        </button>
-      </div>
-      <button class="btn-primary" id="sintoniaBtnB" style="opacity:.4;" onclick="ambienteSplashReveal()">VER NUESTRO NIVEL ✦</button>
-    </div>
-
-    <!-- RESULTADO -->
-    <div id="sintoniaSplashResult" style="width:100%;display:none;text-align:center;">
-      <div style="font-size:3rem;margin-bottom:12px;" id="splashResultIcon">✨</div>
-      <div class="splash-title" style="font-size:1.8rem;margin-bottom:6px;" id="splashResultTitle">—</div>
-      <div style="font-size:0.72rem;color:var(--muted);line-height:1.7;margin-bottom:20px;" id="splashResultDesc">—</div>
-      <div style="display:inline-block;padding:6px 20px;border-radius:20px;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:24px;" id="splashResultLevel" class="checkin-match-level">—</div>
-      <button class="btn-primary" onclick="startAppWithAmbiente()">¡EMPEZAR A JUGAR! ✦</button>
-    </div>
-  </div>
-
-  <!-- PASO 2: PANTALLA ORIGINAL (si omite ambiente) -->
-  <div id="splashManual" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 30px;text-align:center;animation:fadeIn .5s ease;">
-    <div class="splash-ornament">✦</div>
     <div class="splash-title">PASSION</div>
     <div class="splash-title" style="color:var(--rose);margin-top:-8px;">PLAY</div>
-    <div class="splash-subtitle">Para Parejas</div>
+    <div class="splash-subtitle" style="margin-bottom:48px;">Juegos íntimos para parejas</div>
 
-    <div class="heat-selector">
-      <div class="heat-label">✦ Elige tu nivel de intensidad</div>
-      <div class="heat-options">
-        <button class="heat-btn active" onclick="setHeat(this,'romantico')">
-          <span class="heat-icon">🌹</span>ROMÁNTICO
-        </button>
-        <button class="heat-btn" onclick="setHeat(this,'picante')">
-          <span class="heat-icon">🌶️</span>PICANTE
-        </button>
-        <button class="heat-btn" onclick="setHeat(this,'hot')">
-          <span class="heat-icon">🔥</span>HOT
-        </button>
+    <!-- Preview de juegos -->
+    <div style="display:flex;gap:16px;justify-content:center;margin-bottom:48px;">
+      <div style="text-align:center;opacity:0.7;">
+        <div style="font-size:1.8rem;">🎡</div>
+        <div style="font-size:0.5rem;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;">Ruleta</div>
+      </div>
+      <div style="text-align:center;opacity:0.7;">
+        <div style="font-size:1.8rem;">🃏</div>
+        <div style="font-size:0.5rem;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;">T or D</div>
+      </div>
+      <div style="text-align:center;opacity:0.7;">
+        <div style="font-size:1.8rem;">💞</div>
+        <div style="font-size:0.5rem;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;">Fantasías</div>
+      </div>
+      <div style="text-align:center;opacity:0.7;">
+        <div style="font-size:1.8rem;">🎲</div>
+        <div style="font-size:0.5rem;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;">Dados</div>
+      </div>
+      <div style="text-align:center;opacity:0.7;">
+        <div style="font-size:1.8rem;">📅</div>
+        <div style="font-size:0.5rem;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase;">7 Días</div>
       </div>
     </div>
 
-    <button class="btn-primary" onclick="startApp()">COMENZAR ✦</button>
+    <button class="btn-primary" onclick="startSplash()" style="margin-bottom:16px;">COMENZAR ✦</button>
     <div class="privacy-note">✦ Sin registro · Todo privado · Solo en tu dispositivo</div>
-  </div>
 
+  </div>
 </div>
 
 <!-- ══ MENU ══ -->
@@ -1027,6 +1091,13 @@ function setHeat(btn, level) {
   document.querySelectorAll('.heat-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   currentHeat = level;
+}
+
+function startSplash() {
+  applyTheme(currentHeat);
+  goTo('menu');
+  drawWheel();
+  setTimeout(() => openAmbienteModal(), 400);
 }
 
 function startApp() {
@@ -1351,42 +1422,69 @@ function applyTheme(heat) {
 let splashLevelA = null;
 let splashLevelB = null;
 
-function splashSelectLevel(level, person, btn) {
-  // Deselect siblings in same container
-  const siblings = btn.parentElement.querySelectorAll('.checkin-level-btn');
-  siblings.forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
+function ambientSelect(person, level, btn) {
+  const prefix = person === 'A' ? 'btnA' : 'btnB';
 
+  // Si ya eligió, no permitir cambiar
+  if (person === 'A' && splashLevelA !== null) return;
+  if (person === 'B' && splashLevelB !== null) return;
+
+  // Guardar selección
+  if (person === 'A') splashLevelA = level;
+  else splashLevelB = level;
+
+  // Voltear TODAS las cartas de esa columna (oculta cuál eligió)
+  [1,2,3].forEach(i => {
+    const b = document.getElementById(prefix + i);
+    if (b) b.classList.add('selected-hidden');
+  });
+
+  // Actualizar label y dots
   if (person === 'A') {
-    splashLevelA = level;
-    const el = document.getElementById('sintoniaBtnA');
-    if (el) { el.style.opacity = '1'; el.style.pointerEvents = 'auto'; }
+    const lbl = document.getElementById('labelA');
+    if (lbl) { lbl.textContent = '✓ Listo'; lbl.classList.add('ready'); }
+    document.getElementById('stepDot1').classList.add('done');
+    document.getElementById('stepDot1').classList.remove('active');
+    document.getElementById('stepDot2').classList.add('active');
   } else {
-    splashLevelB = level;
-    const el = document.getElementById('sintoniaBtnB');
-    if (el) { el.style.opacity = '1'; el.style.pointerEvents = 'auto'; }
+    const lbl = document.getElementById('labelB');
+    if (lbl) { lbl.textContent = '✓ Listo'; lbl.classList.add('ready'); }
+    document.getElementById('stepDot2').classList.add('done');
+    document.getElementById('stepDot2').classList.remove('active');
+  }
+
+  // Habilitar revelar cuando ambos eligieron
+  if (splashLevelA !== null && splashLevelB !== null) {
+    const revBtn = document.getElementById('ambienteRevealBtn');
+    if (revBtn) revBtn.classList.add('ready');
+    document.getElementById('stepDot3').classList.add('active');
   }
 }
 
-function ambienteSplashNext() {
-  if (!splashLevelA) return;
-  const s1 = document.getElementById('sintoniaSplashStep1');
-  const s2 = document.getElementById('sintoniaSplashStep2');
-  if (s1) s1.style.display = 'none';
-  if (s2) s2.style.display = 'block';
-}
+// Compatibilidad hacia atrás
+function splashSelectLevel(level, person, btn) { ambientSelect(person, level, btn); }
+function ambienteSplashNext() {}
+function sintoniaSplashNext() {}
 
-function ambienteSplashReveal() {
-  if (!splashLevelB) return;
-  const s2 = document.getElementById('sintoniaSplashStep2');
-  const s3 = document.getElementById('sintoniaSplashResult');
-  if (s2) s2.style.display = 'none';
-  if (s3) s3.style.display = 'block';
+function ambienteReveal() {
+  if (!splashLevelA || !splashLevelB) return;
+  // Paso 3: mostrar resultado con animación
+  document.getElementById('stepDot3').classList.add('done');
+  document.getElementById('stepDot3').classList.remove('active');
+  const selectStep = document.getElementById('ambienteSelectStep');
+  const resultStep = document.getElementById('ambienteResultStep');
+  if (selectStep) selectStep.style.display = 'none';
+  if (resultStep) resultStep.classList.add('show');
 
-  // FIX: Always round DOWN to protect the less intense partner
+  // Mostrar las selecciones reveladas
+  const levelLabels = { 1:'🌸 Romántico', 2:'🌶️ Picante', 3:'🔥 Hot' };
+  document.getElementById('ambienteSelections').innerHTML =
+    `<div class="ambient-result-person">Persona 1: ${levelLabels[splashLevelA]}</div>
+     <div class="ambient-result-person">Persona 2: ${levelLabels[splashLevelB]}</div>`;
+
+  // Calcular nivel resultado — redondear hacia abajo para proteger al más suave
   const lower = Math.min(splashLevelA, splashLevelB);
   const avg   = Math.floor((splashLevelA + splashLevelB) / 2);
-  // Use avg but never go above lower+1
   const finalLevel = Math.min(avg, lower + 1);
 
   const levelMap   = { 1:'romantico', 2:'picante', 3:'hot' };
@@ -1432,26 +1530,40 @@ function ambienteSplashReveal() {
 }
 
 function startAppWithAmbiente() {
+  // Cerrar el modal
+  const overlay = document.getElementById('checkinOverlay');
+  if (overlay) overlay.classList.remove('show');
+  // Aplicar tema y navegar
   applyTheme(currentHeat);
   const labels = { romantico:'🌹 ROMÁNTICO ✎', picante:'🌶️ PICANTE ✎', hot:'🔥 HOT ✎' };
   document.getElementById('heatBadge').textContent = labels[currentHeat];
   usedTruth = []; usedDare = [];
-  goTo('menu');
-  drawWheel();
-  // Ocultar ambiente del menú después de usarla
+  storageSet('last_ambiente', Date.now());
+  // Ocultar botón del menú
   const fab = document.getElementById('checkinMenuFab');
   if (fab) fab.classList.add('hidden');
+  // Si estamos en splash, ir al menú
+  const splash = document.getElementById('splash');
+  if (splash && splash.classList.contains('active')) {
+    goTo('menu');
+    drawWheel();
+  }
 }
 
 function skipAmbienteSplash() {
   storageSet('last_ambiente', Date.now());
-  const sintonia = document.getElementById('splashAmbiente');
-  const manual   = document.getElementById('splashManual');
-  if (sintonia) sintonia.style.display = 'none';
-  if (manual)   manual.style.display   = 'flex';
-  // Ocultar también del menú
+  // Cerrar el modal
+  const overlay = document.getElementById('checkinOverlay');
+  if (overlay) overlay.classList.remove('show');
+  // Ocultar botón del menú
   const fab = document.getElementById('checkinMenuFab');
   if (fab) fab.classList.add('hidden');
+  // Si estamos en splash, ir al menú con selector manual
+  const splash = document.getElementById('splash');
+  if (splash && splash.classList.contains('active')) {
+    goTo('menu');
+    drawWheel();
+  }
 }
 
 
@@ -1535,13 +1647,34 @@ function resetFantasy() { initFantasy(); }
 let checkinA = null;
 let checkinB = null;
 
-function openCheckin() {
-  checkinA = null; checkinB = null;
-  document.querySelectorAll('.checkin-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('checkinStep1').classList.add('active');
-  document.querySelectorAll('.checkin-level-btn').forEach(b => b.classList.remove('selected'));
-  document.getElementById('checkinNextA').classList.remove('ready');
-  document.getElementById('checkinNextB').classList.remove('ready');
+function openCheckin() { openAmbienteModal(); }
+
+function openAmbienteModal() {
+  splashLevelA = null; splashLevelB = null;
+  // Reset botones
+  ['A','B'].forEach(p => {
+    [1,2,3].forEach(i => {
+      const b = document.getElementById('btn'+p+i);
+      if (b) b.classList.remove('selected-hidden');
+    });
+  });
+  const lA = document.getElementById('labelA');
+  const lB = document.getElementById('labelB');
+  if (lA) { lA.textContent = '👤 Persona 1'; lA.classList.remove('ready'); }
+  if (lB) { lB.textContent = '👤 Persona 2'; lB.classList.remove('ready'); }
+  // Reset dots
+  ['stepDot1','stepDot2','stepDot3'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('done','active'); if(i===0) el.classList.add('active'); }
+  });
+  // Reset reveal btn
+  const revBtn = document.getElementById('ambienteRevealBtn');
+  if (revBtn) revBtn.classList.remove('ready');
+  // Mostrar selección, ocultar resultado
+  const sel = document.getElementById('ambienteSelectStep');
+  const res = document.getElementById('ambienteResultStep');
+  if (sel) sel.style.display = 'block';
+  if (res) res.classList.remove('show');
   document.getElementById('checkinOverlay').classList.add('show');
 }
 
@@ -2429,81 +2562,86 @@ if ('serviceWorker' in navigator) {
 
 <!-- ══ EL AMBIENTE MODAL ══ -->
 <div class="checkin-overlay" id="checkinOverlay">
-  <div class="checkin-sheet">
+  <div class="checkin-sheet" style="max-height:88vh;overflow-y:auto;">
 
-    <!-- PASO 1: Persona A -->
-    <div class="checkin-step active" id="checkinStep1">
-      <div class="checkin-title">¿Cómo están hoy?</div>
-      <div class="checkin-sub">¿Cómo está el ambiente?</div>
-      <div class="checkin-player">👤 Persona 1 — elige tu nivel</div>
-      <div class="checkin-levels">
-        <button class="checkin-level-btn" onclick="selectLevel(1,'A',this)">
-          <span class="checkin-level-icon">🌸</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Suave y romántico</div>
-            <div class="checkin-level-desc">Quiero algo íntimo y tranquilo, mucho contacto y ternura</div>
-          </div>
-        </button>
-        <button class="checkin-level-btn" onclick="selectLevel(2,'A',this)">
-          <span class="checkin-level-icon">🌶️</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Picante y divertido</div>
-            <div class="checkin-level-desc">Tengo energía para explorar y probar cosas nuevas</div>
-          </div>
-        </button>
-        <button class="checkin-level-btn" onclick="selectLevel(3,'A',this)">
-          <span class="checkin-level-icon">🔥</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Hot e intenso</div>
-            <div class="checkin-level-desc">Estoy listo/a para una noche sin límites y muy intensa</div>
-          </div>
-        </button>
-      </div>
-      <button class="checkin-next-btn" id="checkinNextA" onclick="nextCheckin()">CONTINUAR →</button>
-      <span class="checkin-skip" onclick="skipCheckin()">Omitir ambiente</span>
+    <!-- Indicador de pasos -->
+    <div style="display:flex;gap:8px;justify-content:center;padding:20px 0 0;">
+      <div class="splash-step-dot active" id="stepDot1"></div>
+      <div class="splash-step-dot" id="stepDot2"></div>
+      <div class="splash-step-dot" id="stepDot3"></div>
     </div>
 
-    <!-- PASO 2: Persona B -->
-    <div class="checkin-step" id="checkinStep2">
-      <div class="checkin-title">¿Cómo están hoy?</div>
-      <div class="checkin-sub">¿Cómo está el ambiente?</div>
-      <div class="checkin-player">👤 Persona 2 — elige tu nivel</div>
-      <div class="checkin-levels">
-        <button class="checkin-level-btn" onclick="selectLevel(1,'B',this)">
-          <span class="checkin-level-icon">🌸</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Suave y romántico</div>
-            <div class="checkin-level-desc">Quiero algo íntimo y tranquilo, mucho contacto y ternura</div>
-          </div>
-        </button>
-        <button class="checkin-level-btn" onclick="selectLevel(2,'B',this)">
-          <span class="checkin-level-icon">🌶️</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Picante y divertido</div>
-            <div class="checkin-level-desc">Tengo energía para explorar y probar cosas nuevas</div>
-          </div>
-        </button>
-        <button class="checkin-level-btn" onclick="selectLevel(3,'B',this)">
-          <span class="checkin-level-icon">🔥</span>
-          <div class="checkin-level-info">
-            <div class="checkin-level-name">Hot e intenso</div>
-            <div class="checkin-level-desc">Estoy listo/a para una noche sin límites y muy intensa</div>
-          </div>
-        </button>
+    <!-- PASO SELECCIÓN: dos columnas simultáneas ocultas -->
+    <div id="ambienteSelectStep" style="padding:20px 24px 28px;">
+      <div class="checkin-title" style="margin-top:4px;">¿CÓMO ESTÁ</div>
+      <div class="checkin-title" style="color:var(--rose);margin-top:-4px;">EL AMBIENTE?</div>
+      <div class="checkin-sub" style="margin-bottom:20px;">Cada uno elige en secreto 🤫</div>
+
+      <div class="ambient-grid">
+        <!-- Persona A -->
+        <div class="ambient-col">
+          <div class="ambient-col-label" id="labelA">👤 Persona 1</div>
+          <button class="ambient-level-btn" id="btnA1" onclick="ambientSelect('A',1,this)">
+            <div class="ambient-card-inner">
+              <div class="ambient-card-front"><span class="ambient-level-icon">🌸</span><div class="ambient-level-name">Romántico</div></div>
+              <div class="ambient-card-back">✓</div>
+            </div>
+          </button>
+          <button class="ambient-level-btn" id="btnA2" onclick="ambientSelect('A',2,this)">
+            <div class="ambient-card-inner">
+              <div class="ambient-card-front"><span class="ambient-level-icon">🌶️</span><div class="ambient-level-name">Picante</div></div>
+              <div class="ambient-card-back">✓</div>
+            </div>
+          </button>
+          <button class="ambient-level-btn" id="btnA3" onclick="ambientSelect('A',3,this)">
+            <div class="ambient-card-inner">
+              <div class="ambient-card-front"><span class="ambient-level-icon">🔥</span><div class="ambient-level-name">Hot</div></div>
+              <div class="ambient-card-back">✓</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Persona B -->
+        <div class="ambient-col">
+          <div class="ambient-col-label" id="labelB">👤 Persona 2</div>
+          <button class="ambient-level-btn" id="btnB1" onclick="ambientSelect('B',1,this)">
+            <div class="ambient-card-inner">
+              <div class="ambient-card-front"><span class="ambient-level-icon">🌸</span><div class="ambient-level-name">Romántico</div></div>
+              <div class="ambient-card-back">✓</div>
+            </div>
+          </button>
+          <button class="ambient-level-btn" id="btnB2" onclick="ambientSelect('B',2,this)">
+            <div class="ambient-card-inner">
+              <div class="ambient-card-front"><span class="ambient-level-icon">🌶️</span><div class="ambient-level-name">Picante</div></div>
+              <div class="ambient-card-back">✓</div>
+            </div>
+          </button>
+          <button class="ambient-level-btn" id="btnB3" onclick="ambientSelect('B',3,this)">
+            <div class="ambient-card-inner">
+              <div class="ambient-card-front"><span class="ambient-level-icon">🔥</span><div class="ambient-level-name">Hot</div></div>
+              <div class="ambient-card-back">✓</div>
+            </div>
+          </button>
+        </div>
       </div>
-      <button class="checkin-next-btn" id="checkinNextB" onclick="showCheckinResult()">VER RESULTADO →</button>
-      <span class="checkin-skip" onclick="skipCheckin()">Omitir ambiente</span>
+
+      <button class="ambient-reveal-btn" id="ambienteRevealBtn" onclick="ambienteReveal()">
+        ✨ REVELAR NUESTRO NIVEL
+      </button>
+      <span style="display:block;font-size:0.58rem;color:var(--muted);letter-spacing:2px;margin-top:14px;cursor:pointer;text-transform:uppercase;text-align:center;" onclick="skipAmbienteSplash()">
+        Elegir nivel manualmente
+      </span>
     </div>
 
-    <!-- PASO 3: Resultado / Match -->
-    <div class="checkin-step" id="checkinStep3">
-      <div class="checkin-match">
-        <span class="checkin-match-icon" id="checkinMatchIcon">✨</span>
-        <div class="checkin-match-title" id="checkinMatchTitle">—</div>
-        <div class="checkin-match-desc" id="checkinMatchDesc">—</div>
-        <span class="checkin-match-level" id="checkinMatchLevel">—</span>
-        <button class="checkin-go-btn" onclick="applyCheckinAndStart()">¡EMPEZAR A JUGAR! ✦</button>
-      </div>
+    <!-- PASO RESULTADO -->
+    <div class="ambient-result" id="ambienteResultStep" style="padding:20px 24px 32px;">
+      <div class="ambient-result-icon" id="splashResultIcon">✨</div>
+      <div class="ambient-result-selections" id="ambienteSelections"></div>
+      <div class="checkin-title" style="margin-bottom:8px;" id="splashResultTitle">—</div>
+      <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;margin-bottom:16px;text-align:center;" id="splashResultDesc">—</div>
+      <div style="display:inline-block;padding:6px 20px;border-radius:20px;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:20px;" id="splashResultLevel" class="checkin-match-level">—</div>
+      <button class="btn-primary" onclick="startAppWithAmbiente()">¡EMPEZAR A JUGAR! ✦</button>
+      <span style="display:block;font-size:0.58rem;color:var(--muted);letter-spacing:2px;margin-top:12px;cursor:pointer;text-transform:uppercase;text-align:center;" onclick="skipAmbienteSplash()">Cerrar</span>
     </div>
 
   </div>
