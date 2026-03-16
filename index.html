@@ -102,7 +102,7 @@
   .screen-title { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:300; color:var(--gold); letter-spacing:2px; }
 
   /* ── RULETA ── */
-  .wheel-container { display:flex; flex-direction:column; align-items:center; padding:10px 24px 30px; }
+  .wheel-container { display:flex; flex-direction:column; align-items:center; padding:10px 24px 100px; }
   .wheel-wrapper { position:relative; width:300px; height:300px; margin-bottom:20px; }
   .wheel-pointer { position:absolute; top:-16px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent; border-top:22px solid var(--gold); z-index:10; filter:drop-shadow(0 0 6px var(--gold)); }
   #wheelCanvas { border-radius:50%; box-shadow:0 0 40px rgba(201,169,110,0.2),0 0 0 3px rgba(201,169,110,0.3); }
@@ -112,7 +112,7 @@
   .spin-btn:active { transform:scale(0.97); }
   .spin-btn:disabled { opacity:.5; cursor:not-allowed; }
 
-  .result-card { width:100%; background:var(--card2); border:1px solid var(--border); border-radius:20px; padding:20px; display:none; animation:slideUp .5s ease; }
+  .result-card { display:none !important; }
   .result-card.show { display:block; }
   @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
@@ -214,6 +214,141 @@
   .modal-heat-btn.active { border-color:var(--gold); background:rgba(201,169,110,0.12); color:var(--gold); }
   .modal-confirm-btn { width:100%; padding:16px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; cursor:pointer; }
   .modal-close { display:block; text-align:center; margin-top:12px; font-size:0.65rem; color:var(--muted); cursor:pointer; letter-spacing:2px; }
+
+  /* ── RESULT BOTTOM SHEET ── */
+  .result-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0); z-index:200;
+    transition: background .3s ease;
+  }
+  .result-overlay.show {
+    display:block;
+    background:rgba(0,0,0,0.7);
+    backdrop-filter:blur(4px);
+  }
+  .result-sheet {
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%) translateY(100%);
+    width:100%; max-width:430px;
+    background:var(--card2);
+    border-radius:28px 28px 0 0;
+    border-top:1px solid var(--border);
+    z-index:201;
+    transition:transform .4s cubic-bezier(.32,1.1,.7,1);
+    max-height:92vh;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .result-sheet.show { transform:translateX(-50%) translateY(0); }
+  .result-sheet.expanded .sheet-collapsed { display:none; }
+  .result-sheet.expanded .sheet-expanded { display:flex; }
+
+  /* Handle */
+  .sheet-handle-bar {
+    width:40px; height:4px; background:rgba(201,169,110,0.3);
+    border-radius:2px; margin:12px auto 0; flex-shrink:0; cursor:grab;
+  }
+
+  /* COLLAPSED VIEW — name + illustration + hint */
+  .sheet-collapsed {
+    display:flex; flex-direction:column; align-items:center;
+    padding:8px 24px 24px;
+  }
+  .sheet-pos-name {
+    font-family:'Cormorant Garamond',serif;
+    font-size:2rem; color:var(--gold); font-style:italic;
+    text-align:center; margin-bottom:4px;
+  }
+  .sheet-pos-badge {
+    display:inline-block; padding:3px 12px; border-radius:20px;
+    font-size:0.58rem; letter-spacing:1px; text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .sheet-illustration {
+    width:100%; background:var(--card); border-radius:18px;
+    border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    padding:16px; margin-bottom:14px;
+  }
+  .sheet-expand-hint {
+    font-size:0.58rem; color:var(--muted); letter-spacing:2px;
+    text-transform:uppercase; text-align:center; margin-bottom:14px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+  .sheet-expand-btn {
+    width:100%; padding:14px; border-radius:14px; border:1px solid var(--border);
+    background:var(--card); color:var(--gold); font-family:'Montserrat',sans-serif;
+    font-size:0.72rem; font-weight:500; letter-spacing:2px; cursor:pointer;
+    text-transform:uppercase; margin-bottom:10px; transition:all .2s;
+  }
+  .sheet-expand-btn:active { background:var(--card2); }
+  .sheet-spin-btn {
+    width:100%; padding:14px; border-radius:14px; border:none;
+    background:linear-gradient(135deg,var(--rose),var(--rose2));
+    color:#080810; font-family:'Montserrat',sans-serif;
+    font-size:0.72rem; font-weight:600; letter-spacing:2px;
+    cursor:pointer; text-transform:uppercase; transition:all .2s;
+  }
+  .sheet-spin-btn:active { transform:scale(0.97); }
+
+  /* EXPANDED VIEW — full details */
+  .sheet-expanded {
+    display:none; flex-direction:column;
+    overflow-y:auto; padding:8px 24px 40px;
+    flex:1;
+  }
+  .sheet-exp-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:12px; flex-shrink:0;
+  }
+  .sheet-collapse-btn {
+    width:32px; height:32px; border-radius:50%;
+    border:1px solid var(--border); background:var(--card);
+    color:var(--muted); font-size:1rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .sheet-exp-name {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.6rem; color:var(--gold); font-style:italic;
+  }
+  .sheet-exp-illustration {
+    width:100%; background:var(--card); border-radius:16px;
+    border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    padding:14px; margin-bottom:14px; flex-shrink:0;
+  }
+  .sheet-detail-row {
+    display:flex; gap:10px; margin-bottom:8px; align-items:flex-start;
+  }
+  .sheet-detail-lbl {
+    font-size:0.55rem; color:var(--muted); letter-spacing:2px;
+    text-transform:uppercase; min-width:68px; padding-top:2px; flex-shrink:0;
+  }
+  .sheet-detail-val {
+    font-size:0.76rem; color:var(--text); line-height:1.5; flex:1;
+  }
+  .sheet-divider { height:1px; background:var(--border); margin:10px 0; flex-shrink:0; }
+  .sheet-exp-spin {
+    width:100%; padding:16px; border-radius:14px; border:none;
+    background:linear-gradient(135deg,var(--rose),var(--rose2));
+    color:#080810; font-family:'Montserrat',sans-serif;
+    font-size:0.8rem; font-weight:600; letter-spacing:2px;
+    cursor:pointer; text-transform:uppercase; margin-top:16px;
+    flex-shrink:0; transition:all .2s;
+  }
+  .sheet-exp-spin:active { transform:scale(0.97); }
+  .sheet-exp-dots { display:flex; gap:4px; }
+  .sheet-exp-dot { width:8px; height:8px; border-radius:50%; background:var(--border); }
+  .sheet-exp-dot.on { background:var(--rose); }
+  .sheet-exp-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:4px; }
+  .sheet-exp-tag {
+    padding:2px 8px; border-radius:10px; font-size:0.55rem;
+    letter-spacing:1px; text-transform:uppercase;
+    background:rgba(201,169,110,0.08); color:var(--muted);
+    border:1px solid var(--border);
+  }
+
 </style>
 </head>
 <body>
@@ -552,10 +687,16 @@ function drawWheel(rotation = 0) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(angle + arc / 2);
-    ctx.textAlign = 'right';
+    // Draw text centered radially, readable size
+    const label = positions[i].name;
+    ctx.textAlign = 'center';
     ctx.fillStyle = WHEEL_ACCENT[i % WHEEL_ACCENT.length];
-    ctx.font = 'italic 11px Cormorant Garamond, serif';
-    ctx.fillText(positions[i].name, r - 12, 4);
+    ctx.font = 'italic 13px Georgia, serif';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 4;
+    // Position text at 65% of radius so it fits well
+    ctx.fillText(label, r * 0.62, 5);
+    ctx.shadowBlur = 0;
     ctx.restore();
   }
   ctx.beginPath();
@@ -626,22 +767,7 @@ function spinWheel() {
   requestAnimationFrame(animate);
 }
 
-function showPositionResult(pos) {
-  document.getElementById('resultName').textContent = pos.name;
-  document.getElementById('resultPos').textContent = pos.pos;
-  document.getElementById('resultLeads').textContent = pos.leads;
-  document.getElementById('resultFeel').textContent = pos.feel;
-  document.getElementById('resultDesc').textContent = pos.desc;
-  const diffEl = document.getElementById('resultDiff');
-  diffEl.textContent = pos.diff === 'easy' ? 'FÁCIL' : pos.diff === 'med' ? 'MEDIO' : 'INTENSO';
-  diffEl.className = 'meta-tag ' + (pos.diff === 'easy' ? 'tag-easy' : pos.diff === 'med' ? 'tag-med' : 'tag-hard');
-  const metaEl = document.getElementById('resultMeta');
-  metaEl.innerHTML = pos.tags.map(t => `<span class="meta-tag" style="background:rgba(201,169,110,0.08);color:var(--muted);border:1px solid var(--border)">${t}</span>`).join('');
-  const dotsEl = document.getElementById('resultDots');
-  dotsEl.innerHTML = Array.from({length:5},(_,i) => `<div class="dot ${i < pos.intensity ? 'filled' : ''}"></div>`).join('');
-  document.getElementById('resultCard').classList.add('show');
-  document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'nearest'});
-}
+function showPositionResult(pos) { showResultSheet(pos); }
 
 // ── DADOS ──
 function rollDie(index) {
@@ -724,6 +850,253 @@ function pullSlots() {
 }
 
 
+
+// ── RESULT SHEET ──
+const POSITION_SVGS = {
+  "La Cuchara": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="28" cy="40" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M28 49 Q40 52 65 54" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M65 54 Q75 58 82 65" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M65 54 Q72 54 80 58" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M36 48 Q26 55 20 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="38" cy="44" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M38 52 Q50 56 72 58" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M72 58 Q80 62 86 68" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M46 52 Q42 42 36 38" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "El Loto": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="42" cy="22" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M42 31 Q41 50 40 60" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M40 60 Q28 68 20 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M40 60 Q50 70 60 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M42 38 Q30 44 24 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M42 38 Q54 44 60 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="66" cy="28" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M66 36 Q67 52 68 60" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M68 60 Q76 56 82 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M68 60 Q58 66 52 68" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M66 42 Q54 48 48 54" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "El Ángel": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="25" cy="38" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M25 47 Q38 52 62 54" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M62 54 Q74 57 82 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M62 54 Q70 54 78 58" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M33 47 Q22 54 16 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="35" cy="42" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M35 50 Q50 54 70 57" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M70 57 Q80 60 88 65" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M44 50 Q40 40 34 37" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "El Misionero": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="18" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 27 L55 52" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M55 52 Q42 56 30 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 52 Q68 56 80 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 36 Q40 38 28 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 36 Q70 38 82 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="84" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M30 78 Q42 74 55 76 Q68 74 80 78" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M36 76 Q28 68 22 64" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M74 76 Q82 68 88 64" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "La Silla": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="20" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 29 Q54 45 53 55" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M53 55 Q42 60 34 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M53 55 Q62 62 68 74" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M54 38 Q40 42 30 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M54 38 Q68 44 76 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="36" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M55 44 Q54 56 53 64" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M48 55 Q36 58 28 66" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M60 55 Q72 60 78 68" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "La Amazona": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="16" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 25 Q54 42 53 52" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M53 52 Q40 56 30 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M53 52 Q66 58 74 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M54 36 Q40 38 28 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M54 36 Q68 40 78 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M28 72 Q40 70 55 72 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M34 70 Q26 62 22 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M76 70 Q84 62 88 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "La Mariposa": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="16" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 25 L55 52" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M55 52 Q40 58 28 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 52 Q70 58 82 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M32 82 Q42 80 55 81 Q68 80 78 82" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M40 80 Q30 62 28 48" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M70 80 Q80 62 82 48" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "El Puente": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="18" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 27 L55 52" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M55 52 Q42 56 30 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 52 Q68 56 80 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 36 Q40 38 28 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 36 Q70 38 82 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="84" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M30 78 Q42 74 55 76 Q68 74 80 78" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M36 76 Q28 68 22 64" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M74 76 Q82 68 88 64" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "Doggy Style": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="22" cy="35" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M22 44 Q35 46 60 46" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M60 46 Q72 46 80 52" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M60 46 Q68 50 74 60" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M30 44 Q22 52 18 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M30 44 Q28 54 24 64" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="78" cy="34" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M78 43 Q78 56 78 62" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M78 62 Q66 66 58 74" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M78 62 Q88 68 92 76" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M72 48 Q62 44 58 38" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M84 48 Q92 46 96 40" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "La Escalera": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="18" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 27 L55 54" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M55 54 Q44 58 34 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 54 Q66 60 72 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 38 Q40 40 28 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 38 Q70 42 80 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M30 80 Q42 77 55 79 Q68 77 80 80" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M36 78 Q28 70 24 62" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M74 78 Q82 70 86 62" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "La Amazona Inversa": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="16" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 25 Q56 42 57 52" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M57 52 Q68 56 78 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M57 52 Q44 58 36 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M56 36 Q70 40 80 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M56 36 Q42 38 30 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M28 72 Q40 70 55 72 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M34 70 Q26 62 22 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M76 70 Q84 62 88 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "El Trípode": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="40" cy="14" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M40 23 L40 52" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M40 52 Q30 58 24 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M40 52 Q52 58 56 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M40 36 Q26 38 18 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M40 36 Q54 40 62 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="70" cy="18" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M70 27 L70 56" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M70 56 Q60 62 54 74" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M70 56 Q80 62 84 72" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M70 40 Q58 42 52 50" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M70 40 Q82 44 88 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "El Bostezo": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="18" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 27 L55 54" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M55 54 Q42 58 30 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 54 Q68 60 78 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 38 Q40 38 28 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 38 Q70 40 82 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M32 82 Q42 80 55 81 Q68 80 78 82" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M38 80 Q26 64 24 50" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M72 80 Q84 64 86 50" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "La Cobra": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="14" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 23 L55 50" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M55 50 Q42 54 30 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 50 Q68 56 78 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 34 Q36 30 22 36" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55 34 Q74 32 88 38" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="84" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M30 78 Q42 76 55 77 Q68 76 80 78" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M36 76 Q30 68 28 60" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M74 76 Q80 68 82 60" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+  "El Escorpión": `<svg width="170" height="130" viewBox="0 0 110 100">
+        <circle cx="55" cy="20" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+        <path d="M55 29 Q56 46 58 56" stroke="#ff8fab" stroke-width="2" fill="none"/>
+        <path d="M58 56 Q70 60 80 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M58 56 Q46 62 38 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M56 40 Q42 36 30 42" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M56 40 Q70 38 82 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="55" cy="82" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <path d="M30 76 Q42 74 55 75 Q68 74 80 76" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+        <path d="M36 74 Q28 58 26 44" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M74 74 Q82 58 84 44" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`,
+};
+
+function showResultSheet(pos) {
+  const svg = POSITION_SVGS[pos.name] || '<div style="font-size:3rem;color:var(--muted)">✦</div>';
+
+  // Collapsed view
+  document.getElementById('sheetName').textContent = pos.name;
+  const badge = document.getElementById('sheetBadge');
+  badge.textContent = pos.diff === 'easy' ? 'FÁCIL' : pos.diff === 'med' ? 'MEDIO' : 'INTENSO';
+  badge.className = 'sheet-pos-badge ' + (pos.diff === 'easy' ? 'tag-easy' : pos.diff === 'med' ? 'tag-med' : 'tag-hard');
+  document.getElementById('sheetIllustration').innerHTML = svg;
+
+  // Expanded view
+  document.getElementById('sheetExpName').textContent = pos.name;
+  document.getElementById('sheetExpIllustration').innerHTML = svg;
+  document.getElementById('sheetPos').textContent = pos.pos;
+  document.getElementById('sheetLeads').textContent = pos.leads;
+  document.getElementById('sheetFeel').textContent = pos.feel;
+  document.getElementById('sheetDesc').textContent = pos.desc;
+  document.getElementById('sheetExpTags').innerHTML = pos.tags.map(t =>
+    `<span class="sheet-exp-tag">${t}</span>`).join('');
+  document.getElementById('sheetDots').innerHTML = Array.from({length:5},(_,i) =>
+    `<div class="sheet-exp-dot ${i < pos.intensity ? 'on' : ''}"></div>`).join('');
+
+  // Reset to collapsed
+  collapseSheet();
+
+  // Show
+  document.getElementById('resultOverlay').classList.add('show');
+  document.getElementById('resultSheet').classList.add('show');
+}
+
+function expandSheet() {
+  document.getElementById('sheetCollapsed').style.display = 'none';
+  document.getElementById('sheetExpanded').style.display = 'flex';
+}
+
+function collapseSheet() {
+  document.getElementById('sheetCollapsed').style.display = 'flex';
+  document.getElementById('sheetExpanded').style.display = 'none';
+}
+
+function closeResultSheet() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  document.getElementById('resultSheet').classList.remove('show');
+}
+
+function closeAndSpin() {
+  closeResultSheet();
+  setTimeout(() => spinWheel(), 400);
+}
+
+// Swipe up to expand
+let touchStartY = 0;
+document.getElementById('resultSheet') && document.getElementById('resultSheet').addEventListener('touchstart', e => {
+  touchStartY = e.touches[0].clientY;
+});
+document.getElementById('resultSheet') && document.getElementById('resultSheet').addEventListener('touchend', e => {
+  const diff = touchStartY - e.changedTouches[0].clientY;
+  if (diff > 50) expandSheet();
+  if (diff < -50) collapseSheet();
+});
+
 // ── HEAT MODAL ──
 let tempHeat = null;
 
@@ -788,6 +1161,44 @@ if ('serviceWorker' in navigator) {
     </div>
     <button class="modal-confirm-btn" onclick="confirmHeat()">CONFIRMAR ✦</button>
     <span class="modal-close" onclick="closeHeatModal()">CANCELAR</span>
+  </div>
+</div>
+
+<!-- ══ RESULT BOTTOM SHEET ══ -->
+<div class="result-overlay" id="resultOverlay" onclick="if(event.target===this)closeResultSheet()"></div>
+<div class="result-sheet" id="resultSheet">
+  <div class="sheet-handle-bar"></div>
+
+  <!-- COLLAPSED: name + illustration + buttons -->
+  <div class="sheet-collapsed" id="sheetCollapsed">
+    <div class="sheet-pos-name" id="sheetName">—</div>
+    <span class="sheet-pos-badge tag-easy" id="sheetBadge">FÁCIL</span>
+    <div class="sheet-illustration" id="sheetIllustration"></div>
+    <div class="sheet-expand-hint">↑ desliza para ver instrucciones</div>
+    <button class="sheet-expand-btn" onclick="expandSheet()">VER INSTRUCCIONES ↓</button>
+    <button class="sheet-spin-btn" onclick="closeAndSpin()">🎡 GIRAR DE NUEVO</button>
+  </div>
+
+  <!-- EXPANDED: full details -->
+  <div class="sheet-expanded" id="sheetExpanded">
+    <div class="sheet-exp-header">
+      <div>
+        <div class="sheet-exp-name" id="sheetExpName">—</div>
+        <div class="sheet-exp-tags" id="sheetExpTags"></div>
+      </div>
+      <button class="sheet-collapse-btn" onclick="collapseSheet()">↓</button>
+    </div>
+    <div class="sheet-exp-illustration" id="sheetExpIllustration"></div>
+    <div class="sheet-detail-row"><span class="sheet-detail-lbl">📍 POSICIÓN</span><span class="sheet-detail-val" id="sheetPos">—</span></div>
+    <div class="sheet-detail-row"><span class="sheet-detail-lbl">👤 LIDERA</span><span class="sheet-detail-val" id="sheetLeads">—</span></div>
+    <div class="sheet-detail-row"><span class="sheet-detail-lbl">🎯 SENSACIÓN</span><span class="sheet-detail-val" id="sheetFeel">—</span></div>
+    <div class="sheet-detail-row">
+      <span class="sheet-detail-lbl">⚡ INTENSIDAD</span>
+      <div class="sheet-exp-dots" id="sheetDots"></div>
+    </div>
+    <div class="sheet-divider"></div>
+    <div class="sheet-detail-row"><span class="sheet-detail-lbl">📖 CÓMO</span><span class="sheet-detail-val" id="sheetDesc">—</span></div>
+    <button class="sheet-exp-spin" onclick="closeAndSpin()">🎡 GIRAR DE NUEVO</button>
   </div>
 </div>
 </body>

@@ -1,4 +1,4 @@
-const CACHE = 'passionplay-v3';
+const CACHE = 'passionplay-v5';
 const FILES = [
   './',
   './index.html',
@@ -8,9 +8,7 @@ const FILES = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(FILES))
-  );
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
   self.skipWaiting();
 });
 
@@ -27,21 +25,13 @@ self.addEventListener('fetch', e => {
   if(e.request.mode === 'navigate') {
     e.respondWith(
       fetch(e.request)
-        .then(res => {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-          return res;
-        })
+        .then(res => { const c = res.clone(); caches.open(CACHE).then(ca => ca.put(e.request, c)); return res; })
         .catch(() => caches.match(e.request) || caches.match('./index.html'))
     );
   } else {
     e.respondWith(
       fetch(e.request)
-        .then(res => {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-          return res;
-        })
+        .then(res => { const c = res.clone(); caches.open(CACHE).then(ca => ca.put(e.request, c)); return res; })
         .catch(() => caches.match(e.request))
     );
   }
