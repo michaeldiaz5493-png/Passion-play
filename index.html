@@ -26,13 +26,15 @@
     --text: #f0e6d3;
     --muted: #666680;
     --border: rgba(201,169,110,0.2);
+    --card-gradient-soft: linear-gradient(135deg, rgba(201,169,110,0.10), rgba(232,132,154,0.07));
+    --card-gradient-fantasy: linear-gradient(135deg, rgba(155,109,255,0.10), rgba(232,132,154,0.07));
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   body {
     background: var(--bg);
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Montserrat', system-ui, sans-serif;
     color: var(--text);
     min-height: 100vh;
     max-width: 430px;
@@ -103,9 +105,9 @@
 
   /* ── RULETA ── */
   .wheel-container { display:flex; flex-direction:column; align-items:center; padding:10px 24px 100px; }
-  .wheel-wrapper { position:relative; width:300px; height:300px; margin-bottom:20px; }
+  .wheel-wrapper { position:relative; width:min(300px, calc(100vw - 48px)); height:min(300px, calc(100vw - 48px)); margin-bottom:20px; }
   .wheel-pointer { position:absolute; top:-16px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent; border-top:22px solid var(--gold); z-index:10; filter:drop-shadow(0 0 6px var(--gold)); }
-  #wheelCanvas { border-radius:50%; box-shadow:0 0 40px rgba(201,169,110,0.2),0 0 0 3px rgba(201,169,110,0.3); }
+  #wheelCanvas { border-radius:50%; box-shadow:0 0 40px rgba(201,169,110,0.2),0 0 0 3px rgba(201,169,110,0.3); max-width:100%; }
   .wheel-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:44px; height:44px; border-radius:50%; background:var(--bg); border:3px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:1.2rem; z-index:5; box-shadow:0 0 20px rgba(201,169,110,0.4); }
 
   .spin-btn { width:100%; padding:18px; border-radius:16px; border:none; background:linear-gradient(135deg,var(--rose),var(--rose2)); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all .3s; margin-bottom:16px; }
@@ -183,7 +185,10 @@
   /* ── BOTTOM NAV ── */
   .bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:rgba(8,8,16,0.95); backdrop-filter:blur(20px); border-top:1px solid var(--border); padding:10px 0 20px; display:none; z-index:100; }
   .bottom-nav.show { display:flex; }
-  .nav-items { display:flex; width:100%; justify-content:space-around; }
+  .nav-scroll-hint { position:absolute; right:0; top:0; bottom:0; width:30px; background:linear-gradient(to left, rgba(8,8,16,0.95), transparent); pointer-events:none; border-radius:0 0 0 0; z-index:1; }
+  .nav-items { display:flex; width:100%; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:0 8px; gap:4px; }
+  .nav-items::-webkit-scrollbar { display:none; }
+  .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:6px 14px; border-radius:12px; transition:all .2s; flex-shrink:0; scroll-snap-align:start; min-width:64px; }
   .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:6px 16px; border-radius:12px; transition:all .2s; }
   .nav-item.active { background:rgba(201,169,110,0.1); }
   .nav-icon { font-size:1.3rem; }
@@ -390,7 +395,7 @@
   #challenge { padding:0; }
   .challenge-container { padding:20px 16px 100px; }
   .challenge-header-card {
-    background:linear-gradient(135deg,rgba(201,169,110,0.1),rgba(232,132,154,0.08));
+    background:var(--card-gradient-soft);
     border:1px solid var(--border); border-radius:20px;
     padding:20px; margin-bottom:16px; text-align:center;
   }
@@ -432,6 +437,159 @@
   .challenge-day-card.completed .cday-complete-btn { display:none; }
   .challenge-reset { width:100%; padding:14px; border-radius:14px; border:1px solid var(--border); background:transparent; color:var(--muted); font-size:0.65rem; letter-spacing:2px; cursor:pointer; text-transform:uppercase; margin-top:8px; }
 
+
+  /* ── EL AMBIENTE ── */
+  .checkin-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:400; align-items:center; justify-content:center; backdrop-filter:blur(8px); padding:20px; }
+  .checkin-overlay.show { display:flex; }
+  .checkin-sheet { width:100%; max-width:390px; background:var(--card2); border-radius:28px; border:1px solid var(--border); padding:28px 24px 32px; animation:fadeIn .4s ease; }
+
+  .checkin-step { display:none; }
+  .checkin-step.active { display:block; }
+
+  .checkin-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--gold); font-style:italic; text-align:center; margin-bottom:6px; }
+  .checkin-sub { font-size:0.65rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; text-align:center; margin-bottom:24px; }
+
+  .checkin-player { font-size:0.7rem; color:var(--rose); letter-spacing:2px; text-transform:uppercase; text-align:center; margin-bottom:16px; font-weight:600; }
+
+  .checkin-levels { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+  .checkin-level-btn {
+    padding:14px 18px; border-radius:16px;
+    border:1px solid var(--border); background:var(--card);
+    cursor:pointer; transition:all .25s; text-align:left;
+    display:flex; align-items:center; gap:14px;
+  }
+  .checkin-level-btn:active { transform:scale(0.98); }
+  .checkin-level-btn.selected { border-color:var(--rose); background:rgba(232,132,154,0.1); }
+  .checkin-level-icon { font-size:1.6rem; flex-shrink:0; }
+  .checkin-level-info {}
+  .checkin-level-name { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--gold); font-style:italic; margin-bottom:2px; }
+  .checkin-level-desc { font-size:0.6rem; color:var(--muted); line-height:1.4; }
+
+  .checkin-next-btn { width:100%; padding:16px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--rose),var(--rose2)); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:3px; cursor:pointer; opacity:.4; transition:all .3s; }
+  .checkin-next-btn.ready { opacity:1; }
+  .checkin-skip { display:block; text-align:center; font-size:0.6rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-top:12px; cursor:pointer; }
+
+  /* MATCH RESULT */
+  .checkin-match { text-align:center; }
+  .checkin-match-icon { font-size:3.5rem; margin-bottom:12px; display:block; animation:float 2s ease-in-out infinite; }
+  .checkin-match-title { font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:var(--gold); font-style:italic; margin-bottom:6px; }
+  .checkin-match-desc { font-size:0.72rem; color:var(--muted); line-height:1.6; margin-bottom:20px; }
+  .checkin-match-level { display:inline-block; padding:6px 18px; border-radius:20px; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; font-weight:600; }
+  .checkin-match-level.romantico { background:rgba(201,169,110,0.15); color:var(--gold); border:1px solid rgba(201,169,110,0.3); }
+  .checkin-match-level.picante { background:rgba(255,100,100,0.15); color:#f0b429; border:1px solid rgba(255,100,100,0.3); }
+  .checkin-match-level.hot { background:rgba(232,132,154,0.15); color:var(--rose); border:1px solid rgba(232,132,154,0.3); }
+  .checkin-go-btn { width:100%; padding:16px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:600; letter-spacing:3px; cursor:pointer; }
+
+  /* MENU EL AMBIENTE BUTTON */
+  .checkin-fab { display:flex; transition: all .3s; align-items:center; gap:10px; width:100%; padding:16px 20px; border-radius:18px; border:1px solid var(--border); background:var(--card-gradient-soft); cursor:pointer; margin-bottom:12px; transition:all .2s; }
+  .checkin-fab:active { transform:scale(0.98); }
+  .checkin-fab.hidden { display:none !important; }
+  .checkin-fab-icon { font-size:1.8rem; }
+  .checkin-fab-text {}
+  .checkin-fab-title { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--rose2); font-style:italic; }
+  .checkin-fab-sub { font-size:0.58rem; color:var(--muted); letter-spacing:1px; margin-top:1px; }
+
+
+  /* ── FANTASÍAS ── */
+  #fantasy { padding:0; }
+  .fantasy-container { padding:20px 16px 100px; }
+
+  .fantasy-intro { background:var(--card2); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px; text-align:center; }
+  .fantasy-intro-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--gold); font-style:italic; margin-bottom:6px; }
+  .fantasy-intro-sub { font-size:0.62rem; color:var(--muted); letter-spacing:1px; line-height:1.6; }
+
+  .fantasy-step { display:none; }
+  .fantasy-step.active { display:block; }
+
+  .fantasy-player-label { font-size:0.65rem; color:var(--rose); letter-spacing:2px; text-transform:uppercase; text-align:center; margin:16px 0 12px; font-weight:600; }
+
+  .fantasy-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+  .fantasy-item {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:14px 12px; cursor:pointer;
+    transition:all .25s; text-align:center; position:relative;
+  }
+  .fantasy-item.selected { border-color:var(--rose); background:rgba(232,132,154,0.1); }
+  .fantasy-item:active { transform:scale(0.96); }
+  .fantasy-item-icon { font-size:1.4rem; margin-bottom:6px; display:block; }
+  .fantasy-item-name { font-size:0.65rem; color:var(--text); line-height:1.3; }
+  .fantasy-item .check { position:absolute; top:8px; right:8px; width:18px; height:18px; border-radius:50%; background:var(--rose); color:#080810; font-size:0.6rem; display:none; align-items:center; justify-content:center; font-weight:bold; }
+  .fantasy-item.selected .check { display:flex; }
+
+  .fantasy-count { font-size:0.6rem; color:var(--muted); text-align:center; margin-bottom:12px; letter-spacing:1px; }
+  .fantasy-reveal-btn { width:100%; padding:16px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--rose),var(--rose2)); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:3px; cursor:pointer; opacity:.5; transition:all .3s; }
+  .fantasy-reveal-btn.ready { opacity:1; }
+  .fantasy-next-btn { width:100%; padding:16px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:3px; cursor:pointer; opacity:.5; transition:all .3s; margin-bottom:8px; }
+  .fantasy-next-btn.ready { opacity:1; }
+
+  .fantasy-results { }
+  .fantasy-result-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--gold); font-style:italic; text-align:center; margin-bottom:6px; }
+  .fantasy-result-sub { font-size:0.62rem; color:var(--muted); letter-spacing:1px; text-align:center; margin-bottom:20px; }
+  .fantasy-match-item { background:var(--card2); border:1px solid rgba(232,132,154,0.3); border-radius:16px; padding:16px; margin-bottom:10px; display:flex; align-items:center; gap:14px; }
+  .fantasy-match-icon { font-size:1.6rem; flex-shrink:0; }
+  .fantasy-match-name { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--rose2); font-style:italic; }
+  .fantasy-match-desc { font-size:0.6rem; color:var(--muted); margin-top:2px; line-height:1.4; }
+  .fantasy-no-match { text-align:center; padding:30px; }
+  .fantasy-no-match-icon { font-size:2.5rem; margin-bottom:12px; display:block; }
+  .fantasy-no-match-text { font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:var(--muted); font-style:italic; }
+  .fantasy-reset-btn { width:100%; padding:14px; border-radius:14px; border:1px solid var(--border); background:transparent; color:var(--muted); font-size:0.65rem; letter-spacing:2px; cursor:pointer; text-transform:uppercase; margin-top:10px; }
+
+
+  /* ── LOGROS ── */
+  .achievement-toast {
+    position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-80px);
+    background:linear-gradient(135deg,var(--card2),var(--card));
+    border:1px solid var(--gold); border-radius:16px;
+    padding:12px 20px; z-index:500; display:flex; align-items:center; gap:12px;
+    min-width:280px; max-width:380px;
+    transition:transform .4s cubic-bezier(.32,1.1,.7,1);
+    box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  }
+  .achievement-toast.show { transform:translateX(-50%) translateY(0); }
+  .achievement-toast-icon { font-size:1.8rem; flex-shrink:0; }
+  .achievement-toast-text {}
+  .achievement-toast-title { font-size:0.6rem; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:2px; }
+  .achievement-toast-name { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--text); font-style:italic; }
+
+  /* SURPRISE BTN */
+  .surprise-btn {
+    width:100%; padding:18px; border-radius:18px; border:none;
+    background:linear-gradient(135deg,#9b6dff,#c084fc);
+    color:white; font-family:'Montserrat',sans-serif;
+    font-size:0.85rem; font-weight:600; letter-spacing:3px;
+    cursor:pointer; margin:0 16px 12px; width:calc(100% - 32px);
+    transition:all .2s; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .surprise-btn:active { transform:scale(0.97); }
+
+
+  /* ── FANTASY CARD DINÁMICA ── */
+  .fantasy-card {
+    background: var(--card-gradient-fantasy) !important;
+    border-color: var(--border) !important;
+  }
+
+  /* ── TEMAS POR NIVEL ── */
+  body.theme-romantico {
+    --gold: #c9a96e; --gold2: #e8d5a3; --rose: #e8849a; --rose2: #ffb3c6;
+    --accent: #c9a96e; --accent2: #e8d5a3;
+  }
+  body.theme-romantico body::before {
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(201,169,110,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(232,132,154,0.06) 0%, transparent 50%);
+  }
+  body.theme-picante {
+    --gold: #e8773a; --gold2: #f0a060; --rose: #e84040; --rose2: #ff7070;
+    --border: rgba(232,119,58,0.25);
+  }
+  body.theme-hot {
+    --gold: #e83050; --gold2: #ff6080; --rose: #cc1040; --rose2: #ff4070;
+    --border: rgba(232,48,80,0.25);
+  }
+  /* Transición suave al cambiar tema */
+  body { transition: --gold .5s, background .5s; }
+
 </style>
 </head>
 <body>
@@ -448,28 +606,109 @@
 
 <!-- ══ SPLASH ══ -->
 <div class="screen active" id="splash">
-  <div class="splash-ornament">✦</div>
-  <div class="splash-title">PASSION</div>
-  <div class="splash-title" style="color:var(--rose);margin-top:-8px;">PLAY</div>
-  <div class="splash-subtitle">Para Parejas</div>
 
-  <div class="heat-selector">
-    <div class="heat-label">✦ Elige tu nivel de intensidad</div>
-    <div class="heat-options">
-      <button class="heat-btn active" onclick="setHeat(this,'romantico')">
-        <span class="heat-icon">🌹</span>ROMÁNTICO
-      </button>
-      <button class="heat-btn" onclick="setHeat(this,'picante')">
-        <span class="heat-icon">🌶️</span>PICANTE
-      </button>
-      <button class="heat-btn" onclick="setHeat(this,'hot')">
-        <span class="heat-icon">🔥</span>HOT
-      </button>
+  <!-- PASO 1: EL AMBIENTE EN SPLASH -->
+  <div id="splashAmbiente" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;text-align:center;animation:fadeIn .8s ease;">
+    <div class="splash-ornament">💞</div>
+    <div class="splash-title" style="font-size:2rem;">¿CÓMO ESTÁ</div>
+    <div class="splash-title" style="font-size:2rem;color:var(--rose);margin-top:-8px;">EL AMBIENTE?</div>
+    <div class="splash-subtitle" style="margin-bottom:32px;">Nivel de la noche</div>
+
+    <!-- PERSONA 1 -->
+    <div id="sintoniaSplashStep1" style="width:100%;">
+      <div style="font-size:0.65rem;color:var(--rose);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;font-weight:600;">👤 Persona 1 — elige tu nivel</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+        <button class="checkin-level-btn" onclick="splashSelectLevel(1,'A',this)">
+          <span class="checkin-level-icon">🌸</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Suave y romántico</div>
+            <div class="checkin-level-desc">Íntimo y tranquilo, mucho contacto y ternura</div>
+          </div>
+        </button>
+        <button class="checkin-level-btn" onclick="splashSelectLevel(2,'A',this)">
+          <span class="checkin-level-icon">🌶️</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Picante y divertido</div>
+            <div class="checkin-level-desc">Con energía para explorar y probar cosas nuevas</div>
+          </div>
+        </button>
+        <button class="checkin-level-btn" onclick="splashSelectLevel(3,'A',this)">
+          <span class="checkin-level-icon">🔥</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Hot e intenso</div>
+            <div class="checkin-level-desc">Lista/o para una noche sin límites</div>
+          </div>
+        </button>
+      </div>
+      <button class="btn-primary" id="sintoniaBtnA" style="opacity:.4;" onclick="ambienteSplashNext()">CONTINUAR →</button>
+      <span style="display:block;font-size:0.6rem;color:var(--muted);letter-spacing:2px;margin-top:14px;cursor:pointer;" onclick="skipAmbienteSplash()">Omitir y elegir nivel manualmente</span>
+    </div>
+
+    <!-- PERSONA 2 -->
+    <div id="sintoniaSplashStep2" style="width:100%;display:none;">
+      <div style="font-size:0.65rem;color:var(--rose);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;font-weight:600;">👤 Persona 2 — elige tu nivel</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+        <button class="checkin-level-btn" onclick="splashSelectLevel(1,'B',this)">
+          <span class="checkin-level-icon">🌸</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Suave y romántico</div>
+            <div class="checkin-level-desc">Íntimo y tranquilo, mucho contacto y ternura</div>
+          </div>
+        </button>
+        <button class="checkin-level-btn" onclick="splashSelectLevel(2,'B',this)">
+          <span class="checkin-level-icon">🌶️</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Picante y divertido</div>
+            <div class="checkin-level-desc">Con energía para explorar y probar cosas nuevas</div>
+          </div>
+        </button>
+        <button class="checkin-level-btn" onclick="splashSelectLevel(3,'B',this)">
+          <span class="checkin-level-icon">🔥</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Hot e intenso</div>
+            <div class="checkin-level-desc">Lista/o para una noche sin límites</div>
+          </div>
+        </button>
+      </div>
+      <button class="btn-primary" id="sintoniaBtnB" style="opacity:.4;" onclick="ambienteSplashReveal()">VER NUESTRO NIVEL ✦</button>
+    </div>
+
+    <!-- RESULTADO -->
+    <div id="sintoniaSplashResult" style="width:100%;display:none;text-align:center;">
+      <div style="font-size:3rem;margin-bottom:12px;" id="splashResultIcon">✨</div>
+      <div class="splash-title" style="font-size:1.8rem;margin-bottom:6px;" id="splashResultTitle">—</div>
+      <div style="font-size:0.72rem;color:var(--muted);line-height:1.7;margin-bottom:20px;" id="splashResultDesc">—</div>
+      <div style="display:inline-block;padding:6px 20px;border-radius:20px;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:24px;" id="splashResultLevel" class="checkin-match-level">—</div>
+      <button class="btn-primary" onclick="startAppWithAmbiente()">¡EMPEZAR A JUGAR! ✦</button>
     </div>
   </div>
 
-  <button class="btn-primary" onclick="startApp()">COMENZAR ✦</button>
-  <div class="privacy-note">✦ Sin registro · Todo privado · Solo en tu dispositivo</div>
+  <!-- PASO 2: PANTALLA ORIGINAL (si omite ambiente) -->
+  <div id="splashManual" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 30px;text-align:center;animation:fadeIn .5s ease;">
+    <div class="splash-ornament">✦</div>
+    <div class="splash-title">PASSION</div>
+    <div class="splash-title" style="color:var(--rose);margin-top:-8px;">PLAY</div>
+    <div class="splash-subtitle">Para Parejas</div>
+
+    <div class="heat-selector">
+      <div class="heat-label">✦ Elige tu nivel de intensidad</div>
+      <div class="heat-options">
+        <button class="heat-btn active" onclick="setHeat(this,'romantico')">
+          <span class="heat-icon">🌹</span>ROMÁNTICO
+        </button>
+        <button class="heat-btn" onclick="setHeat(this,'picante')">
+          <span class="heat-icon">🌶️</span>PICANTE
+        </button>
+        <button class="heat-btn" onclick="setHeat(this,'hot')">
+          <span class="heat-icon">🔥</span>HOT
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="startApp()">COMENZAR ✦</button>
+    <div class="privacy-note">✦ Sin registro · Todo privado · Solo en tu dispositivo</div>
+  </div>
+
 </div>
 
 <!-- ══ MENU ══ -->
@@ -478,39 +717,72 @@
     <div class="menu-title">Passion Play</div>
     <div class="heat-badge" id="heatBadge" onclick="openHeatModal()">🌹 ROMÁNTICO ✎</div>
   </div>
+  <div style="padding:0 16px 0;">
+    <button class="surprise-btn" onclick="surpriseMode()">🎲 MODO SORPRESA — ELEGIR POR MÍ</button>
+  </div>
+  <div style="padding:0 16px;">
+    <div class="checkin-fab" id="checkinMenuFab" onclick="openCheckin()">
+      <span class="checkin-fab-icon">💞</span>
+      <div class="checkin-fab-text">
+        <div class="checkin-fab-title">💞 ¿Cómo está el ambiente?</div>
+        <div class="checkin-fab-sub">¿Cómo están hoy? · Encuentra su nivel juntos</div>
+      </div>
+    </div>
+  </div>
   <div class="games-grid">
-    <div class="game-card wide" onclick="goTo('ruleta')">
+
+    <!-- #1 Ruleta — más visual e icónica, gancho principal -->
+    <div class="game-card wide" onclick="goTo('ruleta')" style="position:relative;">
+      <div style="position:absolute;top:12px;right:14px;font-size:0.5rem;color:var(--gold);letter-spacing:2px;opacity:0.7;">⭐ FAVORITO</div>
       <span class="game-icon">🎡</span>
       <div class="game-name">Ruleta de Posiciones</div>
-      <div class="game-desc">Gira y descubre tu próxima posición con instrucciones detalladas</div>
+      <div class="game-desc">Gira y descubre tu próxima posición con instrucciones y técnica paso a paso</div>
     </div>
+
+    <!-- #2 Truth or Dare — más popular en apps de pareja según estudios -->
+    <div class="game-card" onclick="goTo('truth')">
+      <span class="game-icon">🃏</span>
+      <div class="game-name">Verdad o Reto</div>
+      <div class="game-desc">Conócanse más profundo con cada carta</div>
+    </div>
+
+    <!-- #3 Match de Fantasías — mayor impacto emocional según simulación -->
+    <div class="game-card" onclick="goTo('fantasy')" class="fantasy-card">
+      <span class="game-icon">💞</span>
+      <div class="game-name">Match de Fantasías</div>
+      <div class="game-desc">Descubran qué desean en secreto</div>
+    </div>
+
+    <!-- #4 Dados — rápido y accesible -->
     <div class="game-card" onclick="goTo('dados')">
       <span class="game-icon">🎲</span>
       <div class="game-name">Dados del Deseo</div>
-      <div class="game-desc">Combina acción, zona y ritmo</div>
+      <div class="game-desc">Acción + zona + duración al azar</div>
     </div>
-    <div class="game-card" onclick="goTo('truth')">
-      <span class="game-icon">🃏</span>
-      <div class="game-name">Truth or Dare</div>
-      <div class="game-desc">Verdad o reto para parejas</div>
-    </div>
-    <div class="game-card wide" onclick="goTo('slots')">
-      <span class="game-icon">🎰</span>
-      <div class="game-name">Slots de Pasión</div>
-      <div class="game-desc">Gira los reeles y descubre una combinación única</div>
-    </div>
-    <div class="game-card wide" onclick="goTo('challenge')" style="background:linear-gradient(135deg,rgba(201,169,110,0.08),rgba(232,132,154,0.06))">
+
+    <!-- #5 Desafío 7 días — retención y hábito -->
+    <div class="game-card" onclick="goTo('challenge')">
       <span class="game-icon">📅</span>
       <div class="game-name">Desafío 7 Días</div>
-      <div class="game-desc">Un reto especial diferente cada día para conectar más</div>
+      <div class="game-desc">Un reto científico cada día</div>
     </div>
+
+    <!-- #6 Slots — variante y novedad -->
+    <div class="game-card" onclick="goTo('slots')">
+      <span class="game-icon">🎰</span>
+      <div class="game-name">Slots de Pasión</div>
+      <div class="game-desc">Combinación aleatoria sorpresa</div>
+    </div>
+
   </div>
-  <nav class="bottom-nav show"><div class="nav-items">
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
-    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
-    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
-    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
-    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+    <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item " onclick="goTo('fantasy')"><span class="nav-icon">💞</span><span class="nav-label">Fantasías</span></div>
+    <div class="nav-item " onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item " onclick="goTo('challenge')"><span class="nav-icon">📅</span><span class="nav-label">7 Días</span></div>
+    <div class="nav-item " onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
   </div></nav>
 </div>
 
@@ -542,12 +814,14 @@
       <div class="result-row"><span class="result-row-label">📖 CÓMO</span><span class="result-row-value" id="resultDesc">—</span></div>
     </div>
   </div>
-  <nav class="bottom-nav show"><div class="nav-items">
-    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
-    <div class="nav-item active" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
-    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
-    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
-    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item " onclick="goTo('fantasy')"><span class="nav-icon">💞</span><span class="nav-label">Fantasías</span></div>
+    <div class="nav-item " onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item " onclick="goTo('challenge')"><span class="nav-icon">📅</span><span class="nav-label">7 Días</span></div>
+    <div class="nav-item " onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
   </div></nav>
 </div>
 
@@ -571,12 +845,14 @@
       <div class="dice-desc" id="diceDesc">—</div>
     </div>
   </div>
-  <nav class="bottom-nav show"><div class="nav-items">
-    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
-    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
-    <div class="nav-item active" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
-    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
-    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item " onclick="goTo('fantasy')"><span class="nav-icon">💞</span><span class="nav-label">Fantasías</span></div>
+    <div class="nav-item " onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item " onclick="goTo('challenge')"><span class="nav-icon">📅</span><span class="nav-label">7 Días</span></div>
+    <div class="nav-item " onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
   </div></nav>
 </div>
 
@@ -599,12 +875,14 @@
     </div>
     <button class="next-btn" onclick="nextTod()">SIGUIENTE ✦</button>
   </div>
-  <nav class="bottom-nav show"><div class="nav-items">
-    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
-    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
-    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
-    <div class="nav-item active" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
-    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item " onclick="goTo('fantasy')"><span class="nav-icon">💞</span><span class="nav-label">Fantasías</span></div>
+    <div class="nav-item " onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item " onclick="goTo('challenge')"><span class="nav-icon">📅</span><span class="nav-label">7 Días</span></div>
+    <div class="nav-item " onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
   </div></nav>
 </div>
 
@@ -628,12 +906,14 @@
     </div>
     <button class="pull-btn" id="pullBtn" onclick="pullSlots()">🎰 GIRAR RULETA</button>
   </div>
-  <nav class="bottom-nav show"><div class="nav-items">
-    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
-    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
-    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
-    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
-    <div class="nav-item active" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item " onclick="goTo('fantasy')"><span class="nav-icon">💞</span><span class="nav-label">Fantasías</span></div>
+    <div class="nav-item " onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item " onclick="goTo('challenge')"><span class="nav-icon">📅</span><span class="nav-label">7 Días</span></div>
+    <div class="nav-item " onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
   </div></nav>
 </div>
 
@@ -642,40 +922,40 @@
 const DATA = {
   positions: {
     romantico: [
-      { name:"La Cuchara",    diff:"easy", pos:"Lateral, ambos de lado",          leads:"Él desde atrás",  feel:"Íntimo y envolvente",   intensity:2, desc:"Ella acostada de lado, él la abraza por detrás. Penetración suave con libertad de manos para explorar y besar el cuello.", tags:["LATERAL","ROMÁNTICO"] },
-      { name:"El Loto",       diff:"easy", pos:"Sentados frente a frente",         leads:"Ambos juntos",    feel:"Conexión máxima",       intensity:2, desc:"Ambos sentados, ella sobre él con piernas cruzadas detrás. Máximo contacto visual y corporal. Ideal para movimientos lentos.", tags:["SENTADOS","ÍNTIMO"] },
-      { name:"El Ángel",      diff:"easy", pos:"Lateral abrazados",                leads:"Ambos",           feel:"Suave y seguro",        intensity:1, desc:"Cucharita suave. Cuerpos completamente pegados, movimientos lentos y rítmicos. Perfecta para momentos muy románticos.", tags:["SUAVE","ABRAZO"] },
-      { name:"El Misionero",  diff:"easy", pos:"Ella abajo, él arriba",            leads:"Él",              feel:"Clásico y cercano",     intensity:2, desc:"Posición clásica con máximo contacto facial. Ella extiende o eleva ligeramente las piernas para variar la sensación.", tags:["CLÁSICO","CARA A CARA"] },
-      { name:"La Silla",      diff:"easy", pos:"Él sentado, ella encima",          leads:"Ella",            feel:"Control y cercanía",    intensity:2, desc:"Él sentado en silla o borde de cama. Ella se sienta frente a él. Permite abrazarse y besarse mientras se mueven juntos.", tags:["SENTADOS","ELLA LIDERA"] },
-      { name:"El Columpio",   diff:"easy", pos:"Ella sentada, él arrodillado",     leads:"Ella",            feel:"Rítmico y suave",       intensity:2, desc:"Ella al borde de la cama, él arrodillado enfrente. Ella se balancea hacia él con un ritmo suave. Manos libres para caricias.", tags:["BORDE","BALANCEO"] },
-      { name:"La Ola",        diff:"easy", pos:"Él acostado, ella encima reclinada",leads:"Ella",           feel:"Profundo y cómodo",     intensity:2, desc:"Ella encima pero reclinada hacia atrás apoyando las manos en sus rodillas. Movimiento ondulante de caderas. Muy placentero para ambos.", tags:["ELLA ARRIBA","RELAJADO"] },
-      { name:"El Abrazo",     diff:"easy", pos:"De pie, frente a frente",          leads:"Ambos",           feel:"Apasionado y cercano",  intensity:2, desc:"De pie frente a frente, ella eleva una pierna apoyándola en su cadera. Ideal contra la pared. Máximo contacto corporal y visual.", tags:["DE PIE","PASIÓN"] },
-      { name:"La Montaña",    diff:"easy", pos:"Ella sobre él, inclinada adelante",leads:"Ella",            feel:"Íntimo y profundo",     intensity:2, desc:"Ella encima inclinada hacia adelante apoyando las manos a los lados de su cabeza. Ángulo muy íntimo, cuerpos casi pegados.", tags:["ELLA ARRIBA","ÍNTIMO"] },
+      { name:"La Cuchara",    diff:"easy", pos:"Lateral, ambos de lado",          leads:"Persona A desde atrás",  feel:"Íntimo y envolvente",   intensity:2, desc:"1. Persona B se acuesta de lado. 2. Persona A se coloca detrás en la misma posición. 3. Penetración suave desde atrás. 4. Persona A tiene las manos libres para acariciar.", tags:["LATERAL","ROMÁNTICO"] },
+      { name:"El Loto",       diff:"easy", pos:"Sentados frente a frente",         leads:"Ambos",    feel:"Conexión máxima",       intensity:2, desc:"1. Persona A se sienta con las piernas cruzadas. 2. Persona B se sienta encima, piernas rodeando la cintura. 3. Cuerpos pegados, cara a cara. 4. Movimientos lentos y ondulantes.", tags:["SENTADOS","ÍNTIMO"] },
+      { name:"El Ángel",      diff:"easy", pos:"Lateral abrazados",                leads:"Ambos",           feel:"Suave y seguro",        intensity:1, desc:"1. Ambos se acuestan de lado en la misma dirección. 2. Cuerpos completamente pegados. 3. Movimientos muy lentos y suaves. 4. Manos libres para acariciar.", tags:["SUAVE","ABRAZO"] },
+      { name:"El Misionero",  diff:"easy", pos:"Ella abajo, él arriba",            leads:"Persona A",              feel:"Clásico y cercano",     intensity:2, desc:"1. Persona B se acuesta boca arriba. 2. Persona A se coloca encima. 3. Elevar ligeramente las caderas de Persona B para ajustar el ángulo. 4. Máximo contacto facial.", tags:["CLÁSICO","CARA A CARA"] },
+      { name:"La Silla",      diff:"easy", pos:"Persona A sentado/a, Persona B encima",          leads:"Persona B",            feel:"Control y cercanía",    intensity:2, desc:"1. Persona A se sienta en silla o borde de cama. 2. Persona B se sienta encima mirando hacia Persona A. 3. Ambos se abrazan para equilibrio. 4. Persona B controla el ritmo.", tags:["SENTADOS","ELLA LIDERA"] },
+      { name:"El Columpio",   diff:"easy", pos:"Ella sentada, Persona A arrodillado/a",     leads:"Persona B",            feel:"Rítmico y suave",       intensity:2, desc:"Ella al borde de la cama, Persona A arrodillado/a enfrente. Ella se balancea hacia él con un ritmo suave. Manos libres para caricias.", tags:["BORDE","BALANCEO"] },
+      { name:"La Ola",        diff:"easy", pos:"Él acostado, Persona B encima reclinada",leads:"Persona B",           feel:"Profundo y cómodo",     intensity:2, desc:"Persona B encima pero reclinada hacia atrás apoyando las manos en sus rodillas. Movimiento ondulante de caderas. Muy placentero para ambos.", tags:["ELLA ARRIBA","RELAJADO"] },
+      { name:"El Abrazo",     diff:"easy", pos:"De pie, frente a frente",          leads:"Ambos",           feel:"Apasionado y cercano",  intensity:2, desc:"De pie frente a frente, Persona B eleva una pierna apoyándola en su cadera. Ideal contra la pared. Máximo contacto corporal y visual.", tags:["DE PIE","PASIÓN"] },
+      { name:"La Montaña",    diff:"easy", pos:"Persona B sobre Persona A, inclinada adelante",leads:"Persona B",            feel:"Íntimo y profundo",     intensity:2, desc:"Persona B encima inclinada hacia adelante apoyando las manos a los lados de su cabeza. Ángulo muy íntimo, cuerpos casi pegados.", tags:["ELLA ARRIBA","ÍNTIMO"] },
       { name:"El Puente Suave",diff:"easy",pos:"Ella abajo, caderas elevadas",     leads:"Ambos",           feel:"Suave y romántico",     intensity:2, desc:"Ella acostada con una almohada bajo las caderas, élencima. La almohada cambia el ángulo suavemente para mayor comodidad.", tags:["CLÁSICO","VARIANTE"] },
     ],
     picante: [
-      { name:"La Amazona",    diff:"med",  pos:"Ella encima mirando hacia él",     leads:"Ella",            feel:"Control total de ritmo",intensity:3, desc:"Ella se sienta sobre él con rodillas a los lados. Controla profundidad y ritmo. Él puede ver su cuerpo y tocar libremente.", tags:["ELLA ARRIBA","CONTROL"] },
-      { name:"La Mariposa",   diff:"easy", pos:"Ella acostada, él de pie",         leads:"Él",              feel:"Profundo e intenso",    intensity:3, desc:"Ella al borde de la cama, piernas elevadas sobre sus hombros. Penetración profunda con control externo. Añade almohada bajo caderas.", tags:["BORDE CAMA","PROFUNDO"] },
-      { name:"El Puente",     diff:"med",  pos:"Él arrodillado, ella abajo",       leads:"Ambos",           feel:"Intenso y visual",      intensity:3, desc:"Él arrodillado entre sus piernas, ella eleva caderas hacia él. Permite ver todo el cuerpo y ajustar ritmo fácilmente.", tags:["VISUAL","MEDIO"] },
-      { name:"Doggy Style",   diff:"easy", pos:"Ella en cuatro, él detrás",        leads:"Él",              feel:"Profundo y dominante",  intensity:4, desc:"Ella apoyada en manos y rodillas, él detrás. Penetración profunda desde atrás. Varía ritmo e intensidad fácilmente.", tags:["DESDE ATRÁS","INTENSO"] },
-      { name:"La Escalera",   diff:"med",  pos:"Caderas al borde, él de pie",      leads:"Ambos",           feel:"Ángulo excitante",      intensity:3, desc:"Ella acostada con caderas al borde, él de pie. El ángulo permite estimulación del punto G de forma muy natural.", tags:["BORDE","PUNTO G"] },
-      { name:"El Cangrejo",   diff:"med",  pos:"Ambos sentados, él detrás",        leads:"Ambos",           feel:"Profundo y controlado", intensity:3, desc:"Ambos sentados, ella entre sus piernas de espaldas a él. Él controla el ritmo desde atrás. Manos libres para estimulación extra.", tags:["SENTADOS","DESDE ATRÁS"] },
-      { name:"La Estrella",   diff:"med",  pos:"Ella de lado, piernas cruzadas",   leads:"Ambos",           feel:"Diferente e íntimo",    intensity:3, desc:"Ella acostada de lado con las piernas ligeramente cruzadas, él detrás pero perpendicular. Ángulo único que cambia toda la sensación.", tags:["LATERAL","ÁNGULO"] },
-      { name:"El Triángulo",  diff:"med",  pos:"Diagonal, ángulo 45 grados",       leads:"Él",              feel:"Nuevo e intenso",       intensity:3, desc:"Ella acostada en diagonal al borde de la cama, él de pie en ángulo. La posición diagonal crea una estimulación completamente diferente.", tags:["DIAGONAL","VARIANTE"] },
-      { name:"La Rana",       diff:"easy", pos:"Ella boca abajo, piernas abiertas",leads:"Él",              feel:"Profundo y relajado",   intensity:3, desc:"Ella boca abajo con piernas ligeramente abiertas, él encima. Posición cómoda que permite penetración profunda con poco esfuerzo.", tags:["BOCA ABAJO","PROFUNDO"] },
-      { name:"El Arco",       diff:"med",  pos:"Ella en arco hacia atrás",         leads:"Ella",            feel:"Intenso y visual",      intensity:4, desc:"Ella encima se inclina hacia atrás tocando sus tobillos. Cambia completamente el ángulo de estimulación. Visual y muy placentero.", tags:["ELLA ARRIBA","ARCO"] },
+      { name:"La Amazona",    diff:"med",  pos:"Persona B encima mirando hacia él",     leads:"Persona B",            feel:"Control total de ritmo",intensity:3, desc:"1. Persona A se acuesta boca arriba. 2. Persona B se sienta encima con rodillas a los lados. 3. Persona B controla profundidad y velocidad. 4. Persona A tiene las manos libres.", tags:["ELLA ARRIBA","CONTROL"] },
+      { name:"La Mariposa",   diff:"easy", pos:"Ella acostada, Persona A de pie",         leads:"Persona A",              feel:"Profundo e intenso",    intensity:3, desc:"1. Persona B se acuesta al borde de la cama. 2. Persona A se pone de pie o arrodillado/a frente. 3. Elevar las piernas de Persona B sobre los hombros de Persona A. 4. Ajustar altura para comodidad.", tags:["BORDE CAMA","PROFUNDO"] },
+      { name:"El Puente",     diff:"med",  pos:"Persona A arrodillado/a, ella abajo",       leads:"Ambos",           feel:"Intenso y visual",      intensity:3, desc:"1. Persona B se acuesta boca arriba. 2. Persona A se arrodilla entre sus piernas. 3. Persona B eleva las caderas hacia Persona A. 4. Ajustar el ángulo moviendo las rodillas.", tags:["VISUAL","MEDIO"] },
+      { name:"Doggy Style",   diff:"easy", pos:"Ella en cuatro, Persona A detrás",        leads:"Persona A",              feel:"Profundo y dominante",  intensity:4, desc:"1. Persona B se apoya en manos y rodillas. 2. Persona A se coloca detrás. 3. Persona B puede bajar los codos para cambiar el ángulo. 4. Persona A controla ritmo e intensidad.", tags:["DESDE ATRÁS","INTENSO"] },
+      { name:"La Escalera",   diff:"med",  pos:"Caderas al borde, Persona A de pie",      leads:"Ambos",           feel:"Ángulo excitante",      intensity:3, desc:"1. Persona B se acuesta con las caderas al borde de la cama. 2. Persona A se pone de pie frente. 3. El ángulo de pie estimula el punto G naturalmente. 4. Ajustar la altura de las caderas con almohada.", tags:["BORDE","PUNTO G"] },
+      { name:"El Cangrejo",   diff:"med",  pos:"Ambos sentados, Persona A detrás",        leads:"Ambos",           feel:"Profundo y controlado", intensity:3, desc:"Ambos sentados, ella entre sus piernas de espaldas a él. Él controla el ritmo desde atrás. Manos libres para estimulación extra.", tags:["SENTADOS","DESDE ATRÁS"] },
+      { name:"La Estrella",   diff:"med",  pos:"Ella de lado, piernas cruzadas",   leads:"Ambos",           feel:"Diferente e íntimo",    intensity:3, desc:"Ella acostada de lado con las piernas ligeramente cruzadas, Persona A detrás pero perpendicular. Ángulo único que cambia toda la sensación.", tags:["LATERAL","ÁNGULO"] },
+      { name:"El Triángulo",  diff:"med",  pos:"Diagonal, ángulo 45 grados",       leads:"Persona A",              feel:"Nuevo e intenso",       intensity:3, desc:"Ella acostada en diagonal al borde de la cama, Persona A de pie en ángulo. La posición diagonal crea una estimulación completamente diferente.", tags:["DIAGONAL","VARIANTE"] },
+      { name:"La Rana",       diff:"easy", pos:"Ella boca abajo, piernas abiertas",leads:"Persona A",              feel:"Profundo y relajado",   intensity:3, desc:"Ella boca abajo con piernas ligeramente abiertas, Persona A encima. Posición cómoda que permite penetración profunda con poco esfuerzo.", tags:["BOCA ABAJO","PROFUNDO"] },
+      { name:"El Arco",       diff:"med",  pos:"Ella en arco hacia atrás",         leads:"Persona B",            feel:"Intenso y visual",      intensity:4, desc:"Persona B encima se inclina hacia atrás tocando sus tobillos. Cambia completamente el ángulo de estimulación. Visual y muy placentero.", tags:["ELLA ARRIBA","ARCO"] },
     ],
     hot: [
-      { name:"La Amazona Inversa", diff:"med",  pos:"Ella encima mirando sus pies", leads:"Ella",           feel:"Intenso y profundo",    intensity:4, desc:"Ella sobre él mirando hacia sus pies. Control total de profundidad. Él tiene vista completa y puede guiar las caderas.", tags:["INVERTIDA","INTENSA"] },
-      { name:"El Trípode",         diff:"hard", pos:"De pie, pierna elevada",       leads:"Ambos",           feel:"Dominante y apasionado",intensity:5, desc:"De pie, él levanta una pierna de ella envolviéndola en su torso. Ideal contra la pared para más estabilidad y profundidad.", tags:["DE PIE","AVENTURERO"] },
-      { name:"El Bostezo",         diff:"hard", pos:"Rodillas al pecho",            leads:"Él",              feel:"Máxima profundidad",    intensity:5, desc:"Ella acostada lleva rodillas al pecho, piernas sobre sus hombros. Penetración muy profunda. Empezar despacio para adaptarse.", tags:["PROFUNDO","INTENSO"] },
-      { name:"La Cobra",           diff:"hard", pos:"Él elevado en extensión",      leads:"Él",              feel:"Dominante y poderoso",  intensity:5, desc:"Como misionero pero él se eleva con brazos extendidos. Cambia el ángulo de entrada significativamente. Mayor estimulación frontal.", tags:["ÁNGULO","DOMINANTE"] },
+      { name:"La Amazona Inversa", diff:"med",  pos:"Persona B encima mirando sus pies", leads:"Persona B",           feel:"Intenso y profundo",    intensity:4, desc:"Persona B sobre Persona A mirando hacia sus pies. Control total de profundidad. Él tiene vista completa y puede guiar las caderas.", tags:["INVERTIDA","INTENSA"] },
+      { name:"El Trípode",         diff:"hard", pos:"De pie, pierna elevada",       leads:"Ambos",           feel:"Dominante y apasionado",intensity:5, desc:"De pie, Persona A levanta una pierna de Persona B envolviéndola en su torso. Ideal contra la pared para más estabilidad y profundidad.", tags:["DE PIE","AVENTURERO"] },
+      { name:"El Bostezo",         diff:"hard", pos:"Rodillas al pecho",            leads:"Persona A",              feel:"Máxima profundidad",    intensity:5, desc:"Persona B acostada lleva rodillas al pecho, piernas sobre los hombros de Persona A. Penetración muy profunda. Empezar despacio para adaptarse.", tags:["PROFUNDO","INTENSO"] },
+      { name:"La Cobra",           diff:"hard", pos:"Él elevado en extensión",      leads:"Persona A",              feel:"Dominante y poderoso",  intensity:5, desc:"Como misionero pero él se eleva con brazos extendidos. Cambia el ángulo de entrada significativamente. Mayor estimulación frontal.", tags:["ÁNGULO","DOMINANTE"] },
       { name:"El Escorpión",       diff:"hard", pos:"Ella boca abajo, caderas altas",leads:"Ambos",          feel:"Exótico y profundo",    intensity:5, desc:"Ella boca abajo con caderas elevadas en almohadas. Él desde atrás en ángulo descendente. Una de las mayores profundidades.", tags:["EXÓTICO","MÁXIMO"] },
-      { name:"El Arado",           diff:"hard", pos:"Piernas completamente verticales",leads:"Él",           feel:"Extremo e intenso",     intensity:5, desc:"Ella acostada lleva las piernas completamente verticales juntas. Él encima controla la penetración. Requiere flexibilidad de ella.", tags:["VERTICAL","EXTREMO"] },
-      { name:"La Ballesta",        diff:"hard", pos:"Ella en tensión máxima",       leads:"Ambos",           feel:"Acrobático e intenso",  intensity:5, desc:"Ella en posición de puente con cuerpo arqueado, él arrodillado frente a ella. Requiere fuerza y flexibilidad. Muy visual e intenso.", tags:["ACROBÁTICO","FUERZA"] },
-      { name:"El Torbellino",      diff:"hard", pos:"Rotación durante el acto",     leads:"Ella",            feel:"Aventurero y diferente",intensity:4, desc:"Empiezan en amazona y ella gira 360 grados sin separarse. Requiere coordinación y práctica. El reto lo hace muy excitante.", tags:["ROTACIÓN","RETO"] },
-      { name:"La Silla Inversa",   diff:"med",  pos:"Él sentado, ella de espaldas", leads:"Ella",            feel:"Profundo y dominante",  intensity:4, desc:"Él sentado en silla, ella encima de espaldas. Ella controla el ritmo completamente. Él tiene manos libres para explorar su cuerpo.", tags:["SENTADOS","ESPALDAS"] },
-      { name:"El Ángel Caído",     diff:"hard", pos:"Combinación pie y acostada",   leads:"Ambos",           feel:"Intenso y apasionado",  intensity:5, desc:"Ella con hombros en el suelo y caderas elevadas sostenidas por él de pie. Requiere fuerza. La gravedad intensifica cada movimiento.", tags:["ACROBÁTICO","GRAVEDAD"] },
+      { name:"El Arado",           diff:"hard", pos:"Piernas completamente verticales",leads:"Persona A",           feel:"Extremo e intenso",     intensity:5, desc:"Persona B acostada lleva las piernas completamente verticales juntas. Persona A encima controla la penetración. Requiere flexibilidad de ella.", tags:["VERTICAL","EXTREMO"] },
+      { name:"La Ballesta",        diff:"hard", pos:"Ella en tensión máxima",       leads:"Ambos",           feel:"Acrobático e intenso",  intensity:5, desc:"Ella en posición de puente con cuerpo arqueado, Persona A arrodillado/a frente a ella. Requiere fuerza y flexibilidad. Muy visual e intenso.", tags:["ACROBÁTICO","FUERZA"] },
+      { name:"El Torbellino",      diff:"hard", pos:"Rotación durante el acto",     leads:"Persona B",            feel:"Aventurero y diferente",intensity:4, desc:"Empiezan en amazona y ella gira 360 grados sin separarse. Requiere coordinación y práctica. El reto lo hace muy excitante.", tags:["ROTACIÓN","RETO"] },
+      { name:"La Silla Inversa",   diff:"med",  pos:"Persona A sentado/a, ella de espaldas", leads:"Persona B",            feel:"Profundo y dominante",  intensity:4, desc:"Persona A sentado/a en silla, Persona B encima de espaldas. Ella controla el ritmo completamente. Él tiene manos libres para explorar su cuerpo.", tags:["SENTADOS","ESPALDAS"] },
+      { name:"El Ángel Caído",     diff:"hard", pos:"Combinación pie y acostada",   leads:"Ambos",           feel:"Intenso y apasionado",  intensity:5, desc:"Ella con hombros en el suelo y caderas elevadas sostenidas por Persona A de pie. Requiere fuerza. La gravedad intensifica cada movimiento.", tags:["ACROBÁTICO","GRAVEDAD"] },
     ]
   },
   dice: {
@@ -689,16 +969,16 @@ const DATA = {
       picante:   ["el cuello","el pecho","el abdomen","los muslos","la cadera","la espalda baja"],
       hot:       ["el cuello","el pecho","los muslos","la cadera","el abdomen","la nuca"]
     },
-    duracion: ["30 segundos","1 minuto","2 minutos","Hasta que el otro diga stop","3 minutos","Lo que quieras"]
+    duracion: ["1 minuto","2 minutos","3 minutos","Hasta que el otro diga stop","5 minutos","Lo que quieras"]
   },
   truth: {
-    romantico: ["¿Qué parte de mi cuerpo es tu favorita?","¿Cuál ha sido tu momento más romántico conmigo?","¿Qué canción te recuerda a nosotros?","¿Qué es lo primero que notaste de mí?","¿Cuál es tu recuerdo favorito juntos?","¿Qué cosa pequeña que hago te pone muy feliz?","¿Dónde sueñas que viajemos juntos?","¿Cuándo fue la última vez que te sorprendí de buena manera?"],
-    picante:   ["¿Cuál es tu fantasía más recurrente?","¿Qué lugar inusual te gustaría intentar?","¿Qué parte de mi cuerpo te excita más?","¿Hay algo que siempre quisiste pedirme pero no te atreviste?","¿Cuál fue el momento más caliente que hemos tenido?","¿Qué prenda mía te resulta más sexi?","¿Qué hora del día prefieres para intimar?","¿Qué cosa nueva te gustaría probar esta semana?"],
+    romantico: ["¿Qué parte del cuerpo de tu pareja es tu favorita?","¿Cuál ha sido tu momento más romántico conmigo?","¿Qué momento de nuestra historia te gustaría revivir exactamente como fue?","¿Qué es lo primero que notaste de mí?","¿Cuál es tu recuerdo favorito juntos?","¿Qué cosa pequeña que hago te pone muy feliz?","¿Dónde sueñas que viajemos juntos?","¿Qué cosa pequeña que hago te hace sentir muy deseado/a?"],
+    picante:   ["¿Cuál es tu fantasía más recurrente?","¿Qué lugar inusual te gustaría intentar?","¿Qué parte de mi cuerpo te excita más?","¿Hay algo que siempre quisiste pedirme pero no te atreviste?","¿Cuál fue el momento más caliente que hemos tenido?","¿Qué prenda de tu pareja te resulta más sexi?","¿Qué momento del día te pone más en mood y por qué?","¿Qué cosa nueva te gustaría probar esta semana?"],
     hot:       ["¿Cuál es tu fantasía más atrevida que nunca me has contado?","¿Qué palabra o frase dicha en el momento te vuelve loco/a?","¿Prefieren que tome el control o que lo tomes tú?","¿Hay algún rol que siempre quisiste interpretar?","¿Qué objeto o accesorio te gustaría incorporar?","¿Cuál posición sientes que nunca hemos explotado al máximo?","¿Hay algo que hayas hecho antes que quisieras repetir conmigo?","¿Qué parte del cuerpo mío más te cuesta resistir?"]
   },
   dare: {
-    romantico: ["Dale un masaje de 2 minutos en los hombros.","Dile 3 cosas específicas que amas de su cuerpo.","Bésalo/a de la forma más apasionada que puedas por 30 segundos.","Escríbele un mensaje muy romántico y léeselo en voz alta.","Baila lento con él/ella sin música por 1 minuto.","Cuéntale tu momento favorito que han vivido juntos.","Dibuja corazones en su espalda con el dedo.","Míralo/a a los ojos sin hablar ni reír por 1 minuto."],
-    picante:   ["Dale un masaje en los pies por 3 minutos sin parar.","Susúrrale al oído qué quieres hacerle esta noche.","Quítale una prenda de ropa solo con los dientes.","Besa cada parte de su cuello durante 1 minuto.","Baila para él/ella de forma seductora por 1 minuto.","Descríbele en detalle tu fantasía más reciente.","Haz contacto visual intenso mientras le tocas la cara.","Dale un beso largo de 1 minuto sin manos."],
+    romantico: ["Dale un masaje de 2 minutos en los hombros.","Dile 3 cosas específicas que amas de su cuerpo.","Bésaa tu pareja de la forma más apasionada que puedas por 30 segundos.","Escríbele un mensaje muy romántico y léeselo en voz alta.","Baila lento con tu pareja sin música por 1 minuto.","Cuéntale tu momento favorito que han vivido juntos.","Dibuja corazones en su espalda con el dedo.","Míraa tu pareja a los ojos sin hablar ni reír por 1 minuto."],
+    picante:   ["Dale un masaje en los pies por 3 minutos sin parar.","Susúrrale al oído qué quieres hacerle esta noche.","Quítale una prenda a tu pareja solo con los dientes.","Besa cada parte de su cuello durante 1 minuto.","Baila para tu pareja de forma seductora por 1 minuto.","Descríbele en detalle tu fantasía más reciente.","Haz contacto visual intenso mientras le tocas la cara.","Dale un beso largo de 1 minuto sin manos."],
     hot:       ["Realiza un striptease de al menos 2 prendas.","Susúrrale tus 3 fantasías más atrevidas sin parar.","Domina la siguiente posición que salga en la ruleta.","Elige una zona del cuerpo y explórala por 3 minutos.","Descríbele exactamente cómo quieres que te toque.","Toma el control total por los próximos 5 minutos.","Elige el próximo juego de esta app y lidera tú.","Improvisa un roleplay de 2 minutos sin previo aviso."]
   },
   slots: {
@@ -750,6 +1030,7 @@ function setHeat(btn, level) {
 }
 
 function startApp() {
+  applyTheme(currentHeat);
   const labels = { romantico:'🌹 ROMÁNTICO', picante:'🌶️ PICANTE', hot:'🔥 HOT' };
   document.getElementById('heatBadge').textContent = labels[currentHeat];
   goTo('menu');
@@ -762,7 +1043,10 @@ function goTo(screen) {
   window.scrollTo(0, 0);
   if (screen === 'ruleta') drawWheel();
   if (screen === 'challenge') initChallenge();
+  if (screen === 'fantasy') initFantasy();
   updateTimerFab(screen);
+  // Aplicar tema siempre que se navega
+  applyTheme(currentHeat);
 }
 
 // ── RULETA ──
@@ -772,11 +1056,14 @@ const WHEEL_ACCENT = ['#c9a96e','#e8d5a3','#c9a96e','#e8c4a0','#d4b886','#c9a96e
 function drawWheel(rotation = 0) {
   const canvas = document.getElementById('wheelCanvas');
   if (!canvas) return;
+  // Responsive canvas size
+  const size = Math.min(300, window.innerWidth - 48);
+  canvas.width = size; canvas.height = size;
   const ctx = canvas.getContext('2d');
   const positions = DATA.positions[currentHeat];
   const n = positions.length;
   const arc = (2 * Math.PI) / n;
-  const cx = 150, cy = 150, r = 145;
+  const cx = size/2, cy = size/2, r = size/2 - 5;
   ctx.clearRect(0, 0, 300, 300);
   for (let i = 0; i < n; i++) {
     const angle = rotation + i * arc;
@@ -796,11 +1083,11 @@ function drawWheel(rotation = 0) {
     const label = positions[i].name;
     ctx.textAlign = 'center';
     ctx.fillStyle = WHEEL_ACCENT[i % WHEEL_ACCENT.length];
-    ctx.font = 'italic 13px Georgia, serif';
+    ctx.font = `italic ${Math.max(10, Math.floor(r * 0.09))}px Georgia, serif`;
     ctx.shadowColor = 'rgba(0,0,0,0.8)';
     ctx.shadowBlur = 4;
     // Position text at 65% of radius so it fits well
-    ctx.fillText(label, r * 0.62, 5);
+    ctx.fillText(label, r * 0.64, 4);
     ctx.shadowBlur = 0;
     ctx.restore();
   }
@@ -872,7 +1159,7 @@ function spinWheel() {
   requestAnimationFrame(animate);
 }
 
-function showPositionResult(pos) { showResultSheet(pos); }
+function showPositionResult(pos) { showResultSheet(pos); trackEvent('spin'); }
 
 // ── DADOS ──
 function rollDie(index) {
@@ -894,7 +1181,7 @@ function rollAll() {
 }
 
 function checkDiceResult() {
-  if (dieValues.every(v => v !== null)) {
+  if (dieValues.every(v => v !== null)) { trackEvent('dice');
     document.getElementById('diceCombination').textContent = `${dieValues[0]} ${dieValues[1]} durante ${dieValues[2]}`;
     document.getElementById('diceDesc').textContent = `Tu próximo reto: ${dieValues[0]} ${dieValues[1]} durante ${dieValues[2]}. ¡A disfrutar!`;
     document.getElementById('diceResult').classList.add('show');
@@ -923,6 +1210,7 @@ function nextTod() {
   do { idx = Math.floor(Math.random() * pool.length); } while (used.includes(idx));
   used.push(idx);
   document.getElementById('todQuestion').textContent = pool[idx];
+  trackEvent('tod');
   const lvl = { romantico:1, picante:2, hot:3 }[currentHeat];
   const n = lvl + Math.floor(Math.random()*2);
   document.getElementById('todIntensity').innerHTML = Array.from({length:5},(_,i) => `<div class="dot ${i < n ? 'filled' : ''}"></div>`).join('');
@@ -947,6 +1235,7 @@ function pullSlots() {
         setTimeout(() => {
           document.getElementById('slotsCombo').textContent = `${results[0]} ${results[1]} ${results[2]}`;
           document.getElementById('slotsResult').classList.add('show');
+          trackEvent('slots');
           btn.disabled = false;
         }, 400);
       }
@@ -958,39 +1247,462 @@ function pullSlots() {
 
 
 
+
+
+
+// ── LOGROS ──
+const ACHIEVEMENTS = [
+  { id:'first_spin',   icon:'🎡', name:'Primera Vuelta',        trigger:'spin',      count:1 },
+  { id:'spin_5',       icon:'🌀', name:'5 Giros',               trigger:'spin',      count:5 },
+  { id:'spin_20',      icon:'💫', name:'20 Giros — ¡Adictos!',  trigger:'spin',      count:20 },
+  { id:'dice_first',   icon:'🎲', name:'Primer Lanzamiento',    trigger:'dice',      count:1 },
+  { id:'tod_first',    icon:'🃏', name:'Primera Verdad o Reto', trigger:'tod',       count:1 },
+  { id:'tod_10',       icon:'🔥', name:'10 Retos Completados',  trigger:'tod',       count:10 },
+  { id:'slots_first',  icon:'🎰', name:'Primer Slot',           trigger:'slots',     count:1 },
+  { id:'all_games',    icon:'🎮', name:'¡Jugaron Todo!',        trigger:'all_games', count:1 },
+  { id:'hot_level',    icon:'🌶️', name:'Nivel HOT Desbloqueado',trigger:'hot',       count:1 },
+  { id:'challenge_3',  icon:'📅', name:'3 Días Seguidos',       trigger:'challenge', count:3 },
+  { id:'challenge_7',  icon:'🏆', name:'¡Semana Completa!',     trigger:'challenge', count:7 },
+  { id:'fantasy_match',icon:'💞', name:'¡Primer Match!',        trigger:'fantasy',   count:1 },
+  { id:'surprise',     icon:'🎁', name:'Modo Sorpresa Activado',trigger:'surprise',  count:1 },
+];
+
+const _stats = {};
+const _unlocked = new Set(JSON.parse(storageGet('achievements') || '[]'));
+
+function trackEvent(trigger) {
+  if (!_stats[trigger]) _stats[trigger] = 0;
+  _stats[trigger]++;
+
+  // Check all_games
+  const gamesUsed = ['spin','dice','tod','slots'];
+  if (gamesUsed.every(g => _stats[g] > 0)) _stats['all_games'] = 1;
+
+  ACHIEVEMENTS.forEach(a => {
+    if (!_unlocked.has(a.id) && a.trigger === trigger && (_stats[trigger]||0) >= a.count) {
+      _unlocked.add(a.id);
+      try { storageSet('achievements', JSON.stringify([..._unlocked])); } catch(e){}
+      showAchievement(a);
+    }
+  });
+}
+
+function showAchievement(a) {
+  document.getElementById('achievementIcon').textContent = a.icon;
+  document.getElementById('achievementName').textContent = a.name;
+  const toast = document.getElementById('achievementToast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// ── MODO SORPRESA ──
+function surpriseMode() {
+  const games = ['ruleta','dados','truth','slots'];
+  const random = games[Math.floor(Math.random() * games.length)];
+  trackEvent('surprise');
+  goTo(random);
+  // For ruleta, auto-spin after short delay
+  if (random === 'ruleta') setTimeout(() => spinWheel(), 800);
+  if (random === 'dados') setTimeout(() => rollAll(), 800);
+  if (random === 'truth') setTimeout(() => nextTod(), 400);
+  if (random === 'slots') setTimeout(() => pullSlots(), 800);
+}
+
+
+
+// ── TEMA POR NIVEL ──
+const THEMES = {
+  romantico: {
+    gold: '#c9a96e', gold2: '#e8d5a3', rose: '#e8849a', rose2: '#ffb3c6',
+    border: 'rgba(201,169,110,0.2)',
+    gradientSoft:    'linear-gradient(135deg, rgba(201,169,110,0.10), rgba(232,132,154,0.07))',
+    gradientFantasy: 'linear-gradient(135deg, rgba(155,109,255,0.10), rgba(232,132,154,0.07))'
+  },
+  picante: {
+    gold: '#e07830', gold2: '#f09a50', rose: '#d94030', rose2: '#ff6055',
+    border: 'rgba(224,120,48,0.3)',
+    gradientSoft:    'linear-gradient(135deg, rgba(224,120,48,0.12), rgba(217,64,48,0.08))',
+    gradientFantasy: 'linear-gradient(135deg, rgba(224,120,48,0.12), rgba(217,64,48,0.08))'
+  },
+  hot: {
+    gold: '#d02050', gold2: '#f04070', rose: '#b01030', rose2: '#e03060',
+    border: 'rgba(208,32,80,0.3)',
+    gradientSoft:    'linear-gradient(135deg, rgba(208,32,80,0.12), rgba(176,16,48,0.08))',
+    gradientFantasy: 'linear-gradient(135deg, rgba(208,32,80,0.12), rgba(176,16,48,0.08))'
+  }
+};
+
+function applyTheme(heat) {
+  document.body.classList.remove('theme-romantico','theme-picante','theme-hot');
+  document.body.classList.add('theme-' + heat);
+  const t = THEMES[heat] || THEMES.romantico;
+  const root = document.documentElement;
+  root.style.setProperty('--gold',   t.gold);
+  root.style.setProperty('--gold2',  t.gold2);
+  root.style.setProperty('--rose',   t.rose);
+  root.style.setProperty('--rose2',  t.rose2);
+  root.style.setProperty('--border', t.border);
+  // Variables de gradiente precalculadas (evita rgba(var()) que no funciona en CSS)
+  root.style.setProperty('--card-gradient-soft',    t.gradientSoft);
+  root.style.setProperty('--card-gradient-fantasy', t.gradientFantasy);
+}
+
+// ── EL AMBIENTE EN SPLASH ──
+let splashLevelA = null;
+let splashLevelB = null;
+
+function splashSelectLevel(level, person, btn) {
+  // Deselect siblings in same container
+  const siblings = btn.parentElement.querySelectorAll('.checkin-level-btn');
+  siblings.forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  if (person === 'A') {
+    splashLevelA = level;
+    const el = document.getElementById('sintoniaBtnA');
+    if (el) { el.style.opacity = '1'; el.style.pointerEvents = 'auto'; }
+  } else {
+    splashLevelB = level;
+    const el = document.getElementById('sintoniaBtnB');
+    if (el) { el.style.opacity = '1'; el.style.pointerEvents = 'auto'; }
+  }
+}
+
+function ambienteSplashNext() {
+  if (!splashLevelA) return;
+  const s1 = document.getElementById('sintoniaSplashStep1');
+  const s2 = document.getElementById('sintoniaSplashStep2');
+  if (s1) s1.style.display = 'none';
+  if (s2) s2.style.display = 'block';
+}
+
+function ambienteSplashReveal() {
+  if (!splashLevelB) return;
+  const s2 = document.getElementById('sintoniaSplashStep2');
+  const s3 = document.getElementById('sintoniaSplashResult');
+  if (s2) s2.style.display = 'none';
+  if (s3) s3.style.display = 'block';
+
+  // FIX: Always round DOWN to protect the less intense partner
+  const lower = Math.min(splashLevelA, splashLevelB);
+  const avg   = Math.floor((splashLevelA + splashLevelB) / 2);
+  // Use avg but never go above lower+1
+  const finalLevel = Math.min(avg, lower + 1);
+
+  const levelMap   = { 1:'romantico', 2:'picante', 3:'hot' };
+  const levelNames = { 1:'romántico', 2:'picante', 3:'hot' };
+  const levelEmoji = { 1:'🌹', 2:'🌶️', 3:'🔥' };
+  const matchLevel = levelMap[Math.max(1, Math.min(3, finalLevel))];
+  const isMatch    = splashLevelA === splashLevelB;
+  const diff       = Math.abs(splashLevelA - splashLevelB);
+
+  let icon, title, desc;
+
+  if (isMatch) {
+    const msgs = {
+      romantico: ['🌹','¡Perfecta ambiente romántica!','Los dos están en el mismo mood suave. Esta noche es para disfrutar despacio, con ternura y sin apuros. Perfectos el uno para el otro hoy.'],
+      picante:   ['🌶️','¡Match picante!','Ambos quieren explorar y divertirse. El nivel picante tiene exactamente lo que necesitan esta noche. ¡A jugar!'],
+      hot:       ['🔥','¡Están en llamas!','Los dos listos para una noche sin límites. El nivel HOT los está esperando. ¡Que empiece!']
+    };
+    [icon, title, desc] = msgs[matchLevel];
+  } else if (diff === 1) {
+    // 1 level apart — validate BOTH, go to lower level
+    const lowerName = levelNames[Math.min(splashLevelA, splashLevelB)];
+    const higherName = levelNames[Math.max(splashLevelA, splashLevelB)];
+    icon  = '💛';
+    title = `Empezamos en nivel ${levelNames[finalLevel]}`;
+    desc  = `Uno está listo para algo ${higherName} y el otro prefiere algo más ${lowerName}. Los dos tienen razón — el deseo de más intensidad es válido, y el de más suavidad también. Empezamos en ${levelNames[finalLevel]} y si ambos quieren, pueden subir juntos durante la noche.`;
+  } else {
+    // 2 levels apart — romántico + hot → picante
+    icon  = '✨';
+    title = 'Su zona de encuentro: picante';
+    desc  = `Hay una diferencia grande entre sus niveles de hoy. Eso es completamente normal — los cuerpos y el ánimo no siempre coinciden. El nivel picante es donde ambos pueden conectar cómodamente: sin presionar a quien necesita más suavidad, sin frustrar a quien tiene más energía. ¡Desde ahí pueden descubrir hacia dónde van!`;
+  }
+
+  document.getElementById('splashResultIcon').textContent  = icon;
+  document.getElementById('splashResultTitle').textContent = title;
+  document.getElementById('splashResultDesc').textContent  = desc;
+  const lvlEl = document.getElementById('splashResultLevel');
+  lvlEl.textContent  = levelEmoji[finalLevel] + ' ' + levelNames[finalLevel].toUpperCase();
+  lvlEl.className    = 'checkin-match-level ' + matchLevel;
+
+  currentHeat = matchLevel;
+  applyTheme(currentHeat);
+  storageSet('last_ambiente', Date.now());
+}
+
+function startAppWithAmbiente() {
+  applyTheme(currentHeat);
+  const labels = { romantico:'🌹 ROMÁNTICO ✎', picante:'🌶️ PICANTE ✎', hot:'🔥 HOT ✎' };
+  document.getElementById('heatBadge').textContent = labels[currentHeat];
+  usedTruth = []; usedDare = [];
+  goTo('menu');
+  drawWheel();
+  // Ocultar ambiente del menú después de usarla
+  const fab = document.getElementById('checkinMenuFab');
+  if (fab) fab.classList.add('hidden');
+}
+
+function skipAmbienteSplash() {
+  storageSet('last_ambiente', Date.now());
+  const sintonia = document.getElementById('splashAmbiente');
+  const manual   = document.getElementById('splashManual');
+  if (sintonia) sintonia.style.display = 'none';
+  if (manual)   manual.style.display   = 'flex';
+  // Ocultar también del menú
+  const fab = document.getElementById('checkinMenuFab');
+  if (fab) fab.classList.add('hidden');
+}
+
+
+// ── MATCH DE FANTASÍAS ──
+let fantasySelectionsA = [];
+let fantasySelectionsB = [];
+
+function initFantasy() {
+  fantasySelectionsA = [];
+  fantasySelectionsB = [];
+  document.querySelectorAll('.fantasy-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('fantasyStep1').classList.add('active');
+  renderFantasyGrid('fantasyGridA', 'A');
+  renderFantasyGrid('fantasyGridB', 'B');
+  document.getElementById('fantasyNextBtn').classList.remove('ready');
+  document.getElementById('fantasyRevealBtn').classList.remove('ready');
+}
+
+function renderFantasyGrid(gridId, person) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = FANTASIES.map((f, i) => `
+    <div class="fantasy-item" onclick="toggleFantasy(${i},'${person}',this)">
+      <div class="check">✓</div>
+      <span class="fantasy-item-icon">${f.icon}</span>
+      <div class="fantasy-item-name">${f.name}</div>
+    </div>
+  `).join('');
+}
+
+function toggleFantasy(idx, person, btn) {
+  const list = person === 'A' ? fantasySelectionsA : fantasySelectionsB;
+  const pos = list.indexOf(idx);
+  if (pos === -1) { list.push(idx); btn.classList.add('selected'); }
+  else { list.splice(pos,1); btn.classList.remove('selected'); }
+  const count = list.length;
+  const countEl = document.getElementById('fantasyCount' + person);
+  countEl.textContent = count === 0 ? 'Elige al menos 1' : `${count} elegida${count>1?'s':''}`;
+  const btnEl = person === 'A' ? document.getElementById('fantasyNextBtn') : document.getElementById('fantasyRevealBtn');
+  if (count > 0) btnEl.classList.add('ready'); else btnEl.classList.remove('ready');
+}
+
+function nextFantasyStep() {
+  if (fantasySelectionsA.length === 0) return;
+  document.getElementById('fantasyStep1').classList.remove('active');
+  document.getElementById('fantasyStep2').classList.add('active');
+}
+
+function revealFantasyMatch() {
+  if (fantasySelectionsB.length === 0) return;
+  const matches = fantasySelectionsA.filter(i => fantasySelectionsB.includes(i));
+  document.getElementById('fantasyStep2').classList.remove('active');
+  document.getElementById('fantasyStep3').classList.add('active');
+
+  const results = document.getElementById('fantasyResults');
+  if (matches.length === 0) {
+    results.innerHTML = `
+      <div class="fantasy-result-title">Sin coincidencias esta vez</div>
+      <div class="fantasy-result-sub">¡Pero eso es una oportunidad para aprender!</div>
+      <div class="fantasy-no-match">
+        <span class="fantasy-no-match-icon">💛</span>
+        <div class="fantasy-no-match-text">Diferentes deseos hoy. Hablen sobre lo que cada uno eligió — la conversación es el mejor juego de todos.</div>
+      </div>`;
+  } else {
+    results.innerHTML = `
+      <div class="fantasy-result-title">✨ ${matches.length} match${matches.length>1?'es':''}</div>
+      <div class="fantasy-result-sub">¡Los dos desean esto esta noche!</div>
+      ${matches.map(i => `
+        <div class="fantasy-match-item">
+          <span class="fantasy-match-icon">${FANTASIES[i].icon}</span>
+          <div>
+            <div class="fantasy-match-name">${FANTASIES[i].name}</div>
+            <div class="fantasy-match-desc">${FANTASIES[i].desc}</div>
+          </div>
+        </div>`).join('')}`;
+  }
+}
+
+function resetFantasy() { initFantasy(); }
+
+// ── EL AMBIENTE ──
+let checkinA = null;
+let checkinB = null;
+
+function openCheckin() {
+  checkinA = null; checkinB = null;
+  document.querySelectorAll('.checkin-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('checkinStep1').classList.add('active');
+  document.querySelectorAll('.checkin-level-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('checkinNextA').classList.remove('ready');
+  document.getElementById('checkinNextB').classList.remove('ready');
+  document.getElementById('checkinOverlay').classList.add('show');
+}
+
+function selectLevel(level, person, btn) {
+  // Deselect others in same step
+  btn.closest('.checkin-levels').querySelectorAll('.checkin-level-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  if (person === 'A') {
+    checkinA = level;
+    document.getElementById('checkinNextA').classList.add('ready');
+  } else {
+    checkinB = level;
+    document.getElementById('checkinNextB').classList.add('ready');
+  }
+}
+
+function nextCheckin() {
+  if (!checkinA) return;
+  document.getElementById('checkinStep1').classList.remove('active');
+  document.getElementById('checkinStep2').classList.add('active');
+}
+
+function showCheckinResult() {
+  if (!checkinB) return;
+  document.getElementById('checkinStep2').classList.remove('active');
+  document.getElementById('checkinStep3').classList.add('active');
+
+  // CORRECT LOGIC: Round DOWN to protect less intense partner
+  const avg = Math.floor((checkinA + checkinB) / 2);
+  const levelMap = { 1:'romantico', 2:'picante', 3:'hot' };
+  const levelNames = { 1:'romántico', 2:'picante', 3:'hot' };
+  const levelEmojis = { 1:'🌹', 2:'🌶️', 3:'🔥' };
+  const matchLevel = levelMap[avg];
+
+  const isMatch = checkinA === checkinB;
+  const diff = Math.abs(checkinA - checkinB);
+
+  let icon, title, desc;
+
+  if (isMatch) {
+    // Perfect match
+    const matchTitles = {
+      romantico: '¡Perfecta ambiente romántica! 🌹',
+      picante: '¡Match picante! 🌶️',
+      hot: '¡Están en llamas! 🔥'
+    };
+    const matchDescs = {
+      romantico: 'Los dos están en el mismo mood suave y conectado. Esta noche es para disfrutar despacio, con ternura y sin apuros.',
+      picante: 'Ambos tienen energía para explorar y divertirse. El nivel picante tiene exactamente lo que necesitan esta noche.',
+      hot: 'Los dos están listos para una noche intensa y sin límites. ¡El nivel HOT los espera!'
+    };
+    icon = levelEmojis[avg];
+    title = matchTitles[matchLevel];
+    desc = matchDescs[matchLevel];
+  } else if (diff === 1) {
+    // One level apart — meet in the middle naturally
+    icon = '💛';
+    title = `Se encuentran en el nivel ${levelNames[avg]}`;
+    desc = `Uno eligió ${levelNames[checkinA]} y el otro ${levelNames[checkinB]}. El punto de encuentro natural es el nivel ${levelNames[avg]} — donde ambos pueden disfrutar plenamente sin que ninguno se fuerce ni se quede corto.`;
+  } else {
+    // Two levels apart (romantico + hot) — middle is always picante
+    icon = '✨';
+    title = 'Punto de encuentro: nivel picante';
+    desc = `Hay una diferencia de dos niveles — uno eligió ${levelNames[checkinA]} y el otro ${levelNames[checkinB]}. La ciencia dice que el mejor resultado es encontrarse en el medio: el nivel picante permite explorar sin presionar a quien quiere más suavidad, y sin frustrar a quien quiere más intensidad. Pueden ir subiendo juntos si ambos lo desean.`;
+  }
+
+  document.getElementById('checkinMatchIcon').textContent = icon;
+  document.getElementById('checkinMatchTitle').textContent = title;
+  document.getElementById('checkinMatchDesc').textContent = desc;
+  const lvlEl = document.getElementById('checkinMatchLevel');
+  lvlEl.textContent = levelEmojis[avg] + ' ' + levelNames[avg].toUpperCase();
+  lvlEl.className = 'checkin-match-level ' + matchLevel;
+
+  // Store match level
+  checkinMatchLevel = matchLevel;
+}
+
+let checkinMatchLevel = null;
+
+function applyCheckinAndStart() {
+  if (checkinMatchLevel) {
+    currentHeat = checkinMatchLevel;
+    const labels = { romantico:'🌹 ROMÁNTICO ✎', picante:'🌶️ PICANTE ✎', hot:'🔥 HOT ✎' };
+    document.getElementById('heatBadge').textContent = labels[currentHeat];
+    usedTruth = []; usedDare = [];
+    drawWheel();
+    storageSet('last_ambiente', Date.now());
+  }
+  document.getElementById('checkinOverlay').classList.remove('show');
+}
+
+function skipCheckinAndTrack() {
+  storageSet('last_ambiente', Date.now());
+  document.getElementById('checkinOverlay').classList.remove('show');
+}
+
+function skipCheckin() {
+  document.getElementById('checkinOverlay').classList.remove('show');
+}
+
 // ── DESAFÍO 7 DÍAS ──
-const CHALLENGES = {
-  romantico: [
-    { title:"Masaje Sensorial",    desc:"Dediquen 10 minutos a un masaje completo sin hablar. Solo con las manos y la respiración como guía. Luego intercambien." },
-    { title:"Carta de Amor",       desc:"Cada uno escribe 5 cosas específicas que ama del otro. Léanlas en voz alta con música de fondo." },
-    { title:"Baño Compartido",     desc:"Compartan un baño o ducha lenta. Sin prisas, explorando cada zona con jabón y caricias." },
-    { title:"La Mirada",           desc:"Siéntense frente a frente y mantengan contacto visual por 5 minutos. Solo respiren y sonrían." },
-    { title:"Cena Romántica",      desc:"Cocinen juntos algo especial, pongan velas y coman sin teléfonos. Termina con un baile lento." },
-    { title:"Exploración Suave",   desc:"Túrnense para explorar el cuerpo del otro solo con las yemas de los dedos por 5 minutos cada uno." },
-    { title:"Noche de Fantasías",  desc:"Compartan 3 fantasías románticas cada uno. Escuchen sin juzgar y elijan una para comenzar a hacer realidad." },
+
+const FANTASIES = [
+  { icon:"💆", name:"Masaje erótico completo", desc:"Explorar todo el cuerpo lentamente con las manos" },
+  { icon:"🎭", name:"Roleplay y fantasía", desc:"Interpretar personajes o situaciones imaginarias" },
+  { icon:"🪢", name:"Dominación suave", desc:"Uno guía completamente, el otro recibe" },
+  { icon:"🪟", name:"Fuera de la cama", desc:"Explorar otros lugares de la casa" },
+  { icon:"🕯️", name:"Ambiente especial", desc:"Velas, música, toda una experiencia sensorial" },
+  { icon:"👁️", name:"Mirarnos al espejo", desc:"Mantener contacto visual durante el encuentro" },
+  { icon:"🎲", name:"Juegos y retos", desc:"Dados, cartas, ruleta — dejar que el azar decida" },
+  { icon:"🌊", name:"Baño o ducha juntos", desc:"Exploración íntima con agua y calor" },
+  { icon:"🌙", name:"Toda la noche", desc:"Sin límites de tiempo, disfrutar sin apuros" },
+  { icon:"💌", name:"Susurros y palabras", desc:"Hablar durante el encuentro, describir todo" },
+  { icon:"🎵", name:"Con música especial", desc:"Una playlist que marque el ritmo de la noche" },
+  { icon:"🍓", name:"Juegos con comida", desc:"Frutas, chocolate, crema — mezclar sabores e intimidad" },
+];
+
+const CHALLENGES = {romantico: [
+    { title:"Masaje Sensorial",    why:"El tacto libera oxitocina, la hormona del vínculo. Un masaje sin expectativas reduce el estrés y aumenta la confianza mutua.",    desc:"Dediquen 10 minutos a un masaje completo sin hablar. Solo con las manos y la respiración. Luego intercambien." },
+    { title:"Carta de Amor",       why:"Expresar lo que se ama activa el sistema de recompensa del cerebro de quien lo recibe Y de quien lo escribe.",                    desc:"Cada uno escribe 5 cosas específicas que ama del otro. Léanlas en voz alta con música de fondo." },
+    { title:"Baño Compartido",     why:"Compartir un espacio íntimo sin objetivo sexual reduce la ansiedad de rendimiento y profundiza la conexión sensorial.",           desc:"Compartan un baño o ducha lenta. Sin prisas, explorando cada zona con jabón y caricias." },
+    { title:"La Mirada",           why:"El contacto visual sostenido activa las neuronas espejo y genera una sensación real de unión emocional profunda.",                desc:"Siéntense frente a frente y mantengan contacto visual por 5 minutos. Solo respiren y sonrían." },
+    { title:"Cena Romántica",      why:"Los rituales compartidos fortalecen la identidad de pareja. Cocinar juntos activa la colaboración y el placer anticipatorio.",    desc:"Cocinen juntos algo especial, pongan velas y coman sin teléfonos. Termina con un baile lento." },
+    { title:"Exploración Suave",   why:"Explorar sin objetivo sexual entrena al cerebro a asociar el tacto con placer puro, mejorando la respuesta en encuentros íntimos.", desc:"Túrnense para explorar el cuerpo del otro solo con las yemas de los dedos por 5 minutos cada uno." },
+    { title:"Noche de Fantasías",  why:"Revelar fantasías en un ambiente seguro aumenta la satisfacción sexual. Parejas que hablan de esto tienen más satisfacción a largo plazo.", desc:"Compartan 3 fantasías románticas cada uno. Escuchen sin juzgar y elijan una para comenzar a hacer realidad." },
   ],
   picante: [
-    { title:"Striptease Lento",    desc:"Uno de los dos realiza un striptease lento con música. El otro no puede tocar hasta que termine." },
-    { title:"El Juego de Hielo",   desc:"Usen un cubo de hielo para explorar el cuerpo del otro. Alterna frío y calor con tu boca." },
-    { title:"Vendas y Sorpresas",  desc:"Vendan los ojos al otro y sorpréndanlo con caricias, besos y susurros durante 10 minutos." },
-    { title:"Mensajes Secretos",   desc:"Durante el día envíen mensajes describiendo qué harán esta noche. Créen la tensión juntos." },
-    { title:"El Reto de Posiciones",desc:"Elijan 3 posiciones nuevas de la ruleta y pruébenlas todas esta noche. Valoren cada una del 1 al 10." },
-    { title:"Fotografía Íntima",   desc:"Tómense fotos artísticas el uno al otro. Solo para ustedes. Descubran los ángulos que más les gustan." },
-    { title:"Noche sin Límites",   desc:"Esta noche uno de los dos elige absolutamente todo: lugar, posición, duración, música. Sin restricciones." },
+    { title:"Striptease Lento",    why:"La anticipación activa los mismos circuitos de placer que el encuentro en sí. Crear tensión antes mejora la experiencia significativamente.", desc:"Una persona realiza un striptease lento con música. La otra no puede tocar hasta que termine." },
+    { title:"El Juego de Frío",    why:"Alternar temperaturas activa más receptores nerviosos simultáneamente, intensificando toda la experiencia sensorial.",               desc:"Usen un cubo de hielo para explorar el cuerpo de la otra persona. Alterna frío y calor con la boca." },
+    { title:"Vendas y Sorpresas",  why:"Eliminar la vista potencia todos los demás sentidos. Las parejas que juegan con privación sensorial reportan mayor intensidad.", desc:"Vendan los ojos a la otra persona y sorpréndanla con caricias, besos y susurros durante 10 minutos." },
+    { title:"Mensajes Secretos",   why:"El deseo anticipado durante el día mantiene la conexión erótica activa. La espera consciente aumenta la dopamina.",              desc:"Durante el día envíen mensajes describiendo qué harán esta noche. Creen la tensión juntos." },
+    { title:"El Reto de Posiciones",why:"Probar cosas nuevas libera dopamina — el mismo neurotransmisor de las primeras citas. La novedad es el enemigo de la rutina.", desc:"Elijan 3 posiciones nuevas de la ruleta y pruébenlas todas esta noche. Valoren cada una del 1 al 10." },
+    { title:"Fotografía Íntima",   why:"Verse a través de los ojos de la pareja aumenta la autoestima corporal. La imagen de uno mismo como objeto de deseo es poderosa.", desc:"Tómense fotos artísticas entre sí. Solo para ustedes. Descubran los ángulos que más les gustan." },
+    { title:"Noche sin Límites",   why:"Ceder el control total a la pareja construye confianza profunda. Saber que el otro elige pensando en ti es íntimo y excitante.", desc:"Esta noche una persona elige absolutamente todo: lugar, posición, duración, música. Sin restricciones." },
   ],
   hot: [
-    { title:"Dominación Suave",    desc:"Uno domina completamente durante 15 minutos. El otro solo recibe. Luego invierten los roles." },
-    { title:"El Espejo",           desc:"Hagan el amor frente a un espejo. Mantengan contacto visual con su reflejo durante todo el encuentro." },
-    { title:"Roleplay Sorpresa",   desc:"Uno prepara un escenario de roleplay sin decirle al otro. La sorpresa es parte del juego." },
-    { title:"Maratón de Posiciones",desc:"Usen la ruleta 5 veces seguidas. Cada posición que salga debe durar al menos 3 minutos." },
-    { title:"Fuera de la Cama",    desc:"Esta noche está prohibida la cama. Elijan otro lugar de la casa y sean creativos." },
-    { title:"La Cuenta Regresiva", desc:"Usen el temporizador: 5 minutos en cada posición sin parar. Cuando suene, cambian. 4 rondas mínimo." },
-    { title:"Fantasy Final",       desc:"Cada uno comparte su fantasía más atrevida. Esta noche hacen realidad la que elija la ruleta." },
+    { title:"Dominación Suave",    why:"Explorar dinámicas de poder en un contexto seguro y consentido aumenta la excitación y la confianza mutua.",                    desc:"Una persona domina completamente durante 15 minutos. La otra solo recibe. Luego invierten los roles." },
+    { title:"El Espejo",           why:"Ver el propio cuerpo en un encuentro íntimo combina el autoconocimiento con el erotismo compartido — muy poderoso para la autoestima.", desc:"Hagan el amor frente a un espejo. Mantengan contacto visual con su reflejo durante todo el encuentro." },
+    { title:"Roleplay Sorpresa",   why:"El roleplay permite explorar facetas de la personalidad que en el día a día no emergen. Activa la creatividad y reduce inhibiciones.", desc:"Una persona prepara un escenario de roleplay sin decirle al otro. La sorpresa es parte del juego." },
+    { title:"Maratón de Posiciones",why:"Variar de posición mantiene el sistema nervioso en estado de alerta placentera. El cambio constante prolonga y amplifica la experiencia.", desc:"Usen la ruleta 5 veces seguidas. Cada posición que salga debe durar al menos 3 minutos." },
+    { title:"Fuera de la Cama",    why:"Cambiar el espacio físico interrumpe los patrones automáticos. El cerebro asocia lugares con experiencias — un lugar nuevo crea una experiencia nueva.", desc:"Esta noche está prohibida la cama. Elijan otro lugar de la casa y sean creativos." },
+    { title:"La Cuenta Regresiva", why:"El temporizador externo elimina la presión de decidir cuándo cambiar. Ambos saben que el cambio viene — eso crea anticipación constante.", desc:"Usen el temporizador: 5 minutos en cada posición sin parar. Cuando suene, cambian. 4 rondas mínimo." },
+    { title:"Fantasy Final",       why:"Hacer realidad una fantasía compartida es uno de los momentos más íntimos posibles y el recuerdo más duradero en la memoria de pareja.", desc:"Cada uno comparte su fantasía más atrevida. Esta noche hacen realidad la que elija la ruleta." },
   ]
 };
 
+
+// Safe storage with in-memory fallback
+const _store = {};
+function storageGet(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return _store[key] || null; }
+}
+function storageSet(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { _store[key] = val; }
+}
+function storageRemove(key) {
+  try { localStorage.removeItem(key); } catch(e) { delete _store[key]; }
+}
+
 function initChallenge() {
-  const saved = JSON.parse(localStorage.getItem('challenge_' + currentHeat) || '{"completed":[],"startDay":0}');
+  const saved = storageGet('challenge_' + currentHeat) || {completed:[], startDay:0};
   renderChallenge(saved);
 }
 
@@ -1017,13 +1729,15 @@ function renderChallenge(saved) {
   days.innerHTML = challenges.map((c,i) => {
     const isDone = completed.includes(i);
     const isToday = i === dayIndex && !isDone;
+    const unlocked = isDone || isToday || i < dayIndex;
     return `<div class="challenge-day-card ${isDone?'completed':''} ${isToday?'today':''}">
       <div class="cday-header">
         <span class="cday-num">DÍA ${i+1}</span>
         <span class="cday-status">${isDone ? '✅' : isToday ? '🔥 HOY' : i < dayIndex ? '⏭️' : '🔒'}</span>
       </div>
       <div class="cday-title">${c.title}</div>
-      <div class="cday-desc">${isDone || isToday || i < dayIndex ? c.desc : 'Completa los días anteriores para desbloquear.'}</div>
+      ${unlocked && c.why ? `<div style="font-size:0.58rem;color:#9b6dff;line-height:1.5;margin-bottom:6px;font-style:italic;padding:6px 8px;background:rgba(155,109,255,0.08);border-radius:8px;border-left:2px solid #9b6dff">🔬 ${c.why}</div>` : ''}
+      <div class="cday-desc">${unlocked ? c.desc : 'Completa los días anteriores para desbloquear.'}</div>
       ${isToday ? `<button class="cday-complete-btn" onclick="completeDay(${i})">✓ MARCAR COMO COMPLETADO</button>` : ''}
     </div>`;
   }).join('');
@@ -1031,17 +1745,17 @@ function renderChallenge(saved) {
 
 function completeDay(idx) {
   const key = 'challenge_' + currentHeat;
-  const saved = JSON.parse(localStorage.getItem(key) || '{"completed":[],"startDay":0}');
+  const saved = storageGet(key) || {completed:[], startDay:0};
   if (!saved.completed.includes(idx)) saved.completed.push(idx);
   if (!saved.startDay) saved.startDay = Math.floor(Date.now() / 86400000);
-  localStorage.setItem(key, JSON.stringify(saved));
+  storageSet(key, saved);
   renderChallenge(saved);
 }
 
 function resetChallenge() {
-  localStorage.removeItem('challenge_' + currentHeat);
+  storageRemove('challenge_' + currentHeat);
   const newSaved = { completed:[], startDay: Math.floor(Date.now() / 86400000) };
-  localStorage.setItem('challenge_' + currentHeat, JSON.stringify(newSaved));
+  storageSet('challenge_' + currentHeat, newSaved);
   renderChallenge(newSaved);
 }
 
@@ -1057,12 +1771,12 @@ function openTimer() {
 function closeTimer() {
   document.getElementById('timerModal').classList.remove('show');
 }
-function setTimer(secs) {
+function setTimer(secs, btn) {
   if (timerRunning) return;
   timerTotal = secs;
   timerLeft = secs;
   document.querySelectorAll('.timer-preset').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  if (btn) btn.classList.add('active');
   updateTimerDisplay();
   document.getElementById('timerBar').style.width = '100%';
 }
@@ -1545,16 +2259,19 @@ function closeAndSpin() {
   setTimeout(() => spinWheel(), 400);
 }
 
-// Swipe up to expand
+// Swipe up to expand — safe init after DOM ready
 let touchStartY = 0;
-document.getElementById('resultSheet') && document.getElementById('resultSheet').addEventListener('touchstart', e => {
-  touchStartY = e.touches[0].clientY;
-});
-document.getElementById('resultSheet') && document.getElementById('resultSheet').addEventListener('touchend', e => {
-  const diff = touchStartY - e.changedTouches[0].clientY;
-  if (diff > 50) expandSheet();
-  if (diff < -50) collapseSheet();
-});
+function initSheetSwipe() {
+  const sheet = document.getElementById('resultSheet');
+  if (!sheet) return;
+  sheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive:true});
+  sheet.addEventListener('touchend', e => {
+    const diff = touchStartY - e.changedTouches[0].clientY;
+    if (diff > 50) expandSheet();
+    if (diff < -50) collapseSheet();
+  });
+}
+document.addEventListener('DOMContentLoaded', initSheetSwipe);
 
 // ── HEAT MODAL ──
 let tempHeat = null;
@@ -1581,6 +2298,8 @@ function selectModalHeat(level, btn) {
 function confirmHeat() {
   if (!tempHeat) return;
   currentHeat = tempHeat;
+  if (currentHeat === 'hot') trackEvent('hot');
+  applyTheme(currentHeat);
   const labels = { romantico:'🌹 ROMÁNTICO ✎', picante:'🌶️ PICANTE ✎', hot:'🔥 HOT ✎' };
   document.getElementById('heatBadge').textContent = labels[currentHeat];
   // Reset used cards
@@ -1603,6 +2322,52 @@ if ('serviceWorker' in navigator) {
 </script>
 
 
+
+<!-- ══ FANTASÍAS ══ -->
+<div class="screen" id="fantasy">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('menu')">←</button>
+    <div class="screen-title">Match de Fantasías</div>
+  </div>
+  <div class="fantasy-container">
+    <div class="fantasy-intro">
+      <div class="fantasy-intro-title">✦ El Juego del Deseo</div>
+      <div class="fantasy-intro-sub">Cada uno elige en secreto sus fantasías. Solo se revelan las que ambos eligieron. Sin juicios, solo descubrimientos.</div>
+    </div>
+
+    <!-- PASO 1: Persona A -->
+    <div class="fantasy-step active" id="fantasyStep1">
+      <div class="fantasy-player-label">👤 Persona 1 — elige en secreto</div>
+      <div class="fantasy-count" id="fantasyCountA">Elige al menos 1</div>
+      <div class="fantasy-grid" id="fantasyGridA"></div>
+      <button class="fantasy-next-btn" id="fantasyNextBtn" onclick="nextFantasyStep()">LISTO, SIGUIENTE →</button>
+    </div>
+
+    <!-- PASO 2: Persona B -->
+    <div class="fantasy-step" id="fantasyStep2">
+      <div class="fantasy-player-label">👤 Persona 2 — elige en secreto</div>
+      <div class="fantasy-count" id="fantasyCountB">Elige al menos 1</div>
+      <div class="fantasy-grid" id="fantasyGridB"></div>
+      <button class="fantasy-reveal-btn" id="fantasyRevealBtn" onclick="revealFantasyMatch()">✨ REVELAR MATCHES</button>
+    </div>
+
+    <!-- PASO 3: Resultado -->
+    <div class="fantasy-step" id="fantasyStep3">
+      <div class="fantasy-results" id="fantasyResults"></div>
+      <button class="fantasy-reset-btn" onclick="resetFantasy()">↺ Jugar de nuevo</button>
+    </div>
+  </div>
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item " onclick="goTo('fantasy')"><span class="nav-icon">💞</span><span class="nav-label">Fantasías</span></div>
+    <div class="nav-item " onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item " onclick="goTo('challenge')"><span class="nav-icon">📅</span><span class="nav-label">7 Días</span></div>
+    <div class="nav-item " onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+  </div></nav>
+</div>
+
 <!-- ══ DESAFÍO 7 DÍAS ══ -->
 <div class="screen" id="challenge">
   <div class="screen-header">
@@ -1618,12 +2383,14 @@ if ('serviceWorker' in navigator) {
     <div id="challengeDays"></div>
     <button class="challenge-reset" onclick="resetChallenge()">↺ Reiniciar desafío</button>
   </div>
-  <nav class="bottom-nav show"><div class="nav-items">
-    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
-    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
-    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
-    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
-    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item " onclick="goTo('fantasy')"><span class="nav-icon">💞</span><span class="nav-label">Fantasías</span></div>
+    <div class="nav-item " onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item " onclick="goTo('challenge')"><span class="nav-icon">📅</span><span class="nav-label">7 Días</span></div>
+    <div class="nav-item " onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
   </div></nav>
 </div>
 
@@ -1649,6 +2416,99 @@ if ('serviceWorker' in navigator) {
 </div>
 
 
+
+
+<!-- ══ ACHIEVEMENT TOAST ══ -->
+<div class="achievement-toast" id="achievementToast">
+  <span class="achievement-toast-icon" id="achievementIcon">🏆</span>
+  <div class="achievement-toast-text">
+    <div class="achievement-toast-title">🏆 LOGRO DESBLOQUEADO</div>
+    <div class="achievement-toast-name" id="achievementName">—</div>
+  </div>
+</div>
+
+<!-- ══ EL AMBIENTE MODAL ══ -->
+<div class="checkin-overlay" id="checkinOverlay">
+  <div class="checkin-sheet">
+
+    <!-- PASO 1: Persona A -->
+    <div class="checkin-step active" id="checkinStep1">
+      <div class="checkin-title">¿Cómo están hoy?</div>
+      <div class="checkin-sub">¿Cómo está el ambiente?</div>
+      <div class="checkin-player">👤 Persona 1 — elige tu nivel</div>
+      <div class="checkin-levels">
+        <button class="checkin-level-btn" onclick="selectLevel(1,'A',this)">
+          <span class="checkin-level-icon">🌸</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Suave y romántico</div>
+            <div class="checkin-level-desc">Quiero algo íntimo y tranquilo, mucho contacto y ternura</div>
+          </div>
+        </button>
+        <button class="checkin-level-btn" onclick="selectLevel(2,'A',this)">
+          <span class="checkin-level-icon">🌶️</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Picante y divertido</div>
+            <div class="checkin-level-desc">Tengo energía para explorar y probar cosas nuevas</div>
+          </div>
+        </button>
+        <button class="checkin-level-btn" onclick="selectLevel(3,'A',this)">
+          <span class="checkin-level-icon">🔥</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Hot e intenso</div>
+            <div class="checkin-level-desc">Estoy listo/a para una noche sin límites y muy intensa</div>
+          </div>
+        </button>
+      </div>
+      <button class="checkin-next-btn" id="checkinNextA" onclick="nextCheckin()">CONTINUAR →</button>
+      <span class="checkin-skip" onclick="skipCheckin()">Omitir ambiente</span>
+    </div>
+
+    <!-- PASO 2: Persona B -->
+    <div class="checkin-step" id="checkinStep2">
+      <div class="checkin-title">¿Cómo están hoy?</div>
+      <div class="checkin-sub">¿Cómo está el ambiente?</div>
+      <div class="checkin-player">👤 Persona 2 — elige tu nivel</div>
+      <div class="checkin-levels">
+        <button class="checkin-level-btn" onclick="selectLevel(1,'B',this)">
+          <span class="checkin-level-icon">🌸</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Suave y romántico</div>
+            <div class="checkin-level-desc">Quiero algo íntimo y tranquilo, mucho contacto y ternura</div>
+          </div>
+        </button>
+        <button class="checkin-level-btn" onclick="selectLevel(2,'B',this)">
+          <span class="checkin-level-icon">🌶️</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Picante y divertido</div>
+            <div class="checkin-level-desc">Tengo energía para explorar y probar cosas nuevas</div>
+          </div>
+        </button>
+        <button class="checkin-level-btn" onclick="selectLevel(3,'B',this)">
+          <span class="checkin-level-icon">🔥</span>
+          <div class="checkin-level-info">
+            <div class="checkin-level-name">Hot e intenso</div>
+            <div class="checkin-level-desc">Estoy listo/a para una noche sin límites y muy intensa</div>
+          </div>
+        </button>
+      </div>
+      <button class="checkin-next-btn" id="checkinNextB" onclick="showCheckinResult()">VER RESULTADO →</button>
+      <span class="checkin-skip" onclick="skipCheckin()">Omitir ambiente</span>
+    </div>
+
+    <!-- PASO 3: Resultado / Match -->
+    <div class="checkin-step" id="checkinStep3">
+      <div class="checkin-match">
+        <span class="checkin-match-icon" id="checkinMatchIcon">✨</span>
+        <div class="checkin-match-title" id="checkinMatchTitle">—</div>
+        <div class="checkin-match-desc" id="checkinMatchDesc">—</div>
+        <span class="checkin-match-level" id="checkinMatchLevel">—</span>
+        <button class="checkin-go-btn" onclick="applyCheckinAndStart()">¡EMPEZAR A JUGAR! ✦</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ══ TIMER FAB ══ -->
 <div class="timer-fab" id="timerFab" onclick="openTimer()">
   <span class="timer-fab-icon">⏱️</span>
@@ -1662,11 +2522,11 @@ if ('serviceWorker' in navigator) {
     <div class="timer-display" id="timerDisplay">02:00</div>
     <div class="timer-progress"><div class="timer-progress-bar" id="timerBar" style="width:100%"></div></div>
     <div class="timer-presets">
-      <button class="timer-preset" onclick="setTimer(60)">1 min</button>
-      <button class="timer-preset active" onclick="setTimer(120)">2 min</button>
-      <button class="timer-preset" onclick="setTimer(180)">3 min</button>
-      <button class="timer-preset" onclick="setTimer(300)">5 min</button>
-      <button class="timer-preset" onclick="setTimer(600)">10 min</button>
+      <button class="timer-preset" onclick="setTimer(60,this)">1 min</button>
+      <button class="timer-preset active" onclick="setTimer(120,this)">2 min</button>
+      <button class="timer-preset" onclick="setTimer(180,this)">3 min</button>
+      <button class="timer-preset" onclick="setTimer(300,this)">5 min</button>
+      <button class="timer-preset" onclick="setTimer(600,this)">10 min</button>
     </div>
     <div class="timer-controls">
       <button class="timer-start" id="timerStartBtn" onclick="toggleTimer()">▶ INICIAR</button>
