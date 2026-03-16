@@ -188,7 +188,7 @@
   .nav-scroll-hint { position:absolute; right:0; top:0; bottom:0; width:30px; background:linear-gradient(to left, rgba(8,8,16,0.95), transparent); pointer-events:none; border-radius:0 0 0 0; z-index:1; }
   .nav-items { display:flex; width:100%; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:0 8px; gap:4px; }
   .nav-items::-webkit-scrollbar { display:none; }
-  .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:6px 14px; border-radius:12px; transition:all .2s; flex-shrink:0; scroll-snap-align:start; min-width:64px; }
+  .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:8px 16px; border-radius:12px; transition:all .2s; flex-shrink:0; scroll-snap-align:start; min-width:68px; }
   .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:6px 16px; border-radius:12px; transition:all .2s; }
   .nav-item.active { background:rgba(201,169,110,0.1); }
   .nav-icon { font-size:1.3rem; }
@@ -427,11 +427,12 @@
   .cday-title { font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:var(--gold); font-style:italic; margin-bottom:4px; }
   .cday-desc { font-size:0.68rem; color:var(--muted); line-height:1.5; }
   .cday-complete-btn {
-    width:100%; padding:12px; border-radius:12px; border:none; margin-top:12px;
+    width:100%; padding:14px; border-radius:12px; border:none; margin-top:14px;
     background:linear-gradient(135deg,var(--gold),var(--gold2));
     color:#080810; font-family:'Montserrat',sans-serif;
     font-size:0.72rem; font-weight:600; letter-spacing:2px; cursor:pointer;
-    display:none;
+    display:none; position:sticky; bottom:8px;
+    box-shadow:0 4px 20px rgba(201,169,110,0.4);
   }
   .challenge-day-card.today .cday-complete-btn { display:block; }
   .challenge-day-card.completed .cday-complete-btn { display:none; }
@@ -686,15 +687,24 @@
 
   /* Botón revelar */
   .ambient-reveal-btn {
-    width:100%; padding:16px; border-radius:16px; border:none;
+    width:100%; padding:20px; border-radius:18px; border:none;
     background:linear-gradient(135deg,var(--rose),var(--rose2));
     color:#080810; font-family:'Montserrat',sans-serif;
-    font-size:0.82rem; font-weight:600; letter-spacing:3px;
+    font-size:0.9rem; font-weight:700; letter-spacing:3px;
     cursor:pointer; transition:all .3s;
-    opacity:.4; pointer-events:none;
+    opacity:.35; pointer-events:none;
+    box-shadow: 0 4px 20px rgba(232,132,154,0);
   }
-  .ambient-reveal-btn.ready { opacity:1; pointer-events:auto; }
-  .ambient-reveal-btn:active { transform:scale(0.97); }
+  .ambient-reveal-btn.ready {
+    opacity:1; pointer-events:auto;
+    animation: revealPulse 1.8s ease-in-out infinite;
+    box-shadow: 0 4px 24px rgba(232,132,154,0.4);
+  }
+  @keyframes revealPulse {
+    0%,100% { transform:scale(1); box-shadow:0 4px 24px rgba(232,132,154,0.4); }
+    50%      { transform:scale(1.03); box-shadow:0 6px 32px rgba(232,132,154,0.7); }
+  }
+  .ambient-reveal-btn:active { transform:scale(0.97) !important; animation:none !important; }
 
   /* Resultado con animación dramática */
   .ambient-result {
@@ -720,6 +730,31 @@
     border:1px solid var(--border); background:var(--card);
     font-size:0.62rem; color:var(--text); letter-spacing:1px;
   }
+
+
+  /* ── PANTALLA LOGROS ── */
+  #achievementsScreen { padding:0; }
+  .achievements-container { padding:20px 16px 100px; }
+  .achievement-item {
+    display:flex; align-items:center; gap:14px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:16px; margin-bottom:10px;
+    transition:all .3s;
+  }
+  .achievement-item.unlocked { border-color:var(--gold); background:rgba(var(--gold-rgb,201,169,110),0.06); }
+  .achievement-item.locked { opacity:0.4; filter:grayscale(1); }
+  .achievement-badge { font-size:1.8rem; flex-shrink:0; width:44px; text-align:center; }
+  .achievement-info { flex:1; }
+  .achievement-name { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--gold); font-style:italic; margin-bottom:2px; }
+  .achievement-status { font-size:0.58rem; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  .achievements-progress {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:16px; padding:16px; margin-bottom:16px; text-align:center;
+  }
+  .achievements-count { font-family:'Cormorant Garamond',serif; font-size:2rem; color:var(--gold); }
+  .achievements-total { font-size:0.65rem; color:var(--muted); letter-spacing:2px; }
+  .achievements-bar { width:100%; height:6px; background:var(--border); border-radius:3px; margin-top:10px; overflow:hidden; }
+  .achievements-bar-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--rose)); border-radius:3px; transition:width .8s ease; }
 
 </style>
 </head>
@@ -831,7 +866,14 @@
       <div class="game-desc">Un reto científico cada día</div>
     </div>
 
-    <!-- #6 Slots — variante y novedad -->
+    <!-- #6 Logros -->
+    <div class="game-card" onclick="goTo('achievementsScreen')">
+      <span class="game-icon">🏆</span>
+      <div class="game-name">Mis Logros</div>
+      <div class="game-desc">Ver progreso y logros desbloqueados</div>
+    </div>
+
+    <!-- #7 Slots — variante y novedad -->
     <div class="game-card" onclick="goTo('slots')">
       <span class="game-icon">🎰</span>
       <div class="game-name">Slots de Pasión</div>
@@ -937,7 +979,10 @@
       <div class="tod-question" id="todQuestion">Presiona el botón para comenzar...</div>
       <div class="tod-intensity" id="todIntensity"></div>
     </div>
-    <button class="next-btn" onclick="nextTod()">SIGUIENTE ✦</button>
+    <div style="display:flex;gap:10px;">
+      <button class="next-btn" onclick="nextTod()" style="flex:2;">SIGUIENTE ✦</button>
+      <button onclick="skipTod()" style="flex:1;padding:18px;border-radius:16px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'Montserrat',sans-serif;font-size:0.7rem;letter-spacing:2px;cursor:pointer;">SALTAR</button>
+    </div>
   </div>
     <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
@@ -1056,7 +1101,11 @@ const DATA = {
       picante:   ["en la ducha","en la cocina","en el auto","en el suelo","en el balcón"],
       hot:       ["contra la pared","en el espejo","en la silla","de pie","donde los lleve el momento"]
     },
-    duracion: ["por 5 minutos","sin límite de tiempo","hasta que ambos quieran parar","por 10 minutos","por 3 rondas","toda la noche"]
+    duracion: {
+      romantico: ["por 5 minutos","por 10 minutos","hasta que ambos quieran parar","por 3 rondas","sin apuros","despacio y sin límite"],
+      picante:   ["por 10 minutos","por 15 minutos","hasta que ambos quieran parar","por 3 rondas intensas","sin límite de tiempo","cuanto quieran"],
+      hot:       ["por 15 minutos","sin límite de tiempo","toda la noche","por 5 rondas","hasta el amanecer","cuanto resistan"]
+    }
   }
 };
 
@@ -1114,6 +1163,7 @@ function goTo(screen) {
   window.scrollTo(0, 0);
   if (screen === 'ruleta') drawWheel();
   if (screen === 'challenge') initChallenge();
+  if (screen === 'achievementsScreen') initAchievementsScreen();
   if (screen === 'fantasy') initFantasy();
   updateTimerFab(screen);
   // Aplicar tema siempre que se navega
@@ -1260,6 +1310,14 @@ function checkDiceResult() {
 }
 
 // ── TRUTH OR DARE ──
+
+function skipTod() {
+  // Mensaje neutro al saltar
+  document.getElementById('todQuestion').textContent = 'Pasaron esta. ¡Toca Siguiente para la próxima!';
+  document.getElementById('todTypeBadge').textContent = '⏭️ SALTADA';
+  document.getElementById('todIntensity').innerHTML = '';
+}
+
 function setTodMode(mode, btn) {
   todMode = mode;
   document.querySelectorAll('.tod-tab').forEach(t => t.classList.remove('active'));
@@ -1292,7 +1350,7 @@ function pullSlots() {
   const btn = document.getElementById('pullBtn');
   btn.disabled = true;
   document.getElementById('slotsResult').classList.remove('show');
-  const pools = [DATA.slots.accion[currentHeat], DATA.slots.lugar[currentHeat], DATA.slots.duracion];
+  const pools = [DATA.slots.accion[currentHeat], DATA.slots.lugar[currentHeat], DATA.slots.duracion[currentHeat]];
   const results = [];
   const reels = ['reel1','reel2','reel3'].map(id => document.getElementById(id));
   const valEls = ['reelVal1','reelVal2','reelVal3'].map(id => document.getElementById(id));
@@ -1320,6 +1378,37 @@ function pullSlots() {
 
 
 
+
+
+// ── PANTALLA DE LOGROS ──
+function initAchievementsScreen() {
+  const unlocked = [..._unlocked];
+  const total = ACHIEVEMENTS.length;
+  const count = unlocked.length;
+
+  document.getElementById('achievementsCount').textContent = count;
+  document.getElementById('achievementsTotal').textContent = `DE ${total} LOGROS`;
+  document.getElementById('achievementsBarFill').style.width = (count/total*100) + '%';
+
+  const list = document.getElementById('achievementsList');
+  // Mostrar desbloqueados primero, luego bloqueados
+  const sorted = [...ACHIEVEMENTS].sort((a,b) => {
+    const aU = unlocked.includes(a.id);
+    const bU = unlocked.includes(b.id);
+    return bU - aU;
+  });
+
+  list.innerHTML = sorted.map(a => {
+    const isUnlocked = unlocked.includes(a.id);
+    return `<div class="achievement-item ${isUnlocked ? 'unlocked' : 'locked'}">
+      <div class="achievement-badge">${a.icon}</div>
+      <div class="achievement-info">
+        <div class="achievement-name">${a.name}</div>
+        <div class="achievement-status">${isUnlocked ? '✓ DESBLOQUEADO' : '🔒 BLOQUEADO'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
 // ── LOGROS ──
 const ACHIEVEMENTS = [
@@ -1625,6 +1714,10 @@ function revealFantasyMatch() {
       <div class="fantasy-no-match">
         <span class="fantasy-no-match-icon">💛</span>
         <div class="fantasy-no-match-text">Diferentes deseos hoy. Hablen sobre lo que cada uno eligió — la conversación es el mejor juego de todos.</div>
+      </div>
+      <div style="margin-top:16px;padding:14px;background:var(--card);border-radius:14px;border:1px solid var(--border);text-align:left;">
+        <div style="font-size:0.58rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">💡 ¿Qué hacer ahora?</div>
+        <div style="font-size:0.72rem;color:var(--text);line-height:1.6;">Cada uno comparte <strong>una</strong> de sus fantasías elegidas. Escuchen sin juzgar. Puede que encuentren más en común de lo que creen.</div>
       </div>`;
   } else {
     results.innerHTML = `
@@ -1637,7 +1730,12 @@ function revealFantasyMatch() {
             <div class="fantasy-match-name">${FANTASIES[i].name}</div>
             <div class="fantasy-match-desc">${FANTASIES[i].desc}</div>
           </div>
-        </div>`).join('')}`;
+        </div>`).join('')}
+      <div style="margin-top:16px;padding:14px;background:var(--card);border-radius:14px;border:1px solid var(--border);text-align:left;">
+        <div style="font-size:0.58rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">🎯 Siguiente paso</div>
+        <div style="font-size:0.72rem;color:var(--text);line-height:1.6;margin-bottom:12px;">Tienen ${matches.length} deseo${matches.length>1?'s':''} en común. Usen la <strong>Ruleta</strong> para encontrar la posición perfecta para esta noche.</div>
+        <button onclick="goTo('ruleta')" style="width:100%;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#080810;font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:2px;cursor:pointer;">🎡 IR A LA RULETA</button>
+      </div>`;
   }
 }
 
@@ -1984,7 +2082,7 @@ const POSITION_SVGS = {
         <path d="M65 54 Q75 58 82 65" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M65 54 Q72 54 80 58" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M36 48 Q26 55 20 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="38" cy="44" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="38" cy="44" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M38 52 Q50 56 72 58" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M72 58 Q80 62 86 68" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M46 52 Q42 42 36 38" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -1996,7 +2094,7 @@ const POSITION_SVGS = {
         <path d="M40 60 Q50 70 60 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M42 38 Q30 44 24 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M42 38 Q54 44 60 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="66" cy="28" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="66" cy="28" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M66 36 Q67 52 68 60" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M68 60 Q76 56 82 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M68 60 Q58 66 52 68" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2008,7 +2106,7 @@ const POSITION_SVGS = {
         <path d="M62 54 Q74 57 82 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M62 54 Q70 54 78 58" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M33 47 Q22 54 16 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="35" cy="42" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="35" cy="42" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M35 50 Q50 54 70 57" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M70 57 Q80 60 88 65" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M44 50 Q40 40 34 37" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2020,7 +2118,7 @@ const POSITION_SVGS = {
         <path d="M55 52 Q68 56 80 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 36 Q40 38 28 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 36 Q70 38 82 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="84" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="84" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M30 78 Q42 74 55 76 Q68 74 80 78" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M36 76 Q28 68 22 64" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M74 76 Q82 68 88 64" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2032,7 +2130,7 @@ const POSITION_SVGS = {
         <path d="M53 55 Q62 62 68 74" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M54 38 Q40 42 30 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M54 38 Q68 44 76 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="36" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="36" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M55 44 Q54 56 53 64" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M48 55 Q36 58 28 66" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M60 55 Q72 60 78 68" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2044,7 +2142,7 @@ const POSITION_SVGS = {
         <path d="M53 52 Q66 58 74 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M54 36 Q40 38 28 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M54 36 Q68 40 78 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M28 72 Q40 70 55 72 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M34 70 Q26 62 22 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M76 70 Q84 62 88 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2054,7 +2152,7 @@ const POSITION_SVGS = {
         <path d="M55 25 L55 52" stroke="#ff8fab" stroke-width="2" fill="none"/>
         <path d="M55 52 Q40 58 28 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 52 Q70 58 82 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M32 82 Q42 80 55 81 Q68 80 78 82" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M40 80 Q30 62 28 48" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M70 80 Q80 62 82 48" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2066,7 +2164,7 @@ const POSITION_SVGS = {
         <path d="M55 52 Q68 56 80 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 36 Q40 38 28 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 36 Q70 38 82 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="84" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="84" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M30 78 Q42 74 55 76 Q68 74 80 78" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M36 76 Q28 68 22 64" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M74 76 Q82 68 88 64" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2078,7 +2176,7 @@ const POSITION_SVGS = {
         <path d="M60 46 Q68 50 74 60" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M30 44 Q22 52 18 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M30 44 Q28 54 24 64" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="78" cy="34" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="78" cy="34" r="9" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M78 43 Q78 56 78 62" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M78 62 Q66 66 58 74" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M78 62 Q88 68 92 76" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2092,7 +2190,7 @@ const POSITION_SVGS = {
         <path d="M55 54 Q66 60 72 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 38 Q40 40 28 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 38 Q70 42 80 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M30 80 Q42 77 55 79 Q68 77 80 80" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M36 78 Q28 70 24 62" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M74 78 Q82 70 86 62" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2104,7 +2202,7 @@ const POSITION_SVGS = {
         <path d="M57 52 Q44 58 36 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M56 36 Q70 40 80 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M56 36 Q42 38 30 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M28 72 Q40 70 55 72 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M34 70 Q26 62 22 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M76 70 Q84 62 88 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2116,7 +2214,7 @@ const POSITION_SVGS = {
         <path d="M40 52 Q52 58 56 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M40 36 Q26 38 18 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M40 36 Q54 40 62 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="70" cy="18" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="70" cy="18" r="9" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M70 27 L70 56" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M70 56 Q60 62 54 74" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M70 56 Q80 62 84 72" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2130,7 +2228,7 @@ const POSITION_SVGS = {
         <path d="M55 54 Q68 60 78 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 38 Q40 38 28 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 38 Q70 40 82 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M32 82 Q42 80 55 81 Q68 80 78 82" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M38 80 Q26 64 24 50" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M72 80 Q84 64 86 50" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2142,7 +2240,7 @@ const POSITION_SVGS = {
         <path d="M55 50 Q68 56 78 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 34 Q36 30 22 36" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M55 34 Q74 32 88 38" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="84" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="84" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M30 78 Q42 76 55 77 Q68 76 80 78" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M36 76 Q30 68 28 60" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M74 76 Q80 68 82 60" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2155,7 +2253,7 @@ const POSITION_SVGS = {
     <path d="M53 56 Q64 64 70 74" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M54 40 Q40 42 28 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M54 40 Q68 44 78 52" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M34 74 Q44 70 55 72 Q66 70 76 74" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M38 72 Q28 64 22 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M72 72 Q82 64 88 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2167,7 +2265,7 @@ const POSITION_SVGS = {
     <path d="M58 50 Q46 56 36 64" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M56 36 Q68 32 80 36" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M56 36 Q44 30 32 34" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M28 72 Q40 70 55 71 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M34 70 Q26 62 22 54" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M76 70 Q84 62 88 54" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2179,7 +2277,7 @@ const POSITION_SVGS = {
     <path d="M42 56 Q56 58 64 52" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M42 38 Q28 38 20 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M42 38 Q56 40 64 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="66" cy="22" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="66" cy="22" r="9" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M66 31 L66 58" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M66 58 Q56 64 50 76" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M66 58 Q78 60 84 70" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2192,7 +2290,7 @@ const POSITION_SVGS = {
     <path d="M52 52 Q62 60 68 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M53 36 Q36 28 22 34" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M53 36 Q70 30 84 36" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M30 74 Q42 72 55 73 Q68 72 80 74" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M36 72 Q28 64 24 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M74 72 Q82 64 86 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2204,8 +2302,8 @@ const POSITION_SVGS = {
     <path d="M55 54 Q68 58 80 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 38 Q40 40 28 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 38 Q70 40 82 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <ellipse cx="55" cy="82" rx="22" ry="6" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
-    <circle cx="55" cy="88" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <ellipse cx="55" cy="82" rx="22" ry="6" fill="none" stroke="#ffb3c6" stroke-width="2"/>
+    <circle cx="55" cy="88" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M36 78 Q28 70 22 62" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M74 78 Q82 70 88 62" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
   </svg>`,
@@ -2216,7 +2314,7 @@ const POSITION_SVGS = {
     <path d="M70 58 Q82 62 88 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M70 42 Q56 40 46 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M70 42 Q84 42 92 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="40" cy="28" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="40" cy="28" r="9" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M40 37 Q42 52 44 60" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M44 60 Q34 66 26 74" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M44 60 Q54 66 58 74" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2228,7 +2326,7 @@ const POSITION_SVGS = {
     <path d="M65 54 Q76 56 84 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M65 54 Q72 58 78 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M38 48 Q28 56 22 64" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="78" cy="36" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="78" cy="36" r="9" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M78 45 Q78 58 78 66" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M78 66 Q66 70 56 78" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M78 66 Q88 72 92 80" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2241,7 +2339,7 @@ const POSITION_SVGS = {
     <path d="M55 54 Q68 58 76 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 38 Q40 36 28 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 38 Q70 38 82 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="88" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="88" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M34 82 Q44 78 55 80 Q66 78 76 82" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M38 80 Q24 70 20 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M72 80 Q86 70 90 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2253,7 +2351,7 @@ const POSITION_SVGS = {
     <path d="M55 56 Q66 62 74 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 40 Q40 40 28 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 40 Q70 42 82 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="84" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="84" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M32 78 Q42 76 55 77 Q68 76 78 78" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M36 76 Q22 68 18 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M74 76 Q88 68 92 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2264,7 +2362,7 @@ const POSITION_SVGS = {
     <path d="M60 48 Q74 44 86 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M60 48 Q48 56 38 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M56 32 Q70 26 82 30" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M28 72 Q40 70 55 71 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M34 70 Q26 62 22 54" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M76 70 Q84 62 88 54" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2276,7 +2374,7 @@ const POSITION_SVGS = {
     <path d="M55 54 Q66 60 74 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 38 Q40 36 28 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 38 Q70 38 82 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M36 80 Q44 76 55 77 Q66 76 74 80" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M42 78 Q42 60 44 44" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M68 78 Q68 60 66 44" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2287,7 +2385,7 @@ const POSITION_SVGS = {
     <path d="M60 58 Q80 52 92 42" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M52 66 Q38 72 28 80" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M58 66 Q72 72 82 80" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="22" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="22" r="9" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M55 31 L55 50" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M48 46 Q36 50 26 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M62 46 Q74 50 84 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2298,7 +2396,7 @@ const POSITION_SVGS = {
     <path d="M58 50 Q72 46 82 52" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M58 50 Q46 58 38 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M56 34 Q70 28 82 34" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M28 72 Q40 70 55 71 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M34 70 Q26 58 22 46" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M76 70 Q84 58 88 46" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2311,7 +2409,7 @@ const POSITION_SVGS = {
     <path d="M58 50 Q46 58 38 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M56 34 Q70 28 82 34" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M56 34 Q42 26 28 32" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M30 72 Q42 70 55 71 Q68 70 80 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M36 70 Q26 62 22 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M74 70 Q84 62 88 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2323,7 +2421,7 @@ const POSITION_SVGS = {
     <path d="M55 54 Q66 60 74 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 38 Q36 32 22 38" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M55 38 Q74 34 88 40" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="55" cy="90" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="90" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
     <path d="M34 84 Q44 80 55 81 Q66 80 76 84" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
     <path d="M38 82 Q20 72 14 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M72 82 Q90 72 96 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2335,7 +2433,7 @@ const POSITION_SVGS = {
         <path d="M58 56 Q46 62 38 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M56 40 Q42 36 30 42" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
         <path d="M56 40 Q70 38 82 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="55" cy="82" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+        <circle cx="55" cy="82" r="7" fill="none" stroke="#ffb3c6" stroke-width="2"/>
         <path d="M30 76 Q42 74 55 75 Q68 74 80 76" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
         <path d="M36 74 Q28 58 26 44" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M74 74 Q82 58 84 44" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -2527,6 +2625,32 @@ if ('serviceWorker' in navigator) {
   </div></nav>
 </div>
 
+
+<!-- ══ LOGROS ══ -->
+<div class="screen" id="achievementsScreen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('menu')">←</button>
+    <div class="screen-title">Logros</div>
+  </div>
+  <div class="achievements-container">
+    <div class="achievements-progress">
+      <div class="achievements-count" id="achievementsCount">0</div>
+      <div class="achievements-total" id="achievementsTotal">DE 13 LOGROS</div>
+      <div class="achievements-bar"><div class="achievements-bar-fill" id="achievementsBarFill" style="width:0%"></div></div>
+    </div>
+    <div id="achievementsList"></div>
+  </div>
+  <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items">
+    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item" onclick="goTo('fantasy')"><span class="nav-icon">💞</span><span class="nav-label">Fantasías</span></div>
+    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item" onclick="goTo('challenge')"><span class="nav-icon">📅</span><span class="nav-label">7 Días</span></div>
+    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+  </div></nav>
+</div>
+
 <!-- ══ HEAT MODAL ══ -->
 <div class="modal-overlay" id="heatModal" onclick="closeHeatModal(event)">
   <div class="modal-sheet">
@@ -2575,7 +2699,8 @@ if ('serviceWorker' in navigator) {
     <div id="ambienteSelectStep" style="padding:20px 24px 28px;">
       <div class="checkin-title" style="margin-top:4px;">¿CÓMO ESTÁ</div>
       <div class="checkin-title" style="color:var(--rose);margin-top:-4px;">EL AMBIENTE?</div>
-      <div class="checkin-sub" style="margin-bottom:20px;">Cada uno elige en secreto 🤫</div>
+      <div class="checkin-sub" style="margin-bottom:8px;">Cada uno elige en secreto 🤫</div>
+      <div style="font-size:0.58rem;color:var(--muted);letter-spacing:1px;text-align:center;margin-bottom:16px;">↓ Toca una carta para elegir</div>
 
       <div class="ambient-grid">
         <!-- Persona A -->
@@ -2641,6 +2766,9 @@ if ('serviceWorker' in navigator) {
       <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;margin-bottom:16px;text-align:center;" id="splashResultDesc">—</div>
       <div style="display:inline-block;padding:6px 20px;border-radius:20px;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:20px;" id="splashResultLevel" class="checkin-match-level">—</div>
       <button class="btn-primary" onclick="startAppWithAmbiente()">¡EMPEZAR A JUGAR! ✦</button>
+      <div style="font-size:0.58rem;color:var(--muted);line-height:1.6;margin-top:14px;text-align:center;padding:0 8px;">
+        💡 Pueden cambiar el nivel en cualquier momento tocando el badge <strong style="color:var(--gold)">🌹 ROMÁNTICO ✎</strong> en el menú
+      </div>
       <span style="display:block;font-size:0.58rem;color:var(--muted);letter-spacing:2px;margin-top:12px;cursor:pointer;text-transform:uppercase;text-align:center;" onclick="skipAmbienteSplash()">Cerrar</span>
     </div>
 
