@@ -1,4 +1,4 @@
-const CACHE = 'passionplay-v2';
+const CACHE = 'passionplay-v3';
 const FILES = [
   './',
   './index.html',
