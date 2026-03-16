@@ -349,6 +349,89 @@
     border:1px solid var(--border);
   }
 
+
+  /* ── TIMER ── */
+  .timer-fab {
+    position:fixed; bottom:90px; right:16px; z-index:150;
+    width:52px; height:52px; border-radius:50%;
+    background:var(--card2); border:1px solid var(--border);
+    display:none; align-items:center; justify-content:center;
+    flex-direction:column; cursor:pointer;
+    box-shadow:0 4px 20px rgba(0,0,0,0.4);
+    transition:all .3s;
+  }
+  .timer-fab.show { display:flex; }
+  .timer-fab.running { border-color:var(--rose); box-shadow:0 0 16px rgba(232,132,154,0.4); }
+  .timer-fab-icon { font-size:1.2rem; line-height:1; }
+  .timer-fab-time { font-size:0.5rem; color:var(--gold); letter-spacing:1px; margin-top:2px; }
+
+  .timer-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:300; align-items:flex-end; justify-content:center; backdrop-filter:blur(4px); }
+  .timer-modal.show { display:flex; }
+  .timer-sheet { width:100%; max-width:430px; background:var(--card2); border-radius:28px 28px 0 0; border-top:1px solid var(--border); padding:24px 24px 48px; animation:slideUp .3s ease; }
+  .timer-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--gold); font-style:italic; text-align:center; margin-bottom:20px; }
+  .timer-display {
+    font-family:'Cormorant Garamond',serif; font-size:4rem; color:var(--text);
+    text-align:center; letter-spacing:4px; margin-bottom:20px;
+    line-height:1;
+  }
+  .timer-display.urgent { color:var(--rose); animation:pulse 1s ease-in-out infinite; }
+  .timer-progress { width:100%; height:4px; background:var(--border); border-radius:2px; margin-bottom:20px; overflow:hidden; }
+  .timer-progress-bar { height:100%; background:linear-gradient(90deg,var(--rose),var(--gold)); border-radius:2px; transition:width .5s linear; }
+  .timer-presets { display:flex; gap:8px; margin-bottom:16px; }
+  .timer-preset { flex:1; padding:10px 4px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--muted); font-size:0.65rem; letter-spacing:1px; cursor:pointer; text-align:center; transition:all .2s; }
+  .timer-preset.active { border-color:var(--gold); color:var(--gold); background:rgba(201,169,110,0.1); }
+  .timer-controls { display:flex; gap:10px; }
+  .timer-start { flex:2; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--rose),var(--rose2)); color:#080810; font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:2px; cursor:pointer; }
+  .timer-reset { flex:1; padding:14px; border-radius:14px; border:1px solid var(--border); background:var(--card); color:var(--muted); font-family:'Montserrat',sans-serif; font-size:0.75rem; cursor:pointer; }
+  .timer-close-btn { display:block; text-align:center; margin-top:12px; font-size:0.6rem; color:var(--muted); letter-spacing:2px; cursor:pointer; text-transform:uppercase; }
+
+
+  /* ── 7 DÍAS ── */
+  #challenge { padding:0; }
+  .challenge-container { padding:20px 16px 100px; }
+  .challenge-header-card {
+    background:linear-gradient(135deg,rgba(201,169,110,0.1),rgba(232,132,154,0.08));
+    border:1px solid var(--border); border-radius:20px;
+    padding:20px; margin-bottom:16px; text-align:center;
+  }
+  .challenge-week-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--gold); font-style:italic; margin-bottom:4px; }
+  .challenge-week-sub { font-size:0.6rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+  .challenge-progress { display:flex; gap:6px; justify-content:center; margin-top:14px; }
+  .day-dot { width:32px; height:32px; border-radius:50%; border:1px solid var(--border); background:var(--card); display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:var(--muted); letter-spacing:1px; cursor:pointer; transition:all .3s; flex-direction:column; gap:1px; }
+  .day-dot.completed { background:linear-gradient(135deg,var(--gold),var(--gold2)); border-color:var(--gold); color:#080810; font-weight:600; }
+  .day-dot.today { border-color:var(--rose); color:var(--rose); box-shadow:0 0 10px rgba(232,132,154,0.3); }
+  .day-dot .day-num { font-size:0.7rem; font-weight:600; }
+  .day-dot .day-check { font-size:0.8rem; }
+
+  .challenge-day-card {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:20px; padding:20px; margin-bottom:12px;
+    cursor:pointer; transition:all .2s; position:relative; overflow:hidden;
+  }
+  .challenge-day-card::before {
+    content:''; position:absolute; left:0; top:0; bottom:0;
+    width:3px; background:var(--border); transition:background .3s;
+  }
+  .challenge-day-card.today::before { background:var(--rose); }
+  .challenge-day-card.completed::before { background:var(--gold); }
+  .challenge-day-card:active { transform:scale(0.98); }
+
+  .cday-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .cday-num { font-size:0.58rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+  .cday-status { font-size:0.7rem; }
+  .cday-title { font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:var(--gold); font-style:italic; margin-bottom:4px; }
+  .cday-desc { font-size:0.68rem; color:var(--muted); line-height:1.5; }
+  .cday-complete-btn {
+    width:100%; padding:12px; border-radius:12px; border:none; margin-top:12px;
+    background:linear-gradient(135deg,var(--gold),var(--gold2));
+    color:#080810; font-family:'Montserrat',sans-serif;
+    font-size:0.72rem; font-weight:600; letter-spacing:2px; cursor:pointer;
+    display:none;
+  }
+  .challenge-day-card.today .cday-complete-btn { display:block; }
+  .challenge-day-card.completed .cday-complete-btn { display:none; }
+  .challenge-reset { width:100%; padding:14px; border-radius:14px; border:1px solid var(--border); background:transparent; color:var(--muted); font-size:0.65rem; letter-spacing:2px; cursor:pointer; text-transform:uppercase; margin-top:8px; }
+
 </style>
 </head>
 <body>
@@ -415,6 +498,11 @@
       <span class="game-icon">🎰</span>
       <div class="game-name">Slots de Pasión</div>
       <div class="game-desc">Gira los reeles y descubre una combinación única</div>
+    </div>
+    <div class="game-card wide" onclick="goTo('challenge')" style="background:linear-gradient(135deg,rgba(201,169,110,0.08),rgba(232,132,154,0.06))">
+      <span class="game-icon">📅</span>
+      <div class="game-name">Desafío 7 Días</div>
+      <div class="game-desc">Un reto especial diferente cada día para conectar más</div>
     </div>
   </div>
   <nav class="bottom-nav show"><div class="nav-items">
@@ -554,25 +642,40 @@
 const DATA = {
   positions: {
     romantico: [
-      { name:"La Cuchara", diff:"easy", pos:"Lateral, ambos de lado", leads:"Él desde atrás", feel:"Íntimo y envolvente", intensity:2, desc:"Ella acostada de lado, él la abraza por detrás. Penetración suave con libertad de manos para explorar y besar el cuello.", tags:["LATERAL","ROMÁNTICO"] },
-      { name:"El Loto", diff:"easy", pos:"Sentados frente a frente", leads:"Ambos juntos", feel:"Conexión máxima", intensity:2, desc:"Ambos sentados, ella sobre él con piernas cruzadas detrás. Máximo contacto visual y corporal. Ideal para movimientos lentos y profundos.", tags:["SENTADOS","ÍNTIMO"] },
-      { name:"El Ángel", diff:"easy", pos:"Lateral abrazados", leads:"Ambos", feel:"Suave y seguro", intensity:1, desc:"Posición de cucharita pero más suave. Cuerpos completamente pegados, movimientos lentos y rítmicos. Perfecta para momentos románticos.", tags:["SUAVE","ABRAZO"] },
-      { name:"El Misionero", diff:"easy", pos:"Ella abajo, él arriba", leads:"Él", feel:"Clásico y cercano", intensity:2, desc:"Posición clásica con máximo contacto facial. Ella extiende las piernas o las eleva ligeramente para variar la sensación.", tags:["CLÁSICO","CARA A CARA"] },
-      { name:"La Silla", diff:"easy", pos:"Él sentado, ella encima", leads:"Ella", feel:"Control y cercanía", intensity:2, desc:"Él sentado en silla o borde de cama. Ella se sienta encima frente a él. Permite abrazarse y besarse mientras se mueven juntos.", tags:["SENTADOS","ELLA LIDERA"] },
+      { name:"La Cuchara",    diff:"easy", pos:"Lateral, ambos de lado",          leads:"Él desde atrás",  feel:"Íntimo y envolvente",   intensity:2, desc:"Ella acostada de lado, él la abraza por detrás. Penetración suave con libertad de manos para explorar y besar el cuello.", tags:["LATERAL","ROMÁNTICO"] },
+      { name:"El Loto",       diff:"easy", pos:"Sentados frente a frente",         leads:"Ambos juntos",    feel:"Conexión máxima",       intensity:2, desc:"Ambos sentados, ella sobre él con piernas cruzadas detrás. Máximo contacto visual y corporal. Ideal para movimientos lentos.", tags:["SENTADOS","ÍNTIMO"] },
+      { name:"El Ángel",      diff:"easy", pos:"Lateral abrazados",                leads:"Ambos",           feel:"Suave y seguro",        intensity:1, desc:"Cucharita suave. Cuerpos completamente pegados, movimientos lentos y rítmicos. Perfecta para momentos muy románticos.", tags:["SUAVE","ABRAZO"] },
+      { name:"El Misionero",  diff:"easy", pos:"Ella abajo, él arriba",            leads:"Él",              feel:"Clásico y cercano",     intensity:2, desc:"Posición clásica con máximo contacto facial. Ella extiende o eleva ligeramente las piernas para variar la sensación.", tags:["CLÁSICO","CARA A CARA"] },
+      { name:"La Silla",      diff:"easy", pos:"Él sentado, ella encima",          leads:"Ella",            feel:"Control y cercanía",    intensity:2, desc:"Él sentado en silla o borde de cama. Ella se sienta frente a él. Permite abrazarse y besarse mientras se mueven juntos.", tags:["SENTADOS","ELLA LIDERA"] },
+      { name:"El Columpio",   diff:"easy", pos:"Ella sentada, él arrodillado",     leads:"Ella",            feel:"Rítmico y suave",       intensity:2, desc:"Ella al borde de la cama, él arrodillado enfrente. Ella se balancea hacia él con un ritmo suave. Manos libres para caricias.", tags:["BORDE","BALANCEO"] },
+      { name:"La Ola",        diff:"easy", pos:"Él acostado, ella encima reclinada",leads:"Ella",           feel:"Profundo y cómodo",     intensity:2, desc:"Ella encima pero reclinada hacia atrás apoyando las manos en sus rodillas. Movimiento ondulante de caderas. Muy placentero para ambos.", tags:["ELLA ARRIBA","RELAJADO"] },
+      { name:"El Abrazo",     diff:"easy", pos:"De pie, frente a frente",          leads:"Ambos",           feel:"Apasionado y cercano",  intensity:2, desc:"De pie frente a frente, ella eleva una pierna apoyándola en su cadera. Ideal contra la pared. Máximo contacto corporal y visual.", tags:["DE PIE","PASIÓN"] },
+      { name:"La Montaña",    diff:"easy", pos:"Ella sobre él, inclinada adelante",leads:"Ella",            feel:"Íntimo y profundo",     intensity:2, desc:"Ella encima inclinada hacia adelante apoyando las manos a los lados de su cabeza. Ángulo muy íntimo, cuerpos casi pegados.", tags:["ELLA ARRIBA","ÍNTIMO"] },
+      { name:"El Puente Suave",diff:"easy",pos:"Ella abajo, caderas elevadas",     leads:"Ambos",           feel:"Suave y romántico",     intensity:2, desc:"Ella acostada con una almohada bajo las caderas, élencima. La almohada cambia el ángulo suavemente para mayor comodidad.", tags:["CLÁSICO","VARIANTE"] },
     ],
     picante: [
-      { name:"La Amazona", diff:"med", pos:"Ella encima mirando hacia él", leads:"Ella", feel:"Control total de ritmo", intensity:3, desc:"Ella se sienta sobre él con rodillas a los lados. Controla profundidad y ritmo. Él puede ver su cuerpo y tocar libremente.", tags:["ELLA ARRIBA","CONTROL"] },
-      { name:"La Mariposa", diff:"easy", pos:"Ella acostada, él de pie o arrodillado", leads:"Él", feel:"Profundo e intenso", intensity:3, desc:"Ella acostada al borde de la cama, piernas elevadas sobre los hombros de él. Penetración profunda con control externo.", tags:["BORDE CAMA","PROFUNDO"] },
-      { name:"El Puente", diff:"med", pos:"Él arrodillado, ella abajo", leads:"Ambos", feel:"Intenso y visual", intensity:3, desc:"Él arrodillado entre sus piernas, ella eleva caderas hacia él. Permite ver todo el cuerpo y ajustar ritmo fácilmente.", tags:["VISUAL","MEDIO"] },
-      { name:"Doggy Style", diff:"easy", pos:"Ella en cuatro, él detrás", leads:"Él", feel:"Profundo y dominante", intensity:4, desc:"Ella apoyada en manos y rodillas, él detrás. Penetración profunda desde atrás. Permite variar ritmo e intensidad fácilmente.", tags:["DESDE ATRÁS","INTENSO"] },
-      { name:"La Escalera", diff:"med", pos:"En borde de cama o escalón", leads:"Ambos", feel:"Ángulo nuevo y excitante", intensity:3, desc:"Ella acostada con caderas al borde, él de pie. El ángulo permite estimulación de punto G de forma natural.", tags:["BORDE","PUNTO G"] },
+      { name:"La Amazona",    diff:"med",  pos:"Ella encima mirando hacia él",     leads:"Ella",            feel:"Control total de ritmo",intensity:3, desc:"Ella se sienta sobre él con rodillas a los lados. Controla profundidad y ritmo. Él puede ver su cuerpo y tocar libremente.", tags:["ELLA ARRIBA","CONTROL"] },
+      { name:"La Mariposa",   diff:"easy", pos:"Ella acostada, él de pie",         leads:"Él",              feel:"Profundo e intenso",    intensity:3, desc:"Ella al borde de la cama, piernas elevadas sobre sus hombros. Penetración profunda con control externo. Añade almohada bajo caderas.", tags:["BORDE CAMA","PROFUNDO"] },
+      { name:"El Puente",     diff:"med",  pos:"Él arrodillado, ella abajo",       leads:"Ambos",           feel:"Intenso y visual",      intensity:3, desc:"Él arrodillado entre sus piernas, ella eleva caderas hacia él. Permite ver todo el cuerpo y ajustar ritmo fácilmente.", tags:["VISUAL","MEDIO"] },
+      { name:"Doggy Style",   diff:"easy", pos:"Ella en cuatro, él detrás",        leads:"Él",              feel:"Profundo y dominante",  intensity:4, desc:"Ella apoyada en manos y rodillas, él detrás. Penetración profunda desde atrás. Varía ritmo e intensidad fácilmente.", tags:["DESDE ATRÁS","INTENSO"] },
+      { name:"La Escalera",   diff:"med",  pos:"Caderas al borde, él de pie",      leads:"Ambos",           feel:"Ángulo excitante",      intensity:3, desc:"Ella acostada con caderas al borde, él de pie. El ángulo permite estimulación del punto G de forma muy natural.", tags:["BORDE","PUNTO G"] },
+      { name:"El Cangrejo",   diff:"med",  pos:"Ambos sentados, él detrás",        leads:"Ambos",           feel:"Profundo y controlado", intensity:3, desc:"Ambos sentados, ella entre sus piernas de espaldas a él. Él controla el ritmo desde atrás. Manos libres para estimulación extra.", tags:["SENTADOS","DESDE ATRÁS"] },
+      { name:"La Estrella",   diff:"med",  pos:"Ella de lado, piernas cruzadas",   leads:"Ambos",           feel:"Diferente e íntimo",    intensity:3, desc:"Ella acostada de lado con las piernas ligeramente cruzadas, él detrás pero perpendicular. Ángulo único que cambia toda la sensación.", tags:["LATERAL","ÁNGULO"] },
+      { name:"El Triángulo",  diff:"med",  pos:"Diagonal, ángulo 45 grados",       leads:"Él",              feel:"Nuevo e intenso",       intensity:3, desc:"Ella acostada en diagonal al borde de la cama, él de pie en ángulo. La posición diagonal crea una estimulación completamente diferente.", tags:["DIAGONAL","VARIANTE"] },
+      { name:"La Rana",       diff:"easy", pos:"Ella boca abajo, piernas abiertas",leads:"Él",              feel:"Profundo y relajado",   intensity:3, desc:"Ella boca abajo con piernas ligeramente abiertas, él encima. Posición cómoda que permite penetración profunda con poco esfuerzo.", tags:["BOCA ABAJO","PROFUNDO"] },
+      { name:"El Arco",       diff:"med",  pos:"Ella en arco hacia atrás",         leads:"Ella",            feel:"Intenso y visual",      intensity:4, desc:"Ella encima se inclina hacia atrás tocando sus tobillos. Cambia completamente el ángulo de estimulación. Visual y muy placentero.", tags:["ELLA ARRIBA","ARCO"] },
     ],
     hot: [
-      { name:"La Amazona Inversa", diff:"med", pos:"Ella encima mirando hacia sus pies", leads:"Ella", feel:"Intenso y profundo", intensity:4, desc:"Ella sentada sobre él pero mirando hacia sus pies. Control total de la profundidad. Él tiene vista completa y puede guiar las caderas.", tags:["INVERTIDA","INTENSA"] },
-      { name:"El Trípode", diff:"hard", pos:"De pie, él levanta una pierna", leads:"Ambos", feel:"Dominante y apasionado", intensity:5, desc:"De pie, él levanta una pierna de ella envolviéndola en su torso. Requiere equilibrio. Ideal contra la pared para más estabilidad.", tags:["DE PIE","AVENTURERO"] },
-      { name:"El Bostezo", diff:"hard", pos:"Ella acostada, rodillas al pecho", leads:"Él", feel:"Máxima profundidad", intensity:5, desc:"Ella acostada lleva rodillas al pecho, piernas sobre los hombros de él. Penetración muy profunda. Ir despacio al principio.", tags:["PROFUNDO","INTENSO"] },
-      { name:"La Cobra", diff:"hard", pos:"Él encima con cuerpo elevado", leads:"Él", feel:"Dominante y poderoso", intensity:5, desc:"Como misionero pero él se eleva con los brazos en extensión. Cambia el ángulo de entrada significativamente.", tags:["ÁNGULO","DOMINANTE"] },
-      { name:"El Escorpión", diff:"hard", pos:"Ella boca abajo, piernas elevadas", leads:"Ambos", feel:"Exótico y profundo", intensity:5, desc:"Ella boca abajo con caderas elevadas sobre almohadas. Él desde atrás con ángulo descendente. Máxima profundidad.", tags:["EXÓTICO","MÁXIMO"] },
+      { name:"La Amazona Inversa", diff:"med",  pos:"Ella encima mirando sus pies", leads:"Ella",           feel:"Intenso y profundo",    intensity:4, desc:"Ella sobre él mirando hacia sus pies. Control total de profundidad. Él tiene vista completa y puede guiar las caderas.", tags:["INVERTIDA","INTENSA"] },
+      { name:"El Trípode",         diff:"hard", pos:"De pie, pierna elevada",       leads:"Ambos",           feel:"Dominante y apasionado",intensity:5, desc:"De pie, él levanta una pierna de ella envolviéndola en su torso. Ideal contra la pared para más estabilidad y profundidad.", tags:["DE PIE","AVENTURERO"] },
+      { name:"El Bostezo",         diff:"hard", pos:"Rodillas al pecho",            leads:"Él",              feel:"Máxima profundidad",    intensity:5, desc:"Ella acostada lleva rodillas al pecho, piernas sobre sus hombros. Penetración muy profunda. Empezar despacio para adaptarse.", tags:["PROFUNDO","INTENSO"] },
+      { name:"La Cobra",           diff:"hard", pos:"Él elevado en extensión",      leads:"Él",              feel:"Dominante y poderoso",  intensity:5, desc:"Como misionero pero él se eleva con brazos extendidos. Cambia el ángulo de entrada significativamente. Mayor estimulación frontal.", tags:["ÁNGULO","DOMINANTE"] },
+      { name:"El Escorpión",       diff:"hard", pos:"Ella boca abajo, caderas altas",leads:"Ambos",          feel:"Exótico y profundo",    intensity:5, desc:"Ella boca abajo con caderas elevadas en almohadas. Él desde atrás en ángulo descendente. Una de las mayores profundidades.", tags:["EXÓTICO","MÁXIMO"] },
+      { name:"El Arado",           diff:"hard", pos:"Piernas completamente verticales",leads:"Él",           feel:"Extremo e intenso",     intensity:5, desc:"Ella acostada lleva las piernas completamente verticales juntas. Él encima controla la penetración. Requiere flexibilidad de ella.", tags:["VERTICAL","EXTREMO"] },
+      { name:"La Ballesta",        diff:"hard", pos:"Ella en tensión máxima",       leads:"Ambos",           feel:"Acrobático e intenso",  intensity:5, desc:"Ella en posición de puente con cuerpo arqueado, él arrodillado frente a ella. Requiere fuerza y flexibilidad. Muy visual e intenso.", tags:["ACROBÁTICO","FUERZA"] },
+      { name:"El Torbellino",      diff:"hard", pos:"Rotación durante el acto",     leads:"Ella",            feel:"Aventurero y diferente",intensity:4, desc:"Empiezan en amazona y ella gira 360 grados sin separarse. Requiere coordinación y práctica. El reto lo hace muy excitante.", tags:["ROTACIÓN","RETO"] },
+      { name:"La Silla Inversa",   diff:"med",  pos:"Él sentado, ella de espaldas", leads:"Ella",            feel:"Profundo y dominante",  intensity:4, desc:"Él sentado en silla, ella encima de espaldas. Ella controla el ritmo completamente. Él tiene manos libres para explorar su cuerpo.", tags:["SENTADOS","ESPALDAS"] },
+      { name:"El Ángel Caído",     diff:"hard", pos:"Combinación pie y acostada",   leads:"Ambos",           feel:"Intenso y apasionado",  intensity:5, desc:"Ella con hombros en el suelo y caderas elevadas sostenidas por él de pie. Requiere fuerza. La gravedad intensifica cada movimiento.", tags:["ACROBÁTICO","GRAVEDAD"] },
     ]
   },
   dice: {
@@ -658,6 +761,8 @@ function goTo(screen) {
   document.getElementById(screen).classList.add('active');
   window.scrollTo(0, 0);
   if (screen === 'ruleta') drawWheel();
+  if (screen === 'challenge') initChallenge();
+  updateTimerFab(screen);
 }
 
 // ── RULETA ──
@@ -851,6 +956,179 @@ function pullSlots() {
 
 
 
+
+
+// ── DESAFÍO 7 DÍAS ──
+const CHALLENGES = {
+  romantico: [
+    { title:"Masaje Sensorial",    desc:"Dediquen 10 minutos a un masaje completo sin hablar. Solo con las manos y la respiración como guía. Luego intercambien." },
+    { title:"Carta de Amor",       desc:"Cada uno escribe 5 cosas específicas que ama del otro. Léanlas en voz alta con música de fondo." },
+    { title:"Baño Compartido",     desc:"Compartan un baño o ducha lenta. Sin prisas, explorando cada zona con jabón y caricias." },
+    { title:"La Mirada",           desc:"Siéntense frente a frente y mantengan contacto visual por 5 minutos. Solo respiren y sonrían." },
+    { title:"Cena Romántica",      desc:"Cocinen juntos algo especial, pongan velas y coman sin teléfonos. Termina con un baile lento." },
+    { title:"Exploración Suave",   desc:"Túrnense para explorar el cuerpo del otro solo con las yemas de los dedos por 5 minutos cada uno." },
+    { title:"Noche de Fantasías",  desc:"Compartan 3 fantasías románticas cada uno. Escuchen sin juzgar y elijan una para comenzar a hacer realidad." },
+  ],
+  picante: [
+    { title:"Striptease Lento",    desc:"Uno de los dos realiza un striptease lento con música. El otro no puede tocar hasta que termine." },
+    { title:"El Juego de Hielo",   desc:"Usen un cubo de hielo para explorar el cuerpo del otro. Alterna frío y calor con tu boca." },
+    { title:"Vendas y Sorpresas",  desc:"Vendan los ojos al otro y sorpréndanlo con caricias, besos y susurros durante 10 minutos." },
+    { title:"Mensajes Secretos",   desc:"Durante el día envíen mensajes describiendo qué harán esta noche. Créen la tensión juntos." },
+    { title:"El Reto de Posiciones",desc:"Elijan 3 posiciones nuevas de la ruleta y pruébenlas todas esta noche. Valoren cada una del 1 al 10." },
+    { title:"Fotografía Íntima",   desc:"Tómense fotos artísticas el uno al otro. Solo para ustedes. Descubran los ángulos que más les gustan." },
+    { title:"Noche sin Límites",   desc:"Esta noche uno de los dos elige absolutamente todo: lugar, posición, duración, música. Sin restricciones." },
+  ],
+  hot: [
+    { title:"Dominación Suave",    desc:"Uno domina completamente durante 15 minutos. El otro solo recibe. Luego invierten los roles." },
+    { title:"El Espejo",           desc:"Hagan el amor frente a un espejo. Mantengan contacto visual con su reflejo durante todo el encuentro." },
+    { title:"Roleplay Sorpresa",   desc:"Uno prepara un escenario de roleplay sin decirle al otro. La sorpresa es parte del juego." },
+    { title:"Maratón de Posiciones",desc:"Usen la ruleta 5 veces seguidas. Cada posición que salga debe durar al menos 3 minutos." },
+    { title:"Fuera de la Cama",    desc:"Esta noche está prohibida la cama. Elijan otro lugar de la casa y sean creativos." },
+    { title:"La Cuenta Regresiva", desc:"Usen el temporizador: 5 minutos en cada posición sin parar. Cuando suene, cambian. 4 rondas mínimo." },
+    { title:"Fantasy Final",       desc:"Cada uno comparte su fantasía más atrevida. Esta noche hacen realidad la que elija la ruleta." },
+  ]
+};
+
+function initChallenge() {
+  const saved = JSON.parse(localStorage.getItem('challenge_' + currentHeat) || '{"completed":[],"startDay":0}');
+  renderChallenge(saved);
+}
+
+function renderChallenge(saved) {
+  const challenges = CHALLENGES[currentHeat];
+  const today = Math.floor(Date.now() / 86400000);
+  const startDay = saved.startDay || today;
+  const dayIndex = Math.min(today - startDay, 6);
+  const completed = saved.completed || [];
+
+  // Progress dots
+  const prog = document.getElementById('challengeProgress');
+  prog.innerHTML = challenges.map((_,i) => {
+    const isDone = completed.includes(i);
+    const isToday = i === dayIndex && !isDone;
+    return `<div class="day-dot ${isDone?'completed':''} ${isToday?'today':''}">
+      <span class="day-num">D${i+1}</span>
+      ${isDone ? '<span class="day-check">✓</span>' : ''}
+    </div>`;
+  }).join('');
+
+  // Day cards
+  const days = document.getElementById('challengeDays');
+  days.innerHTML = challenges.map((c,i) => {
+    const isDone = completed.includes(i);
+    const isToday = i === dayIndex && !isDone;
+    return `<div class="challenge-day-card ${isDone?'completed':''} ${isToday?'today':''}">
+      <div class="cday-header">
+        <span class="cday-num">DÍA ${i+1}</span>
+        <span class="cday-status">${isDone ? '✅' : isToday ? '🔥 HOY' : i < dayIndex ? '⏭️' : '🔒'}</span>
+      </div>
+      <div class="cday-title">${c.title}</div>
+      <div class="cday-desc">${isDone || isToday || i < dayIndex ? c.desc : 'Completa los días anteriores para desbloquear.'}</div>
+      ${isToday ? `<button class="cday-complete-btn" onclick="completeDay(${i})">✓ MARCAR COMO COMPLETADO</button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function completeDay(idx) {
+  const key = 'challenge_' + currentHeat;
+  const saved = JSON.parse(localStorage.getItem(key) || '{"completed":[],"startDay":0}');
+  if (!saved.completed.includes(idx)) saved.completed.push(idx);
+  if (!saved.startDay) saved.startDay = Math.floor(Date.now() / 86400000);
+  localStorage.setItem(key, JSON.stringify(saved));
+  renderChallenge(saved);
+}
+
+function resetChallenge() {
+  localStorage.removeItem('challenge_' + currentHeat);
+  const newSaved = { completed:[], startDay: Math.floor(Date.now() / 86400000) };
+  localStorage.setItem('challenge_' + currentHeat, JSON.stringify(newSaved));
+  renderChallenge(newSaved);
+}
+
+// ── TIMER ──
+let timerTotal = 120;
+let timerLeft = 120;
+let timerInterval = null;
+let timerRunning = false;
+
+function openTimer() {
+  document.getElementById('timerModal').classList.add('show');
+}
+function closeTimer() {
+  document.getElementById('timerModal').classList.remove('show');
+}
+function setTimer(secs) {
+  if (timerRunning) return;
+  timerTotal = secs;
+  timerLeft = secs;
+  document.querySelectorAll('.timer-preset').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  updateTimerDisplay();
+  document.getElementById('timerBar').style.width = '100%';
+}
+function toggleTimer() {
+  if (timerRunning) {
+    pauseTimer();
+  } else {
+    startTimer();
+  }
+}
+function startTimer() {
+  timerRunning = true;
+  document.getElementById('timerStartBtn').textContent = '⏸ PAUSAR';
+  document.getElementById('timerFab').classList.add('running');
+  timerInterval = setInterval(() => {
+    timerLeft--;
+    updateTimerDisplay();
+    const pct = (timerLeft / timerTotal) * 100;
+    document.getElementById('timerBar').style.width = pct + '%';
+    if (timerLeft <= 10) document.getElementById('timerDisplay').classList.add('urgent');
+    if (timerLeft <= 0) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      document.getElementById('timerStartBtn').textContent = '▶ INICIAR';
+      document.getElementById('timerDisplay').textContent = '¡TIEMPO!';
+      document.getElementById('timerFab').classList.remove('running');
+      document.getElementById('timerFabTime').textContent = 'DONE';
+      if (navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
+    }
+  }, 1000);
+}
+function pauseTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  document.getElementById('timerStartBtn').textContent = '▶ CONTINUAR';
+  document.getElementById('timerFab').classList.remove('running');
+}
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerLeft = timerTotal;
+  updateTimerDisplay();
+  document.getElementById('timerBar').style.width = '100%';
+  document.getElementById('timerStartBtn').textContent = '▶ INICIAR';
+  document.getElementById('timerDisplay').classList.remove('urgent');
+  document.getElementById('timerFab').classList.remove('running');
+  document.getElementById('timerFabTime').textContent = 'TIMER';
+}
+function updateTimerDisplay() {
+  const m = Math.floor(timerLeft / 60).toString().padStart(2,'0');
+  const s = (timerLeft % 60).toString().padStart(2,'0');
+  const txt = timerLeft > 0 ? m+':'+s : '¡TIEMPO!';
+  document.getElementById('timerDisplay').textContent = txt;
+  document.getElementById('timerFabTime').textContent = timerLeft > 0 ? m+':'+s : 'DONE';
+}
+
+// Show timer FAB when not on splash/menu
+function updateTimerFab(screen) {
+  const fab = document.getElementById('timerFab');
+  if (screen === 'splash' || screen === 'menu') {
+    fab.classList.remove('show');
+  } else {
+    fab.classList.add('show');
+  }
+}
+
 // ── RESULT SHEET ──
 const POSITION_SVGS = {
   "La Cuchara": `<svg width="170" height="130" viewBox="0 0 110 100">
@@ -1022,6 +1300,187 @@ const POSITION_SVGS = {
         <path d="M36 76 Q30 68 28 60" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <path d="M74 76 Q80 68 82 60" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
       </svg>`,
+  
+  "El Columpio": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="22" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 31 Q54 46 53 56" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M53 56 Q40 62 30 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M53 56 Q64 64 70 74" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M54 40 Q40 42 28 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M54 40 Q68 44 78 52" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M34 74 Q44 70 55 72 Q66 70 76 74" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M38 72 Q28 64 22 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M72 72 Q82 64 88 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "La Ola": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="14" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 23 Q56 38 58 50" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M58 50 Q70 54 82 58" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M58 50 Q46 56 36 64" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M56 36 Q68 32 80 36" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M56 36 Q44 30 32 34" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M28 72 Q40 70 55 71 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M34 70 Q26 62 22 54" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M76 70 Q84 62 88 54" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "El Abrazo": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="42" cy="18" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M42 27 L42 56" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M42 56 Q32 62 26 74" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M42 56 Q56 58 64 52" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M42 38 Q28 38 20 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M42 38 Q56 40 64 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="66" cy="22" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M66 31 L66 58" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M66 58 Q56 64 50 76" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M66 58 Q78 60 84 70" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M66 42 Q52 44 44 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "La Montaña": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="14" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 23 Q54 40 52 52" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M52 52 Q38 56 26 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M52 52 Q62 60 68 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M53 36 Q36 28 22 34" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M53 36 Q70 30 84 36" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="80" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M30 74 Q42 72 55 73 Q68 72 80 74" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M36 72 Q28 64 24 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M74 72 Q82 64 86 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "El Puente Suave": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="20" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 29 L55 54" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M55 54 Q42 58 30 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 54 Q68 58 80 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 38 Q40 40 28 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 38 Q70 40 82 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="55" cy="82" rx="22" ry="6" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <circle cx="55" cy="88" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M36 78 Q28 70 22 62" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M74 78 Q82 70 88 62" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "El Cangrejo": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="70" cy="22" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M70 31 Q70 48 70 58" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M70 58 Q58 64 48 74" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M70 58 Q82 62 88 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M70 42 Q56 40 46 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M70 42 Q84 42 92 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="40" cy="28" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M40 37 Q42 52 44 60" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M44 60 Q34 66 26 74" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M44 60 Q54 66 58 74" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M41 48 Q28 48 20 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "La Estrella": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="30" cy="40" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M30 49 Q42 52 65 54" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M65 54 Q76 56 84 62" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M65 54 Q72 58 78 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M38 48 Q28 56 22 64" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="78" cy="36" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M78 45 Q78 58 78 66" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M78 66 Q66 70 56 78" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M78 66 Q88 72 92 80" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M72 50 Q60 46 52 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "El Triángulo": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="18" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 27 L55 54" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M55 54 Q44 60 36 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 54 Q68 58 76 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 38 Q40 36 28 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 38 Q70 38 82 46" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="88" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M34 82 Q44 78 55 80 Q66 78 76 82" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M38 80 Q24 70 20 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M72 80 Q86 70 90 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "La Rana": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="20" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 29 Q55 46 55 56" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M55 56 Q44 60 34 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 56 Q66 62 74 72" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 40 Q40 40 28 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 40 Q70 42 82 50" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="84" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M32 78 Q42 76 55 77 Q68 76 78 78" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M36 76 Q22 68 18 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M74 76 Q88 68 92 56" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "El Arco": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="12" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 21 Q56 36 60 48" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M60 48 Q74 44 86 48" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M60 48 Q48 56 38 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M56 32 Q70 26 82 30" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M28 72 Q40 70 55 71 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M34 70 Q26 62 22 54" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M76 70 Q84 62 88 54" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "El Arado": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="20" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 29 L55 54" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M55 54 Q44 58 34 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 54 Q66 60 74 70" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 38 Q40 36 28 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 38 Q70 38 82 44" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="86" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M36 80 Q44 76 55 77 Q66 76 74 80" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M42 78 Q42 60 44 44" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M68 78 Q68 60 66 44" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "La Ballesta": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="58" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M50 58 Q30 52 18 42" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M60 58 Q80 52 92 42" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M52 66 Q38 72 28 80" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M58 66 Q72 72 82 80" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="22" r="9" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M55 31 L55 50" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M48 46 Q36 50 26 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M62 46 Q74 50 84 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "El Torbellino": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="14" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 23 Q56 38 58 50" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M58 50 Q72 46 82 52" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M58 50 Q46 58 38 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M56 34 Q70 28 82 34" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M28 72 Q40 70 55 71 Q70 70 82 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M34 70 Q26 58 22 46" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M76 70 Q84 58 88 46" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M55 71 Q70 64 76 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-dasharray="3,3"/>
+  </svg>`,
+  "La Silla Inversa": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="14" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 23 Q56 38 58 50" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M58 50 Q70 54 82 58" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M58 50 Q46 58 38 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M56 34 Q70 28 82 34" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M56 34 Q42 26 28 32" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="78" r="8" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M30 72 Q42 70 55 71 Q68 70 80 72" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M36 70 Q26 62 22 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M74 70 Q84 62 88 52" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  "El Ángel Caído": `<svg width="170" height="130" viewBox="0 0 110 100">
+    <circle cx="55" cy="20" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
+    <path d="M55 29 L55 54" stroke="#ff8fab" stroke-width="2" fill="none"/>
+    <path d="M55 54 Q44 58 34 66" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 54 Q66 60 74 68" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 38 Q36 32 22 38" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55 38 Q74 34 88 40" stroke="#ff8fab" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="55" cy="90" r="7" fill="none" stroke="#ffb3c6" stroke-width="1.5"/>
+    <path d="M34 84 Q44 80 55 81 Q66 80 76 84" stroke="#ffb3c6" stroke-width="1.5" fill="none"/>
+    <path d="M38 82 Q20 72 14 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M72 82 Q90 72 96 58" stroke="#ffb3c6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`,
   "El Escorpión": `<svg width="170" height="130" viewBox="0 0 110 100">
         <circle cx="55" cy="20" r="9" fill="none" stroke="#ff8fab" stroke-width="2"/>
         <path d="M55 29 Q56 46 58 56" stroke="#ff8fab" stroke-width="2" fill="none"/>
@@ -1143,6 +1602,31 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
+
+<!-- ══ DESAFÍO 7 DÍAS ══ -->
+<div class="screen" id="challenge">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goTo('menu')">←</button>
+    <div class="screen-title">Desafío 7 Días</div>
+  </div>
+  <div class="challenge-container">
+    <div class="challenge-header-card">
+      <div class="challenge-week-title">✦ Semana de Conexión</div>
+      <div class="challenge-week-sub">Un reto diferente cada día</div>
+      <div class="challenge-progress" id="challengeProgress"></div>
+    </div>
+    <div id="challengeDays"></div>
+    <button class="challenge-reset" onclick="resetChallenge()">↺ Reiniciar desafío</button>
+  </div>
+  <nav class="bottom-nav show"><div class="nav-items">
+    <div class="nav-item" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
+    <div class="nav-item" onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
+    <div class="nav-item" onclick="goTo('dados')"><span class="nav-icon">🎲</span><span class="nav-label">Dados</span></div>
+    <div class="nav-item" onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
+    <div class="nav-item" onclick="goTo('slots')"><span class="nav-icon">🎰</span><span class="nav-label">Slots</span></div>
+  </div></nav>
+</div>
+
 <!-- ══ HEAT MODAL ══ -->
 <div class="modal-overlay" id="heatModal" onclick="closeHeatModal(event)">
   <div class="modal-sheet">
@@ -1161,6 +1645,34 @@ if ('serviceWorker' in navigator) {
     </div>
     <button class="modal-confirm-btn" onclick="confirmHeat()">CONFIRMAR ✦</button>
     <span class="modal-close" onclick="closeHeatModal()">CANCELAR</span>
+  </div>
+</div>
+
+
+<!-- ══ TIMER FAB ══ -->
+<div class="timer-fab" id="timerFab" onclick="openTimer()">
+  <span class="timer-fab-icon">⏱️</span>
+  <span class="timer-fab-time" id="timerFabTime">TIMER</span>
+</div>
+
+<!-- ══ TIMER MODAL ══ -->
+<div class="timer-modal" id="timerModal" onclick="if(event.target===this)closeTimer()">
+  <div class="timer-sheet">
+    <div class="timer-title">⏱️ Temporizador</div>
+    <div class="timer-display" id="timerDisplay">02:00</div>
+    <div class="timer-progress"><div class="timer-progress-bar" id="timerBar" style="width:100%"></div></div>
+    <div class="timer-presets">
+      <button class="timer-preset" onclick="setTimer(60)">1 min</button>
+      <button class="timer-preset active" onclick="setTimer(120)">2 min</button>
+      <button class="timer-preset" onclick="setTimer(180)">3 min</button>
+      <button class="timer-preset" onclick="setTimer(300)">5 min</button>
+      <button class="timer-preset" onclick="setTimer(600)">10 min</button>
+    </div>
+    <div class="timer-controls">
+      <button class="timer-start" id="timerStartBtn" onclick="toggleTimer()">▶ INICIAR</button>
+      <button class="timer-reset" onclick="resetTimer()">↺ RESET</button>
+    </div>
+    <span class="timer-close-btn" onclick="closeTimer()">CERRAR</span>
   </div>
 </div>
 
