@@ -977,6 +977,172 @@
     border:1px solid rgba(155,109,255,0.2);
   }
 
+
+  /* ── RULETA MEJORADA ── */
+
+  /* Tabs de ruleta: Girar / Favoritas / Historial */
+  .wheel-tabs {
+    display:flex; gap:8px; padding:0 24px 12px;
+  }
+  .wheel-tab {
+    flex:1; padding:9px; border-radius:12px;
+    border:1px solid var(--border); background:var(--card);
+    color:var(--muted); font-size:0.62rem; letter-spacing:1px;
+    cursor:pointer; transition:all .25s; text-align:center;
+  }
+  .wheel-tab.active {
+    background:rgba(var(--gold-rgb,201,169,110),0.12);
+    border-color:var(--gold); color:var(--gold);
+  }
+
+  /* Panel de filtros */
+  .wheel-filter-panel {
+    display:none; padding:0 24px 16px;
+  }
+  .wheel-filter-panel.show { display:block; }
+  .wfp-title {
+    font-size:0.58rem; color:var(--muted); letter-spacing:2px;
+    text-transform:uppercase; margin-bottom:10px;
+  }
+  .wfp-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:8px;
+  }
+  .wfp-item {
+    display:flex; align-items:center; gap:8px;
+    padding:8px 10px; border-radius:10px;
+    border:1px solid var(--border); background:var(--card);
+    cursor:pointer; transition:all .2s;
+  }
+  .wfp-item.disabled { opacity:0.4; }
+  .wfp-item.disabled .wfp-name { text-decoration:line-through; }
+  .wfp-check {
+    width:16px; height:16px; border-radius:4px;
+    border:1px solid var(--border); background:var(--card2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.55rem; flex-shrink:0;
+  }
+  .wfp-item:not(.disabled) .wfp-check {
+    background:var(--gold); border-color:var(--gold); color:#080810;
+  }
+  .wfp-name { font-size:0.6rem; color:var(--text); flex:1; }
+  .wfp-diff {
+    width:6px; height:6px; border-radius:50%; flex-shrink:0;
+  }
+
+  /* Botón filtro */
+  .wheel-filter-btn {
+    padding:7px 14px; border-radius:10px;
+    border:1px solid var(--border); background:var(--card);
+    color:var(--muted); font-size:0.6rem; letter-spacing:1px;
+    cursor:pointer; transition:all .2s; margin-bottom:12px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .wheel-filter-btn.active { border-color:var(--rose); color:var(--rose); }
+  .wfb-count {
+    background:var(--rose); color:#080810;
+    border-radius:10px; padding:1px 6px; font-size:0.5rem;
+    font-weight:700; display:none;
+  }
+  .wheel-filter-btn.active .wfb-count { display:inline; }
+
+  /* Flash del segmento ganador */
+  @keyframes wheelFlash {
+    0%   { opacity:1; }
+    25%  { opacity:0.4; }
+    50%  { opacity:1; }
+    75%  { opacity:0.5; }
+    100% { opacity:1; }
+  }
+  .wheel-flash { animation:wheelFlash .5s ease; }
+
+  /* Favoritos */
+  .favorites-panel { padding:0 24px 100px; display:none; }
+  .favorites-panel.show { display:block; }
+  .fav-empty {
+    text-align:center; padding:40px 0;
+    font-size:0.7rem; color:var(--muted);
+    line-height:1.8;
+  }
+  .fav-item {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:16px; padding:14px 16px; margin-bottom:10px;
+    cursor:pointer; transition:all .2s;
+    display:flex; align-items:center; gap:12px;
+  }
+  .fav-item:active { transform:scale(0.98); }
+  .fav-info { flex:1; }
+  .fav-name {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1rem; color:var(--gold); font-style:italic;
+  }
+  .fav-note { font-size:0.6rem; color:var(--muted); margin-top:3px; }
+  .fav-remove {
+    width:28px; height:28px; border-radius:50%;
+    border:1px solid var(--border); background:var(--card);
+    color:var(--muted); font-size:0.8rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+
+  /* Historial */
+  .history-panel { padding:0 24px 100px; display:none; }
+  .history-panel.show { display:block; }
+  .history-item {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:14px; padding:12px 16px; margin-bottom:8px;
+    display:flex; align-items:center; gap:12px; cursor:pointer;
+    transition:all .2s;
+  }
+  .history-item:active { transform:scale(0.98); }
+  .history-num {
+    width:28px; height:28px; border-radius:50%;
+    background:rgba(var(--gold-rgb,201,169,110),0.1);
+    color:var(--gold); font-size:0.6rem; font-weight:600;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .history-name {
+    font-family:'Cormorant Garamond',serif;
+    font-size:0.95rem; color:var(--text); font-style:italic; flex:1;
+  }
+  .history-spin-again {
+    font-size:0.7rem; color:var(--muted); cursor:pointer;
+    padding:4px 10px; border-radius:8px;
+    border:1px solid var(--border); background:var(--card);
+    white-space:nowrap;
+  }
+
+  /* Botón favorito en el sheet */
+  .sheet-fav-btn {
+    position:absolute; top:16px; right:16px;
+    width:32px; height:32px; border-radius:50%;
+    border:1px solid var(--border); background:var(--card);
+    color:var(--muted); font-size:1rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s;
+  }
+  .sheet-fav-btn.saved { color:#e84040; border-color:#e84040; background:rgba(232,64,64,0.1); }
+
+  /* Modo Reto */
+  .reto-mode-btn {
+    width:100%; padding:13px; border-radius:14px;
+    border:1px solid rgba(155,109,255,0.3);
+    background:rgba(155,109,255,0.08);
+    color:#c084fc; font-family:'Montserrat',sans-serif;
+    font-size:0.72rem; font-weight:500; letter-spacing:2px;
+    cursor:pointer; margin-bottom:10px; transition:all .2s;
+  }
+  .reto-mode-btn.active {
+    background:linear-gradient(135deg,#9b6dff,#c084fc);
+    color:#080810; border-color:transparent;
+  }
+  .reto-progress {
+    display:none; text-align:center;
+    font-size:0.6rem; color:var(--purple); letter-spacing:2px;
+    text-transform:uppercase; margin-bottom:8px;
+  }
+  .reto-progress.show { display:block; }
+
 </style>
 </head>
 <body>
@@ -1102,7 +1268,7 @@
     </div>
 
   </div>
-    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
     <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
     <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
@@ -1119,29 +1285,62 @@
     <button class="back-btn" onclick="goTo('menu')">←</button>
     <div class="screen-title">Ruleta de Posiciones</div>
   </div>
-  <div class="wheel-container">
-    <div class="wheel-wrapper">
-      <div class="wheel-pointer"></div>
-      <canvas id="wheelCanvas" width="300" height="300"></canvas>
-      <div class="wheel-center">✦</div>
+
+  <!-- Tabs -->
+  <div class="wheel-tabs">
+    <div class="wheel-tab active" id="tabGirar" onclick="switchWheelTab('girar')">🎡 Girar</div>
+    <div class="wheel-tab" id="tabFavoritas" onclick="switchWheelTab('favoritas')">❤️ Favoritas</div>
+    <div class="wheel-tab" id="tabHistorial" onclick="switchWheelTab('historial')">🕐 Historial</div>
+  </div>
+
+  <!-- PANEL GIRAR -->
+  <div id="panelGirar">
+    <!-- Controles superiores -->
+    <div style="display:flex;align-items:center;gap:8px;padding:0 24px 8px;">
+      <button class="wheel-filter-btn" id="filterBtn" onclick="toggleFilterPanel()">
+        ⚙️ Filtrar posiciones
+        <span class="wfb-count" id="filterCount">0</span>
+      </button>
+      <button class="reto-mode-btn" id="retoBtn" onclick="toggleRetoMode()" style="flex:0;padding:7px 14px;width:auto;margin-bottom:0;">
+        🎯 Modo Reto
+      </button>
     </div>
-    <button class="spin-btn" id="spinBtn" onclick="spinWheel()">GIRAR ✦</button>
-    <div class="result-card" id="resultCard">
-      <div class="result-level-row">
-        <div class="result-name" id="resultName">—</div>
-        <span class="meta-tag tag-easy" id="resultDiff">FÁCIL</span>
+    <div class="reto-progress" id="retoProgress">Ronda <span id="retoRound">1</span> de 5</div>
+
+    <!-- Panel filtros desplegable -->
+    <div class="wheel-filter-panel" id="filterPanel">
+      <div class="wfp-title">Desactiva posiciones que no quieres</div>
+      <div class="wfp-grid" id="filterGrid"></div>
+    </div>
+
+    <div class="wheel-container">
+      <div class="wheel-wrapper">
+        <div class="wheel-pointer"></div>
+        <canvas id="wheelCanvas" width="300" height="300"></canvas>
+        <div class="wheel-center">✦</div>
       </div>
-      <div class="result-meta" id="resultMeta"></div>
-      <div class="result-divider"></div>
-      <div class="result-row"><span class="result-row-label">📍 POSICIÓN</span><span class="result-row-value" id="resultPos">—</span></div>
-      <div class="result-row"><span class="result-row-label">👤 LIDERA</span><span class="result-row-value" id="resultLeads">—</span></div>
-      <div class="result-row"><span class="result-row-label">🎯 SENSACIÓN</span><span class="result-row-value" id="resultFeel">—</span></div>
-      <div class="result-row"><span class="result-row-label">⚡ INTENSIDAD</span><div class="intensity-dots" id="resultDots"></div></div>
-      <div class="result-divider"></div>
-      <div class="result-row"><span class="result-row-label">📖 CÓMO</span><span class="result-row-value" id="resultDesc">—</span></div>
+      <button class="spin-btn" id="spinBtn" onclick="spinWheel()">GIRAR ✦</button>
+      <div class="result-card" id="resultCard" style="display:none!important;"></div>
     </div>
   </div>
-    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+
+  <!-- PANEL FAVORITAS -->
+  <div class="favorites-panel" id="panelFavoritas" style="display:none;">
+    <div class="fav-empty" id="favEmpty">
+      ❤️<br><br>Aún no tienen favoritas.<br>
+      Toca ❤️ en el resultado de la ruleta<br>para guardar posiciones que les gustan.
+    </div>
+    <div id="favList"></div>
+  </div>
+
+  <!-- PANEL HISTORIAL -->
+  <div class="history-panel" id="panelHistorial" style="display:none;">
+    <div class="fav-empty" id="histEmpty">
+      🕐<br><br>El historial aparece aquí<br>después de girar la ruleta.
+    </div>
+    <div id="histList"></div>
+  </div>
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
     <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
     <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
@@ -1172,7 +1371,7 @@
       <div class="dice-desc" id="diceDesc">—</div>
     </div>
   </div>
-    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
     <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
     <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
@@ -1205,7 +1404,7 @@
       <button onclick="skipTod()" style="flex:1;padding:18px;border-radius:16px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'Montserrat',sans-serif;font-size:0.7rem;letter-spacing:2px;cursor:pointer;">SALTAR</button>
     </div>
   </div>
-    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
     <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
     <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
@@ -1236,7 +1435,7 @@
     </div>
     <button class="pull-btn" id="pullBtn" onclick="pullSlots()">🎰 GIRAR RULETA</button>
   </div>
-    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
     <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
     <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
@@ -1382,7 +1581,7 @@ function goTo(screen) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(screen).classList.add('active');
   window.scrollTo(0, 0);
-  if (screen === 'ruleta') drawWheel();
+  if (screen === 'ruleta') initRuleta();
   if (screen === 'challenge') initChallenge();
   if (screen === 'achievementsScreen') initAchievementsScreen();
   if (screen === 'fantasy') initFantasy();
@@ -1392,47 +1591,230 @@ function goTo(screen) {
 }
 
 // ── RULETA ──
-const WHEEL_COLORS = ['#1a1a2e','#16213e','#1e1e3a','#141428','#1a1a2e','#16213e','#1e1e3a','#141428'];
-const WHEEL_ACCENT = ['#c9a96e','#e8d5a3','#c9a96e','#e8c4a0','#d4b886','#c9a96e','#e8d5a3','#d4b886'];
 
-function drawWheel(rotation = 0) {
+// ── RULETA: VARIABLES ──
+let wheelDisabled = [];   // índices de posiciones desactivadas
+let wheelLastIdx = -1;    // para no repetir
+let wheelFavorites = [];  // { name, diff, pos, leads, feel, desc, tags, intensity }
+let wheelHistory = [];    // últimas 5 posiciones
+let retoModeActive = false;
+let retoRound = 1;
+let wheelTabActive = 'girar';
+
+// ── RULETA: TABS ──
+function switchWheelTab(tab) {
+  wheelTabActive = tab;
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  ['girar','favoritas','historial'].forEach(t => {
+    const panel = document.getElementById('panel' + cap(t));
+    const tabEl = document.getElementById('tab' + cap(t));
+    if (panel) panel.style.display = 'none';
+    if (tabEl) tabEl.classList.remove('active');
+  });
+  const panel = document.getElementById('panel' + cap(tab));
+  const tabEl = document.getElementById('tab' + cap(tab));
+  if (panel) panel.style.display = 'block';
+  if (tabEl) tabEl.classList.add('active');
+  if (tab === 'favoritas') renderFavorites();
+  if (tab === 'historial') renderHistory();
+}
+
+// ── RULETA: FILTROS ──
+function toggleFilterPanel() {
+  const panel = document.getElementById('filterPanel');
+  const btn = document.getElementById('filterBtn');
+  panel.classList.toggle('show');
+  btn.classList.toggle('active');
+  if (panel.classList.contains('show')) renderFilterGrid();
+}
+
+function renderFilterGrid() {
+  const positions = DATA.positions[currentHeat];
+  const grid = document.getElementById('filterGrid');
+  grid.innerHTML = positions.map((p, i) => {
+    const disabled = wheelDisabled.includes(i);
+    const diffColor = p.diff === 'easy' ? '#6dc86d' : p.diff === 'med' ? '#f0b429' : '#ff6b6b';
+    return `<div class="wfp-item ${disabled ? 'disabled' : ''}" onclick="toggleFilter(${i}, this)">
+      <div class="wfp-check">${disabled ? '' : '✓'}</div>
+      <div class="wfp-name">${p.name}</div>
+      <div class="wfp-diff" style="background:${diffColor}"></div>
+    </div>`;
+  }).join('');
+}
+
+function toggleFilter(idx, el) {
+  const pos = wheelDisabled.indexOf(idx);
+  if (pos === -1) {
+    wheelDisabled.push(idx);
+    el.classList.add('disabled');
+    el.querySelector('.wfp-check').textContent = '';
+  } else {
+    wheelDisabled.splice(pos, 1);
+    el.classList.remove('disabled');
+    el.querySelector('.wfp-check').textContent = '✓';
+  }
+  // Actualizar contador
+  const count = wheelDisabled.length;
+  const countEl = document.getElementById('filterCount');
+  countEl.textContent = count;
+  const btn = document.getElementById('filterBtn');
+  if (count > 0) btn.classList.add('active'); else btn.classList.remove('active');
+  // Redibujar rueda
+  drawWheel(wheelAngle);
+}
+
+// ── RULETA: FAVORITOS ──
+let currentSheetPosition = null;
+
+function toggleFavorite() {
+  if (!currentSheetPosition) return;
+  const btn = document.getElementById('sheetFavBtn');
+  const idx = wheelFavorites.findIndex(f => f.name === currentSheetPosition.name);
+  if (idx === -1) {
+    wheelFavorites.push(currentSheetPosition);
+    storageSet('wheel_favorites', wheelFavorites);
+    btn.textContent = '❤️';
+    btn.classList.add('saved');
+    showAchievement({ icon:'❤️', name:'Primera Favorita guardada' });
+  } else {
+    wheelFavorites.splice(idx, 1);
+    storageSet('wheel_favorites', wheelFavorites);
+    btn.textContent = '♡';
+    btn.classList.remove('saved');
+  }
+}
+
+function renderFavorites() {
+  wheelFavorites = storageGet('wheel_favorites') || [];
+  const list = document.getElementById('favList');
+  const empty = document.getElementById('favEmpty');
+  if (wheelFavorites.length === 0) {
+    empty.style.display = 'block'; list.innerHTML = ''; return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = wheelFavorites.map((f, i) => `
+    <div class="fav-item" onclick="showPositionResult(JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(f))}')))" >
+      <div class="fav-info">
+        <div class="fav-name">${f.name}</div>
+        <div class="fav-note">${f.diff === 'easy' ? '🟢 Fácil' : f.diff === 'med' ? '🟡 Medio' : '🔴 Intenso'} · ${f.feel}</div>
+      </div>
+      <button class="fav-remove" onclick="event.stopPropagation();removeFavorite(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function removeFavorite(idx) {
+  wheelFavorites.splice(idx, 1);
+  storageSet('wheel_favorites', wheelFavorites);
+  renderFavorites();
+}
+
+// ── RULETA: HISTORIAL ──
+function addToWheelHistory(pos) {
+  wheelHistory.unshift(pos);
+  if (wheelHistory.length > 5) wheelHistory.pop();
+  storageSet('wheel_history', wheelHistory);
+}
+
+function renderHistory() {
+  wheelHistory = storageGet('wheel_history') || [];
+  const list = document.getElementById('histList');
+  const empty = document.getElementById('histEmpty');
+  if (wheelHistory.length === 0) {
+    empty.style.display = 'block'; list.innerHTML = ''; return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = wheelHistory.map((p, i) => `
+    <div class="history-item">
+      <div class="history-num">${i+1}</div>
+      <div class="history-name">${p.name}</div>
+      <button class="history-spin-again" onclick="showPositionResult(JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(p))}')))" >Ver</button>
+    </div>
+  `).join('');
+}
+
+// ── RULETA: MODO RETO ──
+function toggleRetoMode() {
+  retoModeActive = !retoModeActive;
+  retoRound = 1;
+  const btn = document.getElementById('retoBtn');
+  const prog = document.getElementById('retoProgress');
+  btn.classList.toggle('active', retoModeActive);
+  prog.classList.toggle('show', retoModeActive);
+  if (retoModeActive) {
+    document.getElementById('spinBtn').textContent = 'RETO 1/5 ✦';
+    document.getElementById('retoRound').textContent = 1;
+  } else {
+    document.getElementById('spinBtn').textContent = 'GIRAR ✦';
+  }
+}
+
+// ── RULETA: INIT al navegar ──
+function initRuleta() {
+  wheelDisabled = [];
+  wheelLastIdx = -1;
+  wheelFavorites = storageGet('wheel_favorites') || [];
+  wheelHistory = storageGet('wheel_history') || [];
+  renderFilterGrid();
+  switchWheelTab('girar');
+  drawWheel(wheelAngle);
+}
+
+// Colores por dificultad en la rueda
+function getWheelColors(pos) {
+  if (pos.diff === 'easy') return { bg:'#1a2820', stroke:'rgba(109,200,109,0.5)', text:'#8dc88d' };
+  if (pos.diff === 'med')  return { bg:'#22201a', stroke:'rgba(240,180,41,0.5)',  text:'#d4a030' };
+  return                          { bg:'#22181a', stroke:'rgba(255,107,107,0.5)', text:'#e07070' };
+}
+
+function drawWheel(rotation = 0, highlightIdx = -1) {
   const canvas = document.getElementById('wheelCanvas');
   if (!canvas) return;
-  // Responsive canvas size
   const size = Math.min(300, window.innerWidth - 48);
   canvas.width = size; canvas.height = size;
   const ctx = canvas.getContext('2d');
-  const positions = DATA.positions[currentHeat];
+  // Usar posiciones filtradas
+  const allPositions = DATA.positions[currentHeat];
+  const positions = allPositions.filter((p, i) => !wheelDisabled.includes(i));
+  if (positions.length === 0) return;
   const n = positions.length;
   const arc = (2 * Math.PI) / n;
   const cx = size/2, cy = size/2, r = size/2 - 5;
-  ctx.clearRect(0, 0, 300, 300);
+  ctx.clearRect(0, 0, size, size);
+
   for (let i = 0; i < n; i++) {
     const angle = rotation + i * arc;
+    const colors = getWheelColors(positions[i]);
+    const isHighlight = i === highlightIdx;
+
+    // Segmento
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, r, angle, angle + arc);
     ctx.closePath();
-    ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
+    ctx.fillStyle = isHighlight ? colors.stroke.replace('0.5','0.35') : colors.bg;
     ctx.fill();
-    ctx.strokeStyle = 'rgba(201,169,110,0.3)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = colors.stroke;
+    ctx.lineWidth = isHighlight ? 2.5 : 1;
     ctx.stroke();
+
+    // Texto
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(angle + arc / 2);
-    // Draw text centered radially, readable size
     const label = positions[i].name;
     ctx.textAlign = 'center';
-    ctx.fillStyle = WHEEL_ACCENT[i % WHEEL_ACCENT.length];
-    ctx.font = `italic ${Math.max(10, Math.floor(r * 0.09))}px Georgia, serif`;
-    ctx.shadowColor = 'rgba(0,0,0,0.8)';
-    ctx.shadowBlur = 4;
-    // Position text at 65% of radius so it fits well
-    ctx.fillText(label, r * 0.64, 4);
+    ctx.fillStyle = isHighlight ? '#ffffff' : colors.text;
+    const fontSize = Math.max(9, Math.floor(r * 0.088));
+    ctx.font = `italic ${fontSize}px Georgia, serif`;
+    ctx.shadowColor = 'rgba(0,0,0,0.9)';
+    ctx.shadowBlur = 5;
+    ctx.fillText(label, r * 0.62, 4);
     ctx.shadowBlur = 0;
     ctx.restore();
   }
+
+  // Borde exterior
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, 2 * Math.PI);
   ctx.strokeStyle = 'rgba(201,169,110,0.5)';
@@ -1444,35 +1826,38 @@ function spinWheel() {
   if (wheelSpinning) return;
   wheelSpinning = true;
   document.getElementById('spinBtn').disabled = true;
-  document.getElementById('resultCard').classList.remove('show');
 
-  const positions = DATA.positions[currentHeat];
-  const n = positions.length;
+  // Usar posiciones filtradas (excluir desactivadas)
+  const allPositions = DATA.positions[currentHeat];
+  const enabledPositions = allPositions
+    .map((p, i) => ({ pos: p, origIdx: i }))
+    .filter(item => !wheelDisabled.includes(item.origIdx));
+
+  if (enabledPositions.length === 0) {
+    wheelSpinning = false;
+    document.getElementById('spinBtn').disabled = false;
+    return;
+  }
+
+  // Evitar repetir la última posición si hay más de 1
+  let winFilterIdx;
+  if (enabledPositions.length > 1 && wheelLastIdx >= 0) {
+    const available = enabledPositions.map((_,i)=>i).filter(i=>i!==wheelLastIdx);
+    winFilterIdx = available[Math.floor(Math.random() * available.length)];
+  } else {
+    winFilterIdx = Math.floor(Math.random() * enabledPositions.length);
+  }
+  wheelLastIdx = winFilterIdx;
+
+  const n = enabledPositions.length;
   const arc = (2 * Math.PI) / n;
-
-  // STEP 1: Pick the winning segment FIRST (guaranteed correct)
-  const winIdx = Math.floor(Math.random() * n);
-
-  // STEP 2: Canvas draws segments starting at angle 0 = RIGHT (3 o'clock).
-  // Our pointer is at TOP (12 o'clock) = -Math.PI/2 in canvas coords.
-  // Segment i occupies angles: [i*arc, (i+1)*arc] relative to wheelAngle=0.
-  // We want the CENTER of the winning segment to land under the pointer.
-  // Under pointer means: wheelAngle + segmentCenter = -PI/2 (mod 2PI)
-  // => targetWheelAngle = -PI/2 - segmentCenter
-  const segmentCenter = winIdx * arc + arc / 2;
-  const pointerAngle = -Math.PI / 2; // top of wheel in canvas coords
-
-  // Raw target angle (could be negative)
+  const segmentCenter = winFilterIdx * arc + arc / 2;
+  const pointerAngle = -Math.PI / 2;
   let rawTarget = pointerAngle - segmentCenter;
-
-  // Normalize so rawTarget is in [0, 2PI)
   rawTarget = ((rawTarget % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-
-  // Add full spins (min 5) from current wheelAngle, spinning clockwise (positive)
-  // We need to find the next occurrence of rawTarget that is > current wheelAngle
   const currentNorm = ((wheelAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
   let delta = rawTarget - currentNorm;
-  if (delta < 0) delta += 2 * Math.PI;   // ensure forward spin
+  if (delta < 0) delta += 2 * Math.PI;
   const extraSpins = (5 + Math.floor(Math.random() * 5)) * 2 * Math.PI;
   const totalRotation = extraSpins + delta;
   const targetAngle = wheelAngle + totalRotation;
@@ -1491,17 +1876,56 @@ function spinWheel() {
     if (progress < 1) {
       requestAnimationFrame(animate);
     } else {
-      wheelAngle = targetAngle; // snap exactly to target
-      drawWheel(wheelAngle);
+      wheelAngle = targetAngle;
+      // Flash del segmento ganador
+      drawWheel(wheelAngle, winFilterIdx);
+      setTimeout(() => drawWheel(wheelAngle), 150);
+      setTimeout(() => drawWheel(wheelAngle, winFilterIdx), 300);
+      setTimeout(() => drawWheel(wheelAngle), 450);
+
       wheelSpinning = false;
       document.getElementById('spinBtn').disabled = false;
-      showPositionResult(positions[winIdx]); // use pre-selected winner
+
+      // Vibración en el celular
+      if (navigator.vibrate) navigator.vibrate([80, 40, 120]);
+
+      // Agregar al historial
+      const pos = enabledPositions[winFilterIdx].pos;
+      addToWheelHistory(pos);
+
+      // Modo Reto
+      if (retoModeActive) {
+        retoRound++;
+        document.getElementById('retoRound').textContent = retoRound;
+        if (retoRound > 5) {
+          retoModeActive = false;
+          retoRound = 1;
+          document.getElementById('retoBtn').classList.remove('active');
+          document.getElementById('retoProgress').classList.remove('show');
+          document.getElementById('spinBtn').textContent = 'GIRAR ✦';
+        } else {
+          document.getElementById('spinBtn').textContent = `RETO ${retoRound}/5 ✦`;
+        }
+      }
+
+      setTimeout(() => showPositionResult(pos), 350);
     }
   }
   requestAnimationFrame(animate);
 }
 
-function showPositionResult(pos) { showResultSheet(pos); trackEvent('spin'); }
+function showPositionResult(pos) {
+  currentSheetPosition = pos;
+  // Actualizar botón favorito
+  const favBtn = document.getElementById('sheetFavBtn');
+  if (favBtn) {
+    const isFav = wheelFavorites.some(f => f.name === pos.name);
+    favBtn.textContent = isFav ? '❤️' : '♡';
+    favBtn.classList.toggle('saved', isFav);
+  }
+  showResultSheet(pos);
+  trackEvent('spin');
+}
 
 // ── DADOS ──
 function rollDie(index) {
@@ -1771,10 +2195,8 @@ function ambientSelect(person, level, btn) {
   }
 }
 
-// Compatibilidad hacia atrás
+// Compatibilidad splash
 function splashSelectLevel(level, person, btn) { ambientSelect(person, level, btn); }
-function ambienteSplashNext() {}
-function sintoniaSplashNext() {}
 
 function ambienteReveal() {
   if (!splashLevelA || !splashLevelB) return;
@@ -2024,17 +2446,17 @@ function revealFantasyMatchNew() {
   let totalMatches = 0;
   const matchesByCat = [];
 
-  FANTASY_CATEGORIES.forEach(cat => {
+  FANTASY_CATEGORIES.forEach(function(cat) {
     const aSelected = fantasyPersonA[cat.id] || [];
     const bSelected = fantasyPersonB[cat.id] || [];
-    const matches = aSelected.filter(i => bSelected.includes(i));
-    if (matches.length > 0) {
+    const matchIdxs = aSelected.filter(function(i) { return bSelected.includes(i); });
+    if (matchIdxs.length > 0) {
       const items = cat.items[currentHeat] || cat.items.romantico;
       matchesByCat.push({
-        cat,
-        matches: matches.map(i => items[i])
+        cat: cat,
+        matches: matchIdxs.map(function(i) { return items[i]; })
       });
-      totalMatches += matches.length;
+      totalMatches += matchIdxs.length;
     }
   });
 
@@ -2042,8 +2464,8 @@ function revealFantasyMatchNew() {
   if (totalMatches > 0) {
     const history = storageGet('fantasy_history') || [];
     const entry = {
-      date: new Date().toLocaleDateString('es', {day:'numeric',month:'short'}),
-      matches: matchesByCat.map(m => m.matches.map(i => i.name)).flat(),
+      date: new Date().toLocaleDateString('es', {day:'numeric', month:'short'}),
+      matches: matchesByCat.map(function(m) { return m.matches.map(function(item) { return item.name; }); }).flat(),
       level: currentHeat
     };
     history.unshift(entry);
@@ -2052,71 +2474,64 @@ function revealFantasyMatchNew() {
   }
 
   const container = document.getElementById('fantasyRevealContainer');
+  let html = '';
 
   if (totalMatches === 0) {
-    container.innerHTML = `
-      <div class="fantasy-no-match-new">
-        <div style="font-size:3rem;margin-bottom:12px;">💛</div>
-        <div class="fantasy-reveal-title">Sin matches esta vez</div>
-        <div style="font-size:0.72rem;color:var(--muted);line-height:1.7;margin:12px 0;">
-          Tienen deseos diferentes hoy — y eso es completamente normal. La diferencia también es una invitación a conocerse más.
-        </div>
-        <div style="padding:14px;background:var(--card);border-radius:14px;text-align:left;margin-top:12px;">
-          <div style="font-size:0.58rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">💡 ¿Qué hacer ahora?</div>
-          <div style="font-size:0.72rem;color:var(--text);line-height:1.6;">Cada uno comparte <strong>una</strong> de sus fantasías elegidas. Escuchen sin juzgar — la conversación que viene puede ser la más íntima que hayan tenido.</div>
-        </div>
-      </div>
-    `;
+    html = '<div class="fantasy-no-match-new">' +
+      '<div style="font-size:3rem;margin-bottom:12px;">💛</div>' +
+      '<div class="fantasy-reveal-title">Sin matches esta vez</div>' +
+      '<div style="font-size:0.72rem;color:var(--muted);line-height:1.7;margin:12px 0;">' +
+        'Tienen deseos diferentes hoy — y eso es completamente normal.' +
+      '</div>' +
+      '<div style="padding:14px;background:var(--card);border-radius:14px;text-align:left;margin-top:12px;">' +
+        '<div style="font-size:0.58rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">💡 ¿Qué hacer ahora?</div>' +
+        '<div style="font-size:0.72rem;color:var(--text);line-height:1.6;">Cada uno comparte <strong>una</strong> de sus fantasías elegidas. Escuchen sin juzgar.</div>' +
+      '</div>' +
+    '</div>';
   } else {
-    // Reveal animado por categoría con delay
-    let html = `
-      <div class="fantasy-reveal-header">
-        <div style="font-size:3rem;margin-bottom:12px;animation:resultPop .6s ease;">✨</div>
-        <div class="fantasy-reveal-title">${totalMatches} match${totalMatches>1?'es':''} encontrados</div>
-        <div class="fantasy-reveal-sub">¡Los dos desean esto esta noche!</div>
-      </div>
-    `;
+    html += '<div class="fantasy-reveal-header">' +
+      '<div style="font-size:3rem;margin-bottom:12px;">✨</div>' +
+      '<div class="fantasy-reveal-title">' + totalMatches + ' match' + (totalMatches > 1 ? 'es' : '') + ' encontrados</div>' +
+      '<div class="fantasy-reveal-sub">¡Los dos desean esto esta noche!</div>' +
+    '</div>';
 
-    matchesByCat.forEach((catMatch, ci) => {
-      html += `
-        <div class="fantasy-match-category" style="animation-delay:${ci * 0.15}s">
-          <div class="fantasy-match-cat-header">
-            <span class="fantasy-match-cat-icon">${catMatch.cat.icon}</span>
-            <span class="fantasy-match-cat-name">${catMatch.cat.name}</span>
-            <span class="fantasy-match-count">${catMatch.matches.length} match${catMatch.matches.length>1?'es':''}</span>
-          </div>
-          <div class="fantasy-match-items">
-            ${catMatch.matches.map((item, mi) => `
-              <div class="fantasy-match-item-new" style="animation-delay:${(ci * 0.15) + (mi * 0.1)}s">
-                <span class="fmi-icon">${item.icon}</span>
-                <div>
-                  <div class="fmi-name">${item.name}</div>
-                  <div class="fmi-desc">${item.desc}</div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
+    matchesByCat.forEach(function(catMatch, ci) {
+      html += '<div class="fantasy-match-category" style="animation-delay:' + (ci * 0.15) + 's">' +
+        '<div class="fantasy-match-cat-header">' +
+          '<span class="fantasy-match-cat-icon">' + catMatch.cat.icon + '</span>' +
+          '<span class="fantasy-match-cat-name">' + catMatch.cat.name + '</span>' +
+          '<span class="fantasy-match-count">' + catMatch.matches.length + ' match' + (catMatch.matches.length > 1 ? 'es' : '') + '</span>' +
+        '</div>' +
+        '<div class="fantasy-match-items">';
+
+      catMatch.matches.forEach(function(item, mi) {
+        html += '<div class="fantasy-match-item-new" style="animation-delay:' + ((ci * 0.15) + (mi * 0.1)) + 's">' +
+          '<span class="fmi-icon">' + item.icon + '</span>' +
+          '<div>' +
+            '<div class="fmi-name">' + item.name + '</div>' +
+            '<div class="fmi-desc">' + item.desc + '</div>' +
+          '</div>' +
+        '</div>';
+      });
+
+      html += '</div></div>';
     });
 
-    html += `
-      <div class="fantasy-next-step">
-        <div class="fantasy-next-step-title">🎯 Siguiente paso</div>
-        <div class="fantasy-next-step-desc">
-          Tienen <strong>${totalMatches} deseo${totalMatches>1?'s':''}</strong> en común.
-          ${totalMatches >= 3 ? '¡Tienen mucho para explorar esta noche!' : 'Empiecen por aquí esta noche.'}
-          La Ruleta puede darles la posición perfecta para comenzar.
-        </div>
-        <button class="fantasy-next-step-btn" onclick="goTo('ruleta')">🎡 IR A LA RULETA</button>
-      </div>
-    `;
+    html += '<div class="fantasy-next-step">' +
+      '<div class="fantasy-next-step-title">🎯 Siguiente paso</div>' +
+      '<div class="fantasy-next-step-desc">Tienen <strong>' + totalMatches + ' deseo' + (totalMatches > 1 ? 's' : '') + '</strong> en común. ' +
+        (totalMatches >= 3 ? '¡Tienen mucho para explorar esta noche!' : 'Empiecen por aquí esta noche.') +
+        ' La Ruleta puede darles la posición perfecta para comenzar.' +
+      '</div>' +
+      '<button class="fantasy-next-step-btn" onclick="fantasyGoRuleta()">🎡 IR A LA RULETA</button>' +
+    '</div>';
   }
 
   container.innerHTML = html;
   trackEvent('fantasy');
 }
 
+function fantasyGoRuleta() { goTo('ruleta'); }
 function resetFantasy() {
   initFantasy();
 }
@@ -2157,102 +2572,8 @@ function openAmbienteModal() {
   document.getElementById('checkinOverlay').classList.add('show');
 }
 
-function selectLevel(level, person, btn) {
-  // Deselect others in same step
-  btn.closest('.checkin-levels').querySelectorAll('.checkin-level-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  if (person === 'A') {
-    checkinA = level;
-    document.getElementById('checkinNextA').classList.add('ready');
-  } else {
-    checkinB = level;
-    document.getElementById('checkinNextB').classList.add('ready');
-  }
-}
-
-function nextCheckin() {
-  if (!checkinA) return;
-  document.getElementById('checkinStep1').classList.remove('active');
-  document.getElementById('checkinStep2').classList.add('active');
-}
-
-function showCheckinResult() {
-  if (!checkinB) return;
-  document.getElementById('checkinStep2').classList.remove('active');
-  document.getElementById('checkinStep3').classList.add('active');
-
-  // CORRECT LOGIC: Round DOWN to protect less intense partner
-  const avg = Math.floor((checkinA + checkinB) / 2);
-  const levelMap = { 1:'romantico', 2:'picante', 3:'hot' };
-  const levelNames = { 1:'romántico', 2:'picante', 3:'hot' };
-  const levelEmojis = { 1:'🌹', 2:'🌶️', 3:'🔥' };
-  const matchLevel = levelMap[avg];
-
-  const isMatch = checkinA === checkinB;
-  const diff = Math.abs(checkinA - checkinB);
-
-  let icon, title, desc;
-
-  if (isMatch) {
-    // Perfect match
-    const matchTitles = {
-      romantico: '¡Perfecta ambiente romántica! 🌹',
-      picante: '¡Match picante! 🌶️',
-      hot: '¡Están en llamas! 🔥'
-    };
-    const matchDescs = {
-      romantico: 'Los dos están en el mismo mood suave y conectado. Esta noche es para disfrutar despacio, con ternura y sin apuros.',
-      picante: 'Ambos tienen energía para explorar y divertirse. El nivel picante tiene exactamente lo que necesitan esta noche.',
-      hot: 'Los dos están listos para una noche intensa y sin límites. ¡El nivel HOT los espera!'
-    };
-    icon = levelEmojis[avg];
-    title = matchTitles[matchLevel];
-    desc = matchDescs[matchLevel];
-  } else if (diff === 1) {
-    // One level apart — meet in the middle naturally
-    icon = '💛';
-    title = `Se encuentran en el nivel ${levelNames[avg]}`;
-    desc = `Uno eligió ${levelNames[checkinA]} y el otro ${levelNames[checkinB]}. El punto de encuentro natural es el nivel ${levelNames[avg]} — donde ambos pueden disfrutar plenamente sin que ninguno se fuerce ni se quede corto.`;
-  } else {
-    // Two levels apart (romantico + hot) — middle is always picante
-    icon = '✨';
-    title = 'Punto de encuentro: nivel picante';
-    desc = `Hay una diferencia de dos niveles — uno eligió ${levelNames[checkinA]} y el otro ${levelNames[checkinB]}. La ciencia dice que el mejor resultado es encontrarse en el medio: el nivel picante permite explorar sin presionar a quien quiere más suavidad, y sin frustrar a quien quiere más intensidad. Pueden ir subiendo juntos si ambos lo desean.`;
-  }
-
-  document.getElementById('checkinMatchIcon').textContent = icon;
-  document.getElementById('checkinMatchTitle').textContent = title;
-  document.getElementById('checkinMatchDesc').textContent = desc;
-  const lvlEl = document.getElementById('checkinMatchLevel');
-  lvlEl.textContent = levelEmojis[avg] + ' ' + levelNames[avg].toUpperCase();
-  lvlEl.className = 'checkin-match-level ' + matchLevel;
-
-  // Store match level
-  checkinMatchLevel = matchLevel;
-}
-
-let checkinMatchLevel = null;
-
-function applyCheckinAndStart() {
-  if (checkinMatchLevel) {
-    currentHeat = checkinMatchLevel;
-    const labels = { romantico:'🌹 ROMÁNTICO ✎', picante:'🌶️ PICANTE ✎', hot:'🔥 HOT ✎' };
-    document.getElementById('heatBadge').textContent = labels[currentHeat];
-    usedTruth = []; usedDare = [];
-    drawWheel();
-    storageSet('last_ambiente', Date.now());
-  }
-  document.getElementById('checkinOverlay').classList.remove('show');
-}
-
-function skipCheckinAndTrack() {
-  storageSet('last_ambiente', Date.now());
-  document.getElementById('checkinOverlay').classList.remove('show');
-}
-
-function skipCheckin() {
-  document.getElementById('checkinOverlay').classList.remove('show');
-}
+// Funciones de checkin antiguo eliminadas (limpieza auditoría)
+function skipCheckin() { document.getElementById('checkinOverlay').classList.remove('show'); }
 
 // ── DESAFÍO 7 DÍAS ──
 
@@ -3111,7 +3432,7 @@ if ('serviceWorker' in navigator) {
     </div>
 
   </div>
-    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
     <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
     <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
@@ -3137,7 +3458,7 @@ if ('serviceWorker' in navigator) {
     <div id="challengeDays"></div>
     <button class="challenge-reset" onclick="resetChallenge()">↺ Reiniciar desafío</button>
   </div>
-    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items" id="bottomNav">
+    <nav class="bottom-nav show"><div class="nav-scroll-hint"></div><div class="nav-items">
     <div class="nav-item active" onclick="goTo('menu')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></div>
     <div class="nav-item " onclick="goTo('ruleta')"><span class="nav-icon">🎡</span><span class="nav-label">Ruleta</span></div>
     <div class="nav-item " onclick="goTo('truth')"><span class="nav-icon">🃏</span><span class="nav-label">T or D</span></div>
@@ -3329,6 +3650,7 @@ if ('serviceWorker' in navigator) {
 <div class="result-overlay" id="resultOverlay" onclick="if(event.target===this)closeResultSheet()"></div>
 <div class="result-sheet" id="resultSheet">
   <div class="sheet-handle-bar"></div>
+  <button class="sheet-fav-btn" id="sheetFavBtn" onclick="toggleFavorite()" title="Guardar favorita">♡</button>
 
   <!-- COLLAPSED: name + illustration + buttons -->
   <div class="sheet-collapsed" id="sheetCollapsed">
