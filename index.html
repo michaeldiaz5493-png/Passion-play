@@ -785,8 +785,17 @@
   .fantasy-cat-tabs {
     display:flex; overflow-x:auto; gap:8px;
     padding:14px 16px 4px; scrollbar-width:none;
+    position:relative;
   }
   .fantasy-cat-tabs::-webkit-scrollbar { display:none; }
+  .fantasy-tabs-wrapper {
+    position:relative;
+  }
+  .fantasy-tabs-wrapper::after {
+    content:''; position:absolute; right:0; top:0; bottom:0;
+    width:32px; background:linear-gradient(to left, var(--bg), transparent);
+    pointer-events:none;
+  }
   .fantasy-cat-tab {
     flex-shrink:0; padding:8px 14px; border-radius:20px;
     border:1px solid var(--border); background:var(--card);
@@ -1142,6 +1151,107 @@
     text-transform:uppercase; margin-bottom:8px;
   }
   .reto-progress.show { display:block; }
+
+
+  /* ── POST-MATCH EXPLORACIÓN ── */
+  .fantasy-match-item-new {
+    display:flex; flex-direction:column; gap:0;
+    background:var(--card); border-radius:16px;
+    border:1px solid rgba(232,132,154,0.2);
+    overflow:hidden;
+    animation:slideUp .3s ease both;
+  }
+  .fmi-main {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:18px 16px; cursor:pointer;
+    transition:background .2s; min-height:64px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fmi-main:active { background:rgba(232,132,154,0.08); }
+  .fmi-expand-arrow {
+    margin-left:auto; font-size:1rem; color:var(--muted);
+    transition:transform .3s; flex-shrink:0;
+    padding:4px 8px; margin-right:-8px;
+  }
+  .fantasy-match-item-new.expanded .fmi-expand-arrow { transform:rotate(180deg); }
+
+  /* Panel de exploración */
+  .fmi-explore-panel {
+    display:none; padding:0 16px 16px;
+    border-top:1px solid var(--border);
+  }
+  .fantasy-match-item-new.expanded .fmi-explore-panel { display:block; }
+
+  .fmi-why {
+    font-size:0.6rem; color:#9b6dff; line-height:1.6;
+    padding:10px 12px; margin:12px 0 10px;
+    background:rgba(155,109,255,0.08);
+    border-radius:10px; border-left:2px solid #9b6dff;
+    font-style:italic;
+  }
+  .fmi-ideas-title {
+    font-size:0.58rem; color:var(--gold); letter-spacing:2px;
+    text-transform:uppercase; margin-bottom:8px; margin-top:4px;
+  }
+  .fmi-idea {
+    display:flex; gap:10px; align-items:flex-start;
+    padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05);
+  }
+  .fmi-idea:last-child { border-bottom:none; }
+  .fmi-idea-num {
+    width:22px; height:22px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.6rem; font-weight:700; color:#080810;
+  }
+  .fmi-idea-num.easy { background:#6dc86d; }
+  .fmi-idea-num.med  { background:#f0b429; }
+  .fmi-idea-num.hot  { background:#e84040; }
+  .fmi-idea-text { font-size:0.68rem; color:var(--text); line-height:1.5; }
+
+  .fmi-convo {
+    margin-top:12px; padding:10px 12px;
+    background:rgba(201,169,110,0.07);
+    border-radius:10px; border-left:2px solid var(--gold);
+  }
+  .fmi-convo-label {
+    font-size:0.52rem; color:var(--gold); letter-spacing:2px;
+    text-transform:uppercase; margin-bottom:4px;
+  }
+  .fmi-convo-q { font-size:0.68rem; color:var(--text); line-height:1.5; font-style:italic; }
+
+  /* Botones post-match sticky */
+  .fantasy-post-actions {
+    display:flex; flex-direction:column; gap:8px;
+    padding:14px 16px;
+    background:rgba(8,8,16,0.97); backdrop-filter:blur(12px);
+    border-top:1px solid var(--border);
+    position:sticky; bottom:70px; z-index:10;
+    margin:0 -16px;
+  }
+  .fpa-btn {
+    padding:13px; border-radius:14px; border:none;
+    font-family:'Montserrat',sans-serif; font-size:0.72rem;
+    font-weight:600; letter-spacing:1px; cursor:pointer;
+    transition:all .2s; text-align:center;
+  }
+  .fpa-btn.primary {
+    background:linear-gradient(135deg,var(--gold),var(--gold2));
+    color:#080810;
+  }
+  .fpa-btn.secondary {
+    background:var(--card); border:1px solid var(--border);
+    color:var(--text);
+  }
+  .fpa-btn.purple {
+    background:rgba(155,109,255,0.15);
+    border:1px solid rgba(155,109,255,0.3); color:#c084fc;
+  }
+  .fpa-btn:active { transform:scale(0.97); }
+
+  @keyframes slideUp {
+    from { opacity:0; transform:translateY(12px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
 
 </style>
 </head>
@@ -1566,7 +1676,7 @@ function startSplash() {
   applyTheme(currentHeat);
   goTo('menu');
   drawWheel();
-  setTimeout(() => openAmbienteModal(), 400);
+  setTimeout(() => openAmbienteModal(), 1200);
 }
 
 function startApp() {
@@ -1688,19 +1798,28 @@ function renderFavorites() {
   wheelFavorites = storageGet('wheel_favorites') || [];
   const list = document.getElementById('favList');
   const empty = document.getElementById('favEmpty');
+  if (!list) return;
   if (wheelFavorites.length === 0) {
     empty.style.display = 'block'; list.innerHTML = ''; return;
   }
   empty.style.display = 'none';
-  list.innerHTML = wheelFavorites.map((f, i) => `
-    <div class="fav-item" onclick="showPositionResult(JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(f))}')))" >
-      <div class="fav-info">
-        <div class="fav-name">${f.name}</div>
-        <div class="fav-note">${f.diff === 'easy' ? '🟢 Fácil' : f.diff === 'med' ? '🟡 Medio' : '🔴 Intenso'} · ${f.feel}</div>
-      </div>
-      <button class="fav-remove" onclick="event.stopPropagation();removeFavorite(${i})">✕</button>
-    </div>
-  `).join('');
+  // Usar índice para evitar problemas con encodeURIComponent
+  list.innerHTML = wheelFavorites.map((f, i) => {
+    const diffLabel = f.diff === 'easy' ? '🟢 Fácil' : f.diff === 'med' ? '🟡 Medio' : '🔴 Intenso';
+    const feel = f.feel || '';
+    return '<div class="fav-item" onclick="showFavoriteByIndex(' + i + ')">' +
+      '<div class="fav-info">' +
+        '<div class="fav-name">' + f.name + '</div>' +
+        '<div class="fav-note">' + diffLabel + (feel ? ' · ' + feel : '') + '</div>' +
+      '</div>' +
+      '<button class="fav-remove" onclick="event.stopPropagation();removeFavorite(' + i + ')">✕</button>' +
+    '</div>';
+  }).join('');
+}
+
+function showFavoriteByIndex(idx) {
+  wheelFavorites = storageGet('wheel_favorites') || [];
+  if (wheelFavorites[idx]) showPositionResult(wheelFavorites[idx]);
 }
 
 function removeFavorite(idx) {
@@ -1720,17 +1839,23 @@ function renderHistory() {
   wheelHistory = storageGet('wheel_history') || [];
   const list = document.getElementById('histList');
   const empty = document.getElementById('histEmpty');
+  if (!list) return;
   if (wheelHistory.length === 0) {
     empty.style.display = 'block'; list.innerHTML = ''; return;
   }
   empty.style.display = 'none';
-  list.innerHTML = wheelHistory.map((p, i) => `
-    <div class="history-item">
-      <div class="history-num">${i+1}</div>
-      <div class="history-name">${p.name}</div>
-      <button class="history-spin-again" onclick="showPositionResult(JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(p))}')))" >Ver</button>
-    </div>
-  `).join('');
+  list.innerHTML = wheelHistory.map((p, i) => {
+    return '<div class="history-item">' +
+      '<div class="history-num">' + (i+1) + '</div>' +
+      '<div class="history-name">' + p.name + '</div>' +
+      '<button class="history-spin-again" onclick="showHistoryByIndex(' + i + ')">Ver</button>' +
+    '</div>';
+  }).join('');
+}
+
+function showHistoryByIndex(idx) {
+  wheelHistory = storageGet('wheel_history') || [];
+  if (wheelHistory[idx]) showPositionResult(wheelHistory[idx]);
 }
 
 // ── RULETA: MODO RETO ──
@@ -2027,6 +2152,14 @@ function pullSlots() {
 
 // ── PANTALLA DE LOGROS ──
 function initAchievementsScreen() {
+  // Refrescar desde storage para incluir logros de esta sesión
+  try {
+    const raw = localStorage.getItem('achievements');
+    if (raw && raw !== 'null') {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) parsed.forEach(id => _unlocked.add(id));
+    }
+  } catch(e) {}
   const unlocked = [..._unlocked];
   const total = ACHIEVEMENTS.length;
   const count = unlocked.length;
@@ -2073,7 +2206,14 @@ const ACHIEVEMENTS = [
 ];
 
 const _stats = {};
-const _unlocked = new Set(JSON.parse(storageGet('achievements') || '[]'));
+const _unlocked = (() => {
+  try {
+    const raw = localStorage.getItem('achievements');
+    if (!raw || raw === 'null') return new Set();
+    const parsed = JSON.parse(raw);
+    return new Set(Array.isArray(parsed) ? parsed : []);
+  } catch(e) { return new Set(); }
+})();
 
 function trackEvent(trigger) {
   if (!_stats[trigger]) _stats[trigger] = 0;
@@ -2307,11 +2447,45 @@ let fantasyCurrentPerson = 'A';
 let fantasyCurrentCat = 0;
 let fantasyMatchHistory = [];
 
+let fantasyMode = 'full'; // 'full' o 'quick'
+let fantasyActiveCats = null; // null = todas
+
+function setFantasyMode(mode) {
+  fantasyMode = mode;
+  const btnFull = document.getElementById('fantasyModeFull');
+  const btnQuick = document.getElementById('fantasyModeQuick');
+  if (btnFull && btnQuick) {
+    if (mode === 'full') {
+      btnFull.style.borderColor = 'var(--gold)'; btnFull.style.background = 'rgba(201,169,110,0.12)'; btnFull.style.color = 'var(--gold)';
+      btnQuick.style.borderColor = 'var(--border)'; btnQuick.style.background = 'var(--card)'; btnQuick.style.color = 'var(--muted)';
+      fantasyActiveCats = null;
+    } else {
+      btnQuick.style.borderColor = 'var(--rose)'; btnQuick.style.background = 'rgba(232,132,154,0.12)'; btnQuick.style.color = 'var(--rose)';
+      btnFull.style.borderColor = 'var(--border)'; btnFull.style.background = 'var(--card)'; btnFull.style.color = 'var(--muted)';
+      // Elegir 3 categorías aleatorias
+      const allIdxs = [0,1,2,3,4,5];
+      for (let i = allIdxs.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); var tmp=allIdxs[i]; allIdxs[i]=allIdxs[j]; allIdxs[j]=tmp; }
+      fantasyActiveCats = allIdxs.slice(0,3);
+    }
+    renderFantasyCategoryTabs();
+  }
+}
+
 function initFantasy() {
   fantasyPersonA = {};
   fantasyPersonB = {};
   fantasyCurrentPerson = 'A';
   fantasyCurrentCat = 0;
+  // Mostrar tooltip de scroll solo la primera vez
+  const seenTip = storageGet('fantasy_tabs_tip');
+  if (!seenTip) {
+    setTimeout(function() {
+      const tip = document.getElementById('fantasyTabsTip');
+      if (tip) { tip.style.display = 'block'; setTimeout(() => tip.style.display='none', 3000); }
+      storageSet('fantasy_tabs_tip', 1);
+    }, 800);
+  }
+  fantasyActiveCats = null;
 
   // Mostrar pantalla de selección, ocultar reveal
   const selScreen = document.getElementById('fantasySelectionScreen');
@@ -2323,6 +2497,16 @@ function initFantasy() {
   renderFantasyCategoryTabs();
   renderFantasyGrid();
   updateFantasyActionBtn();
+  // Mostrar hint de scroll solo si es primera vez
+  const hintEl = document.getElementById('fantasyTabsHint');
+  if (hintEl) {
+    const seen = storageGet('fantasy_tabs_hint_seen');
+    if (!seen) {
+      hintEl.style.display = 'block';
+      storageSet('fantasy_tabs_hint_seen', true);
+      setTimeout(() => { hintEl.style.opacity = '0'; hintEl.style.transition = 'opacity 1s'; setTimeout(() => { hintEl.style.display = 'none'; }, 1000); }, 3000);
+    }
+  }
 }
 
 function renderFantasyPersonBar() {
@@ -2346,12 +2530,16 @@ function renderFantasyPersonBar() {
 function renderFantasyCategoryTabs() {
   const tabs = document.getElementById('fantasyCatTabs');
   if (!tabs) return;
-  tabs.innerHTML = FANTASY_CATEGORIES.map((cat, i) => `
-    <div class="fantasy-cat-tab ${i === fantasyCurrentCat ? 'active' : ''}"
-         onclick="switchFantasyCategory(${i})">
-      ${cat.icon} ${cat.name}
-    </div>
-  `).join('');
+  const catsToShow = fantasyActiveCats
+    ? FANTASY_CATEGORIES.filter((_, i) => fantasyActiveCats.includes(i))
+    : FANTASY_CATEGORIES;
+  tabs.innerHTML = catsToShow.map((cat) => {
+    const realIdx = FANTASY_CATEGORIES.indexOf(cat);
+    return '<div class="fantasy-cat-tab ' + (realIdx === fantasyCurrentCat ? 'active' : '') + '" ' +
+      'onclick="switchFantasyCategory(' + realIdx + ')">' +
+      cat.icon + ' ' + cat.name +
+    '</div>';
+  }).join('');
 }
 
 function switchFantasyCategory(idx) {
@@ -2440,7 +2628,18 @@ function fantasyAction() {
 function revealFantasyMatchNew() {
   document.getElementById('fantasySelectionScreen').style.display = 'none';
   const revScreen = document.getElementById('fantasyRevealScreen');
+  // Mostrar micro-loader primero
+  const container = document.getElementById('fantasyRevealContainer');
+  container.innerHTML = '<div style="text-align:center;padding:40px 0;">' +
+    '<div style="font-size:2.5rem;animation:resultPop .5s ease;">✨</div>' +
+    '<div style="font-size:0.65rem;color:var(--muted);letter-spacing:2px;margin-top:12px;">Calculando matches...</div>' +
+  '</div>';
   revScreen.classList.add('show');
+  // Calcular con pequeño delay para que se vea la animación
+  setTimeout(function() { _doRevealFantasy(); }, 600);
+}
+
+function _doRevealFantasy() {
 
   // Calcular matches por categoría
   let totalMatches = 0;
@@ -2476,6 +2675,7 @@ function revealFantasyMatchNew() {
   const container = document.getElementById('fantasyRevealContainer');
   let html = '';
 
+  // ── POST-MATCH: función para expandir
   if (totalMatches === 0) {
     html = '<div class="fantasy-no-match-new">' +
       '<div style="font-size:3rem;margin-bottom:12px;">💛</div>' +
@@ -2489,11 +2689,21 @@ function revealFantasyMatchNew() {
       '</div>' +
     '</div>';
   } else {
+    var matchEmoji = totalMatches >= 5 ? '🔥' : totalMatches >= 3 ? '✨' : '💛';
+    var matchSubtitle = totalMatches >= 5 ? '¡Tienen mucho en común esta noche!' :
+                        totalMatches >= 3 ? '¡Los dos desean esto esta noche!' :
+                        totalMatches === 2 ? 'Dos deseos compartidos — empiecen por aquí.' :
+                        'Un deseo en común — pero es todo lo que necesitan para esta noche.';
     html += '<div class="fantasy-reveal-header">' +
-      '<div style="font-size:3rem;margin-bottom:12px;">✨</div>' +
+      '<div style="font-size:3.5rem;margin-bottom:12px;">' + matchEmoji + '</div>' +
       '<div class="fantasy-reveal-title">' + totalMatches + ' match' + (totalMatches > 1 ? 'es' : '') + ' encontrados</div>' +
-      '<div class="fantasy-reveal-sub">¡Los dos desean esto esta noche!</div>' +
+      '<div class="fantasy-reveal-sub">' + matchSubtitle + '</div>' +
     '</div>';
+    if (totalMatches <= 2) {
+      html += '<div style="padding:12px 16px;background:rgba(201,169,110,0.07);border-radius:14px;border:1px solid rgba(201,169,110,0.2);margin-bottom:16px;font-size:0.68rem;color:var(--text);line-height:1.6;text-align:center;">' +
+        '💡 Toca el match para ver ideas concretas de cómo explorarlo esta noche.' +
+      '</div>';
+    }
 
     matchesByCat.forEach(function(catMatch, ci) {
       html += '<div class="fantasy-match-category" style="animation-delay:' + (ci * 0.15) + 's">' +
@@ -2505,37 +2715,796 @@ function revealFantasyMatchNew() {
         '<div class="fantasy-match-items">';
 
       catMatch.matches.forEach(function(item, mi) {
+        var explore = getFantasyExplore(catMatch.cat.id, currentHeat, item._idx !== undefined ? item._idx : mi);
+        var expandHtml = '';
+        if (explore) {
+          var ideasHtml = '';
+          explore.ideas.forEach(function(idea) {
+            ideasHtml += '<div class="fmi-idea">' +
+              '<div class="fmi-idea-num ' + idea.level + '">' +
+                (idea.level === 'easy' ? '1' : idea.level === 'med' ? '2' : '3') +
+              '</div>' +
+              '<div class="fmi-idea-text">' + idea.text + '</div>' +
+            '</div>';
+          });
+          expandHtml = '<div class="fmi-explore-panel">' +
+            '<div class="fmi-why">' + explore.why + '</div>' +
+            '<div class="fmi-ideas-title">💡 IDEAS PARA EXPLORAR ESTA NOCHE</div>' +
+            ideasHtml +
+            '<div class="fmi-convo">' +
+              '<div class="fmi-convo-label">💬 Pregunta para conversar</div>' +
+              '<div class="fmi-convo-q">' + explore.convo + '</div>' +
+            '</div>' +
+          '</div>';
+        }
         html += '<div class="fantasy-match-item-new" style="animation-delay:' + ((ci * 0.15) + (mi * 0.1)) + 's">' +
-          '<span class="fmi-icon">' + item.icon + '</span>' +
-          '<div>' +
-            '<div class="fmi-name">' + item.name + '</div>' +
-            '<div class="fmi-desc">' + item.desc + '</div>' +
+          '<div class="fmi-main" onclick="toggleMatchExpand(this)">' +
+            '<span class="fmi-icon">' + item.icon + '</span>' +
+            '<div style="flex:1;">' +
+              '<div class="fmi-name">' + item.name + '</div>' +
+              '<div class="fmi-desc">' + item.desc + '</div>' +
+            '</div>' +
+            (explore ? '<span class="fmi-expand-arrow">▾</span>' : '') +
           '</div>' +
+          expandHtml +
         '</div>';
       });
 
       html += '</div></div>';
     });
 
-    html += '<div class="fantasy-next-step">' +
-      '<div class="fantasy-next-step-title">🎯 Siguiente paso</div>' +
-      '<div class="fantasy-next-step-desc">Tienen <strong>' + totalMatches + ' deseo' + (totalMatches > 1 ? 's' : '') + '</strong> en común. ' +
-        (totalMatches >= 3 ? '¡Tienen mucho para explorar esta noche!' : 'Empiecen por aquí esta noche.') +
-        ' La Ruleta puede darles la posición perfecta para comenzar.' +
+    var matchWord = totalMatches > 1 ? 'deseos' : 'deseo';
+    var matchMsg = totalMatches >= 3 ? '¡Tienen mucho para explorar esta noche!' : 'Empiecen por el que más les llama la atención.';
+    html += '<div class="fantasy-post-actions">' +
+      '<div style="font-size:0.72rem;color:var(--text);line-height:1.6;margin-bottom:12px;text-align:center;">' +
+        'Tienen <strong>' + totalMatches + ' ' + matchWord + '</strong> en común. ' + matchMsg +
+        '<br><span style="font-size:0.6rem;color:var(--muted);">Toca cada match para ver ideas de cómo explorarlo ↑</span>' +
       '</div>' +
-      '<button class="fantasy-next-step-btn" onclick="fantasyGoRuleta()">🎡 IR A LA RULETA</button>' +
+      '<button class="fpa-btn primary" onclick="fantasyGoRuleta()">🎡 Ir a la Ruleta — elegir posición</button>' +
+      '<button class="fpa-btn purple" onclick="fantasyGoChallenge()">📅 Convertir en reto de esta semana</button>' +
+      '<button class="fpa-btn secondary" onclick="fantasySaveSession()">💾 Guardar esta sesión</button>' +
     '</div>';
   }
 
   container.innerHTML = html;
   trackEvent('fantasy');
 }
+// fin _doRevealFantasy
+
+
+
+function startFantasyFull() {
+  fantasyActiveCats = null; // todas las categorías
+  renderFantasyCategoryTabs();
+  renderFantasyGrid();
+}
+
+function startFantasyQuick() {
+  // Elegir 3 categorías aleatorias
+  const allIdx = [0,1,2,3,4,5];
+  const shuffled = allIdx.sort(() => Math.random() - 0.5);
+  fantasyActiveCats = shuffled.slice(0, 3);
+  fantasyCurrentCat = fantasyActiveCats[0];
+  renderFantasyCategoryTabs();
+  renderFantasyGrid();
+  showAchievement({ icon:'⚡', name:'Ronda rápida — 3 categorías' });
+}
 
 function fantasyGoRuleta() { goTo('ruleta'); }
+
+function fantasyGoChallenge() {
+  // Guardar el match actual como reto personalizado
+  const history = storageGet('fantasy_history') || [];
+  if (history.length > 0) {
+    const last = history[0];
+    storageSet('fantasy_custom_reto', {
+      matches: last.matches,
+      date: last.date,
+      level: last.level
+    });
+  }
+  goTo('challenge');
+  // Mostrar mensaje de confirmación
+  showAchievement({ icon:'📅', name:'Match guardado como reto de esta semana' });
+}
+function fantasySaveSession() {
+  const history = storageGet('fantasy_history') || [];
+  if (history.length > 0) {
+    showAchievement({ icon:'💾', name:'Sesión guardada — pueden volver a verla en historial' });
+  }
+}
+
 function resetFantasy() {
   initFantasy();
 }
 
+
+
+// ── EXPLORACIÓN DE FANTASÍAS (datos enriquecidos post-match) ──
+const FANTASY_EXPLORE = {
+  // ═══ SENSORIAL ═══
+  sensorial_romantico_0: {
+    why: "🔬 El tacto lento activa la ínsula cerebral, zona de la conciencia corporal. Un masaje sin objetivo sexual reduce el cortisol un 31% y libera oxitocina, la hormona del vínculo.",
+    ideas: [
+      { level:'easy', text:"Empiecen con 5 minutos de espalda. Sin hablar, solo respirar. Luego intercambien." },
+      { level:'med',  text:"Elijan una zona 'olvidada' (nuca, pies, cuero cabelludo) y dedíquenle 10 minutos completos." },
+      { level:'hot',  text:"Masaje completo con aceite caliente, de cabeza a pies, sin saltarse ninguna zona." }
+    ],
+    convo: "¿Cuál es la zona de tu cuerpo que más te gusta que toquen y que menos se toca normalmente?"
+  },
+  sensorial_romantico_1: {
+    why: "🔬 El agua caliente activa el sistema nervioso parasimpático, bajando defensas emocionales. Las parejas que comparten baños reportan mayor intimidad no sexual.",
+    ideas: [
+      { level:'easy', text:"Compartan el baño con música suave y una vela. Sin agenda, solo estar juntos." },
+      { level:'med',  text:"Turnarse a enjabonarse mutuamente, cada uno toma 5 minutos sin apuros." },
+      { level:'hot',  text:"Ducha con vapor, sin luz, solo el tacto y el sonido del agua." }
+    ],
+    convo: "¿Qué temperatura te gusta más — el calor relajante o el frío que despierta? ¿Y cómo se aplica eso a cómo te gusta el contacto?"
+  },
+  sensorial_romantico_2: {
+    why: "🔬 Las yemas de los dedos tienen más de 2.500 receptores táctiles por cm². Explorar solo con manos entrena al cerebro a asociar tacto con placer puro, mejorando la respuesta en encuentros futuros.",
+    ideas: [
+      { level:'easy', text:"Túrnense: 5 minutos cada uno solo con las yemas, siguiendo el contorno del cuerpo." },
+      { level:'med',  text:"Uno con los ojos cerrados describe en voz alta cada sensación que siente." },
+      { level:'hot',  text:"Exploración completa de 15 minutos, empezando por las zonas menos erógenas y avanzando gradualmente." }
+    ],
+    convo: "¿Cuándo fue la última vez que alguien simplemente te tocó sin querer llegar a ningún lado? ¿Cómo te hizo sentir?"
+  },
+  sensorial_romantico_3: {
+    why: "🔬 Las caricias sin objetivo activan el sistema de apego más que el de excitación. Estimulan los nervios CT (C-tactile afferents) que están conectados directamente con el bienestar emocional.",
+    ideas: [
+      { level:'easy', text:"15 minutos de caricias mutuas sin destino fijo. Si sienten que van hacia algo, vuelvan a empezar." },
+      { level:'med',  text:"Uno guía la mano del otro mostrándole exactamente cómo le gusta que lo toquen." },
+      { level:'hot',  text:"Caricias que empiezan suaves y lentamente aumentan la presión y el área explorada." }
+    ],
+    convo: "¿Preferís caricias lentas y largas o cortas y variadas? ¿Ha cambiado eso con el tiempo?"
+  },
+  sensorial_picante_0: {
+    why: "🔬 Alternar frío y calor activa simultáneamente los receptores TRPV1 (calor) y TRPM8 (frío), generando una respuesta neurológica más intensa que cualquiera de los dos por separado.",
+    ideas: [
+      { level:'easy', text:"Hielo en la espalda, luego calor con la palma. Observen la reacción de la piel." },
+      { level:'med',  text:"Hielo en zonas erógenas seguido inmediatamente de boca caliente. Alternar sin aviso." },
+      { level:'hot',  text:"Venda en los ojos + alternancia de temperatura. La sorpresa multiplica la sensación x3." }
+    ],
+    convo: "¿Cuál sensación nueva nunca probaron y siempre sintieron curiosidad? El frío/calor es una de las menos exploradas."
+  },
+  sensorial_picante_1: {
+    why: "🔬 Eliminar la visión amplifica los demás sentidos hasta un 40%. El cerebro redirige recursos neurológicos del cortex visual hacia el táctil y auditivo, haciendo cada toque más intenso.",
+    ideas: [
+      { level:'easy', text:"Venda improvisada con una remera. El vendado solo escucha y siente durante 5 minutos." },
+      { level:'med',  text:"Sorpresas de textura: plumas, hielo, labios, dedos — sin aviso de qué viene después." },
+      { level:'hot',  text:"Privación sensorial completa: venda + auriculares con música, durante 15 minutos." }
+    ],
+    convo: "¿Cuánto control te cuesta soltar? ¿Te resulta más difícil ser el que venda o el que está vendado?"
+  },
+  sensorial_hot_0: {
+    why: "🔬 La privación total de sentidos induce un estado cercano a la meditación profunda. El cerebro en ausencia de input visual entra en modo 'escaneo corporal' donde cada sensación se percibe x4 más intensa.",
+    ideas: [
+      { level:'easy', text:"Tapaojos + manos de la pareja. Solo sentir sin anticipar qué viene." },
+      { level:'med',  text:"Tapaojos + auriculares con sonido blanco. El universo se reduce al tacto." },
+      { level:'hot',  text:"Privación completa durante 20 min. La persona vendada no puede moverse ni hablar." }
+    ],
+    convo: "¿Hasta dónde te sentirías cómodo/a cediendo el control de tus sentidos? ¿Qué condición pondría cada uno?"
+  },
+  sensorial_hot_1: {
+    why: "🔬 Llevar a alguien al 'edge' (borde del orgasmo) y detenerlo activa el sistema de recompensa dopaminérgico más que el orgasmo mismo. La anticipación prolongada intensifica la experiencia final hasta 3x.",
+    ideas: [
+      { level:'easy', text:"Acercarse al límite una vez, parar 2 minutos completos, repetir x3." },
+      { level:'med',  text:"Sistema semáforo: verde=continuar, amarillo=más despacio, rojo=parar. 4 ciclos mínimo." },
+      { level:'hot',  text:"Quien lleva el ritmo decide cuándo se llega al final. La otra persona no puede pedirlo." }
+    ],
+    convo: "¿Alguna vez llegaron a ese límite y pararon juntos? ¿Lo harían voluntariamente o es demasiado intenso?"
+  },
+  // ═══ LUGAR ═══
+  lugar_romantico_0: {
+    why: "🔬 Los rituales sensoriales (velas + música) condicionan el cerebro a asociar ese entorno con intimidad. Con el tiempo, el solo olor de una vela activa el sistema límbico y aumenta la receptividad.",
+    ideas: [
+      { level:'easy', text:"Una vela, playlist especial, teléfonos en otra habitación. Nada más necesitan." },
+      { level:'med',  text:"Crear una 'noche de hotel en casa': sábanas limpias, snacks, todo preparado de antemano." },
+      { level:'hot',  text:"Transformar completamente una habitación: cortinas, aromas, temperatura ajustada, sin ropa." }
+    ],
+    convo: "¿Cuál es el ambiente que más los pone a ambos? ¿Alguna vez lo recrearon intencionalmente en casa?"
+  },
+  lugar_picante_0: {
+    why: "🔬 El cambio de espacio físico interrumpe los patrones automáticos. El cerebro asocia lugares con comportamientos — un lugar nuevo activa el sistema de novedad, liberando dopamina antes de empezar.",
+    ideas: [
+      { level:'easy', text:"El living con las luces apagadas. Es el mismo hogar pero un lugar diferente." },
+      { level:'med',  text:"El baño, la cocina, el balcón de noche — explorar un lugar diferente cada semana." },
+      { level:'hot',  text:"Prohibición de la cama por una noche. Tienen que ser creativos con el espacio disponible." }
+    ],
+    convo: "Si pudieran elegir cualquier lugar del mundo para una noche perfecta, ¿cuál elegiría cada uno y por qué?"
+  },
+  lugar_hot_0: {
+    why: "🔬 El riesgo percibido de ser vistos activa el sistema nervioso simpático (adrenalina + noradrenalina). Esta activación fisiológica se confunde con excitación sexual, amplificando la experiencia.",
+    ideas: [
+      { level:'easy', text:"Jardín o terraza de noche. El exterior a pocos metros de la cama ya cambia todo." },
+      { level:'med',  text:"Auto estacionado en un lugar solitario. El espacio pequeño y la adrenalina cambian la dinámica." },
+      { level:'hot',  text:"Cualquier lugar donde el 'podríamos ser vistos' sea real pero el riesgo sea manejable." }
+    ],
+    convo: "¿Cuánta adrenalina buscan en su vida íntima? ¿Hay algo que fantaseen que consideran demasiado arriesgado?"
+  },
+  // ═══ ROL ═══
+  rol_romantico_0: {
+    why: "🔬 El juego de roles activa la corteza prefrontal (imaginación) y el sistema límbico (emoción) simultáneamente. Fingir ser desconocidos permite experimentar la atracción inicial sin la habituación de la relación estable.",
+    ideas: [
+      { level:'easy', text:"Acordar un bar o café donde 'no se conocen'. Hablar como si fuera la primera vez." },
+      { level:'med',  text:"Crear personajes con nombres distintos. Mantener el rol durante toda la cena." },
+      { level:'hot',  text:"Extraños que se encuentran, sin mencionar su relación real en ningún momento de la noche." }
+    ],
+    convo: "¿Qué les atraía del otro cuando se conocieron que con el tiempo se volvió menos evidente? ¿Cómo recuperarlo?"
+  },
+  rol_picante_0: {
+    why: "🔬 Los roles de autoridad activan la fantasía de poder que según Lehmiller es la segunda más común (64% de personas). La dinámica jefe/empleado permite explorar control sin implicaciones reales.",
+    ideas: [
+      { level:'easy', text:"Uno da 'instrucciones de trabajo' que el otro debe seguir. Mantener los personajes." },
+      { level:'med',  text:"Escenario completo: reunión privada, tensión que va escalando durante 20 minutos." },
+      { level:'hot',  text:"El 'jefe' tiene autoridad completa sobre la noche. El 'empleado' no puede tomar decisiones." }
+    ],
+    convo: "¿Qué rol de poder (dar o recibir) les resulta más atractivo? ¿Se invierte en distintos momentos de su relación?"
+  },
+  rol_hot_0: {
+    why: "🔬 Los encuentros con 'desconocidos' activan el circuito de novedad más potentemente que cualquier variación con la pareja conocida. El cerebro percibe un nivel de incertidumbre que amplifica todos los sentidos.",
+    ideas: [
+      { level:'easy', text:"Acordar que 'no se conocen' antes de salir. Flirtear como si fuera la primera vez." },
+      { level:'med',  text:"Personajes completamente diferentes a ustedes. Otro nombre, otra personalidad, otra historia." },
+      { level:'hot',  text:"Sin mencionar la relación real en toda la noche. Tratar al otro como a un desconocido deseable." }
+    ],
+    convo: "¿Alguna vez se dieron cuenta de que lo que más los atrae del otro es algo que no se relaciona con su cotidianeidad?"
+  },
+  // ═══ PODER ═══
+  poder_romantico_0: {
+    why: "🔬 Ceder el liderazgo activa la confianza y el apego seguro. Cuando una persona lidera con cuidado, activa en la pareja el sistema de apego (oxitocina) más que el sistema de excitación.",
+    ideas: [
+      { level:'easy', text:"Quien lidera decide absolutamente todo por 30 minutos — ritmo, posición, lugar." },
+      { level:'med',  text:"El rol se intercambia cada 15 minutos. Se comunica el cambio con una palabra clave." },
+      { level:'hot',  text:"Una persona elige toda la noche sin consultar. La otra confía completamente." }
+    ],
+    convo: "¿Cuándo se sienten más cómodos liderando y cuándo prefieren seguir? ¿Coincide con otras áreas de su vida?"
+  },
+  poder_picante_0: {
+    why: "🔬 Susurrar instrucciones activa zonas auditivas del córtex y el sistema límbico simultáneamente. La voz baja genera un estado de escucha activa que aumenta la concentración en el cuerpo.",
+    ideas: [
+      { level:'easy', text:"Susurrar 'en 30 segundos voy a...' y cumplirlo exactamente. La anticipación es parte del juego." },
+      { level:'med',  text:"Describir cada acción en voz baja mientras se hace. Narración en tiempo real." },
+      { level:'hot',  text:"Solo instrucciones susurradas durante toda la sesión. Sin conversación normal." }
+    ],
+    convo: "¿Qué preferís: que te digan qué viene o que te sorprendan? ¿En qué momento de la intimidad cambia eso?"
+  },
+  poder_hot_0: {
+    why: "🔬 La sumisión voluntaria en un contexto seguro activa el sistema de recompensa con más intensidad que la estimulación directa. El cerebro interpreta la confianza extrema como el mayor acto de intimidad posible.",
+    ideas: [
+      { level:'easy', text:"Acordar una palabra de seguridad. Definir límites claros antes de empezar." },
+      { level:'med',  text:"Quien domina prepara la noche completa de antemano. Quien cede no sabe qué viene." },
+      { level:'hot',  text:"Control total durante 1 hora con palabra de seguridad activa en todo momento." }
+    ],
+    convo: "¿Qué condición pondría cada uno para sentirse completamente seguro en esta dinámica?"
+  },
+  // ═══ TIEMPO ═══
+  tiempo_romantico_0: {
+    why: "🔬 La presión de tiempo es el mayor enemigo del deseo femenino según Emily Nagoski. Eliminar el reloj activa el sistema de 'acelerador sexual' sin activar simultáneamente el freno.",
+    ideas: [
+      { level:'easy', text:"Apagar alarmas, poner teléfonos en silencio total. No existe ningún lugar donde ir." },
+      { level:'med',  text:"Empezar a las 4pm. Sin objetivo de cuándo terminar. Seguir el ritmo natural." },
+      { level:'hot',  text:"Bloquear el día completo con anticipación. El tiempo es el regalo principal." }
+    ],
+    convo: "¿Cuándo fue la última vez que tuvieron tiempo íntimo sin un límite real o percibido? ¿Qué cambió cuando no había apuros?"
+  },
+  tiempo_picante_1: {
+    why: "🔬 El edging (parar y reiniciar) es una técnica respaldada por sex therapists para el control de la excitación. Estudios muestran que aumenta la intensidad de la experiencia final entre 2 y 4 veces.",
+    ideas: [
+      { level:'easy', text:"Llegar cerca del límite, parar 3 minutos completos de cualquier contacto, reiniciar." },
+      { level:'med',  text:"4 ciclos completos de parar-reiniciar. Cada reinicio debe empezar más lento que el anterior." },
+      { level:'hot',  text:"Quien controla decide cuándo parar y cuándo seguir. La otra persona no puede pedir." }
+    ],
+    convo: "¿Alguna vez experimentaron parar voluntariamente cuando estaban muy cerca? ¿Se atreven a intentarlo?"
+  },
+  // ═══ PALABRAS ═══
+  palabras_romantico_0: {
+    why: "🔬 Las afirmaciones verbales durante la intimidad activan el núcleo accumbens (placer) y reducen la corteza prefrontal (autocrítica). Recibir palabras de admiración aumenta la autoestima corporal.",
+    ideas: [
+      { level:'easy', text:"Cada uno dice una cosa específica que ama del cuerpo del otro. Nada genérico." },
+      { level:'med',  text:"Durante 10 minutos, solo decirse cosas bonitas. Sin silencio. Turnarse." },
+      { level:'hot',  text:"Decir en voz alta exactamente lo que se está sintiendo en tiempo real, sin filtro." }
+    ],
+    convo: "¿Qué es lo que más te gusta escuchar durante la intimidad? ¿Se lo dijiste alguna vez a tu pareja?"
+  },
+  palabras_picante_0: {
+    why: "🔬 Describir lo que se va a hacer antes de hacerlo activa la imaginación erótica y el sistema de anticipación dopaminérgico. El cerebro procesa la palabra casi con la misma intensidad que el acto físico.",
+    ideas: [
+      { level:'easy', text:"Susurrar '¿puedo...?' antes de cada acción. La pregunta como caricias verbal." },
+      { level:'med',  text:"Describir en detalle lo que se va a hacer, 30 segundos antes, al oído." },
+      { level:'hot',  text:"Narración completa: 'ahora voy a...' y '¿te gusta cuando...?' durante toda la sesión." }
+    ],
+    convo: "¿Qué frase o pregunta les gustaría que el otro dijera y nunca dice? ¿Por qué creen que no se dice?"
+  },
+
+  // ═══ SENSORIAL PICANTE (restantes) ═══
+  sensorial_picante_2: {
+    why: "🔬 La boca tiene 10.000 receptores gustativos y una temperatura de 37°C. Explorar con labios y lengua activa zonas del cuerpo que el tacto manual no alcanza con la misma intensidad neurológica.",
+    ideas: [
+      { level:'easy', text:"Empezar por el cuello y hombros. Solo boca, sin manos. Observen qué provoca más reacción." },
+      { level:'med',  text:"Exploración descendente completa. Solo boca, 15 minutos, sin saltarse ninguna zona." },
+      { level:'hot',  text:"Turno completo de 20 minutos exclusivamente con la boca. La otra persona no puede tocar." }
+    ],
+    convo: "¿Cuál zona de tu cuerpo nunca fue explorada con la boca y siempre sentiste curiosidad?"
+  },
+  sensorial_picante_3: {
+    why: "🔬 Los mecano-receptores de la piel responden diferente según la textura del contacto. Alternar texturas (suave, áspero, frío, caliente) activa más vías neurológicas simultáneamente que una sola textura.",
+    ideas: [
+      { level:'easy', text:"Pluma + hielo + labios. Tres texturas distintas, alternadas sin aviso." },
+      { level:'med',  text:"Venda en los ojos y una caja con 5 texturas distintas. Adivinar qué es cada una." },
+      { level:'hot',  text:"Exploración completa con 6 texturas diferentes, una por zona del cuerpo." }
+    ],
+    convo: "¿Cuál textura en el cuerpo del otro nunca prestaron suficiente atención? ¿Por qué creen que eso pasa?"
+  },
+  // ═══ SENSORIAL HOT (restantes) ═══
+  sensorial_hot_2: {
+    why: "🔬 Los receptores TRPV1 que procesan el calor intenso son los mismos que procesan la capsaicina. La estimulación térmica intensa activa el sistema noradrenérgico, amplificando la excitación general.",
+    ideas: [
+      { level:'easy', text:"Agua muy caliente (tolerable) en zonas erógenas. Observar la respuesta de la piel." },
+      { level:'med',  text:"Cera de vela especial para body play (temperatura controlada). Nunca cerca de la cara." },
+      { level:'hot',  text:"Contraste extremo: cubo de hielo seguido inmediatamente de compresas calientes." }
+    ],
+    convo: "¿Cuál es el límite de intensidad sensorial que cada uno querría explorar? ¿Son diferentes esos límites?"
+  },
+  sensorial_hot_3: {
+    why: "🔬 El 'body mapping' —explorar sistemáticamente cada centímetro— aumenta la conciencia interoceptiva. Parejas que practican esto reportan mayor satisfacción a largo plazo y mejor comunicación sexual.",
+    ideas: [
+      { level:'easy', text:"Dividir el cuerpo en zonas. Cada una recibe 2 minutos de atención exclusiva." },
+      { level:'med',  text:"Mapa completo de 30 minutos. Quien explora toma notas mentales de cada reacción." },
+      { level:'hot',  text:"Exploración exhaustiva sin ninguna zona excluida. El objetivo es no dejar ningún centímetro sin atención." }
+    ],
+    convo: "¿Hay una zona de tu cuerpo que sientas que el otro nunca prestó suficiente atención? ¿Se lo dijiste?"
+  },
+  // ═══ LUGAR ROMÁNTICO (restantes) ═══
+  lugar_romantico_1: {
+    why: "🔬 Los hoteles activan la fantasía de 'versión especial de uno mismo'. El entorno desconocido suspende los patrones cotidianos y el cerebro opera en modo de novedad, aumentando la receptividad.",
+    ideas: [
+      { level:'easy', text:"Reservar un hotel por una noche sin planearlo demasiado. La espontaneidad es parte." },
+      { level:'med',  text:"Hotel con jacuzzi o bañera. Llevar vino, apagar el teléfono desde que entran." },
+      { level:'hot',  text:"Hotel de lujo por una noche. Tratar el espacio como si fueran otras personas." }
+    ],
+    convo: "¿Qué versión de ustedes aparece en los viajes que no aparece en casa? ¿Cómo traer esa versión a la cotidianeidad?"
+  },
+  lugar_romantico_2: {
+    why: "🔬 Los encuentros en horarios inusuales (madrugada, amanecer) coinciden con picos de cortisol que aumentan la energía. El cerebro en estado de vigilia-sueño tiene menores defensas inhibitorias.",
+    ideas: [
+      { level:'easy', text:"Poner alarma a las 6am un fin de semana. Ese momento entre sueño y vigilia es único." },
+      { level:'med',  text:"Despertarse de madrugada intencionalmente. La oscuridad y el silencio cambian todo." },
+      { level:'hot',  text:"Amanecer completo: empezar antes de que salga el sol y terminar con la luz." }
+    ],
+    convo: "¿En qué momento del día sienten más deseo naturalmente? ¿Alguna vez lo actuaron en ese horario específico?"
+  },
+  lugar_romantico_3: {
+    why: "🔬 El entorno perfecto reduce la activación de la amígdala (miedo/ansiedad) y permite mayor activación del sistema de recompensa. La comodidad total elimina el freno de la distracción ambiental.",
+    ideas: [
+      { level:'easy', text:"Sábanas recién lavadas, temperatura ideal, sin teléfonos. La cama perfecta es un ritual." },
+      { level:'med',  text:"Preparar el ambiente juntos como parte del juego previo. La anticipación empieza ahí." },
+      { level:'hot',  text:"Rediseñar completamente la habitación para una noche: cortinas, aromas, temperatura." }
+    ],
+    convo: "¿Cuál es el ambiente que más los relaja a ambos? ¿Qué elemento falta en su espacio actual para lograrlo?"
+  },
+  // ═══ LUGAR PICANTE (restantes) ═══
+  lugar_picante_1: {
+    why: "🔬 La ducha activa el sistema nervioso parasimpático. El vapor y el calor del agua reducen la tensión muscular y la autoconsciencia corporal — ambos enemigos del disfrute.",
+    ideas: [
+      { level:'easy', text:"Ducha compartida sin objetivo. Solo estar juntos bajo el agua, sin apuros." },
+      { level:'med',  text:"Turnarse a jabonarse mutuamente. Cada uno tiene 5 minutos completos." },
+      { level:'hot',  text:"Ducha a oscuras, solo con el sonido del agua y el calor como referencias." }
+    ],
+    convo: "¿Por qué creen que el baño suele ser un espacio tan íntimo pero tan poco explorado en pareja?"
+  },
+  lugar_picante_2: {
+    why: "🔬 Cambiar la asociación espacial de la cocina (trabajo/rutina) por una de intimidad crea una interferencia cognitiva placentera. El cerebro necesita reorientarse, lo que aumenta el estado de alerta.",
+    ideas: [
+      { level:'easy', text:"Cocinar juntos con música y convertirlo en juego previo. La cocina como espacio de tensión." },
+      { level:'med',  text:"La cocina de noche con las luces bajas. Un lugar completamente conocido que se vuelve nuevo." },
+      { level:'hot',  text:"La encimera de la cocina. El cambio de altura y superficie cambia completamente la dinámica." }
+    ],
+    convo: "¿Qué lugar de su casa nunca usaron para intimidad que siempre pensaron que podría ser interesante?"
+  },
+  lugar_picante_3: {
+    why: "🔬 El espacio reducido del auto activa la proximidad física obligatoria. La restricción de movimiento aumenta la consciencia de cada contacto y el sistema simpático por la sensación de encierro placentero.",
+    ideas: [
+      { level:'easy', text:"Auto estacionado en lugar tranquilo de noche. La limitación del espacio es parte del juego." },
+      { level:'med',  text:"Asiento trasero. Volver a la adrenalina de cuando todo era nuevo y tenían que ser creativos." },
+      { level:'hot',  text:"Lugar solitario de madrugada. El riesgo percibido amplifica toda la experiencia." }
+    ],
+    convo: "¿Recuerdan alguna vez que la situación o el lugar añadió adrenalina a un encuentro? ¿Cómo se sintió comparado con la comodidad habitual?"
+  },
+  // ═══ LUGAR HOT (restantes) ═══
+  lugar_hot_1: {
+    why: "🔬 El efecto espejo activa la autoimagen sexual. Verse durante un encuentro íntimo aumenta la consciencia del propio cuerpo como objeto de deseo, algo que la mayoría evita inconscientemente.",
+    ideas: [
+      { level:'easy', text:"Dejar un espejo al costado. Solo para ver de reojo, sin hacerlo el foco." },
+      { level:'med',  text:"Posicionarse deliberadamente frente al espejo durante 5 minutos. Mantener contacto visual." },
+      { level:'hot',  text:"Todo el encuentro con el espejo como presencia constante. Verse sin apartar la mirada." }
+    ],
+    convo: "¿Cómo se sienten con su imagen corporal durante la intimidad? ¿Es diferente a cómo se sienten en otros contextos?"
+  },
+  lugar_hot_2: {
+    why: "🔬 La oscuridad exterior y el contacto con la naturaleza activan el sistema nervioso de maneras que los espacios cerrados no pueden. La temperatura del aire, los sonidos y el cielo crean un contexto único.",
+    ideas: [
+      { level:'easy', text:"Jardín o terraza de noche. El exterior a pocos metros de la cama ya cambia todo." },
+      { level:'med',  text:"Campo o playa desierta de noche. La naturaleza como único testigo." },
+      { level:'hot',  text:"Lluvia. El sonido, la temperatura y la sensación del agua cambian completamente el contexto." }
+    ],
+    convo: "¿Cuánto les importa la privacidad completa vs. el riesgo de ser vistos? ¿Están en el mismo punto o difieren?"
+  },
+  lugar_hot_3: {
+    why: "🔬 El tiempo limitado activa la urgencia. El cerebro bajo presión temporal libera adrenalina que se suma a la excitación. La restricción crea intensidad — el mismo principio del 'forbidden fruit effect'.",
+    ideas: [
+      { level:'easy', text:"Poner un temporizador de 10 minutos. Solo tienen ese tiempo. La urgencia es el juego." },
+      { level:'med',  text:"Un ascensor o espacio semi-público donde el tiempo es literalmente limitado." },
+      { level:'hot',  text:"Cualquier lugar donde 'solo tienen X minutos'. La restricción temporal como afrodisíaco." }
+    ],
+    convo: "¿La urgencia suma o resta para cada uno? ¿Cuándo vivieron un encuentro urgente e intenso que recuerden bien?"
+  },
+  // ═══ ROL ROMÁNTICO (restantes) ═══
+  rol_romantico_1: {
+    why: "🔬 Recrear una 'primera vez ficticia' activa el sistema de novedad sin los riesgos reales de lo desconocido. El cerebro experimenta la liberación de dopamina del inicio sin perder la seguridad del vínculo establecido.",
+    ideas: [
+      { level:'easy', text:"Describir cómo se imaginan que habría sido su primera vez si se hubieran conocido diferente." },
+      { level:'med',  text:"Actuar una primera vez lenta y exploratoria. Sin apuros, como si todo fuera nuevo." },
+      { level:'hot',  text:"Recrear completamente: ropa, lugar, diálogos de 'recién conocidos'. Mantener el rol toda la noche." }
+    ],
+    convo: "¿Qué harían diferente si pudieran volver a su primera vez juntos? ¿Qué cambiarían?"
+  },
+  rol_romantico_2: {
+    why: "🔬 Las narrativas románticas activan la corteza prefrontal medial, asociada con la identidad y el deseo de conexión profunda. Construir una historia juntos antes de la intimidad aumenta el deseo anticipatorio.",
+    ideas: [
+      { level:'easy', text:"Elegir una película romántica favorita y recrear una escena que les gustó." },
+      { level:'med',  text:"Crear un escenario propio: tiempo, lugar, contexto. Darle nombres a los personajes." },
+      { level:'hot',  text:"Historia completa durante toda la noche. Salir, tener la 'cita', llegar 'a casa', mantener el personaje." }
+    ],
+    convo: "Si fueran personajes de una historia, ¿cuál sería el contexto en que se conocerían? ¿Qué tipo de historia?"
+  },
+  rol_romantico_3: {
+    why: "🔬 El juego de 'noche de bodas' activa el sistema de apego y el de recompensa simultáneamente. Recrear un rito de iniciación formal eleva el significado simbólico del encuentro, aumentando la conexión emocional.",
+    ideas: [
+      { level:'easy', text:"Cena especial primero. Tratar la noche como si fuera la primera noche oficial de su relación." },
+      { level:'med',  text:"Cartas previas describiendo lo que sienten. Leerlas antes de empezar la noche." },
+      { level:'hot',  text:"Ritual completo: ropa especial, ambiente preparado, tiempo ilimitado, todo como la primera vez." }
+    ],
+    convo: "¿Qué momento de su relación querrían revivir si pudieran? ¿Hay algo que se perdió con el tiempo?"
+  },
+  // ═══ ROL PICANTE (restantes) ═══
+  rol_picante_1: {
+    why: "🔬 La dinámica médico/paciente activa la fantasía de exposición controlada. El 'examen' implica mirada experta, toque profesional y asimetría de poder — tres elementos que combinados generan tensión erótica intensa.",
+    ideas: [
+      { level:'easy', text:"Uno 'examina' al otro con cuidado y seriedad. El lenguaje técnico/neutral es parte del juego." },
+      { level:'med',  text:"Lista de 'síntomas' que requieren atención específica. El examen es exhaustivo." },
+      { level:'hot',  text:"Rol completo con instrumentos (estetoscopio de juguete, etc.). Mantener el personaje siempre." }
+    ],
+    convo: "¿Qué nivel de 'seriedad' en el juego de roles les parece más atractivo — lúdico y con humor o completamente en serio?"
+  },
+  rol_picante_2: {
+    why: "🔬 La asimetría de conocimiento (uno sabe más que el otro) activa la fantasía de aprendizaje y guía. El 'estudiante' puede rendirse a ser enseñado; el 'profesor' disfruta el control pedagógico.",
+    ideas: [
+      { level:'easy', text:"El 'profesor' explica algo real que el otro desconoce. La enseñanza como pretexto de intimidad." },
+      { level:'med',  text:"Clase privada con tarea asignada. El 'alumno' debe seguir las instrucciones exactamente." },
+      { level:'hot',  text:"Examen final. Todo lo aprendido en la noche se evalúa. El 'profesor' decide si aprueba." }
+    ],
+    convo: "¿Qué les gustaría enseñarle al otro sobre su propio cuerpo o deseos que nunca hayan podido expresar directamente?"
+  },
+  rol_picante_3: {
+    why: "🔬 Los roles de entrenador/cliente permiten contacto físico justificado por un objetivo externo, reduciendo la autoconsciencia. La 'corrección' posicional permite guía táctil que de otro modo se sentiría directiva.",
+    ideas: [
+      { level:'easy', text:"El 'entrenador' corrige posiciones con las manos. El contacto tiene un pretexto." },
+      { level:'med',  text:"Sesión de 'entrenamiento' donde cada corrección escala en intimidad progresivamente." },
+      { level:'hot',  text:"El entrenador decide cada movimiento. El cliente solo obedece las instrucciones." }
+    ],
+    convo: "¿En qué área de su intimidad querrían recibir más guía del otro? ¿Qué hace difícil pedirla directamente?"
+  },
+  // ═══ ROL HOT (restantes) ═══
+  rol_hot_1: {
+    why: "🔬 El poder total activa el sistema de control ejecutivo en quien lo ejerce y el sistema de rendición en quien lo recibe. Ambas posiciones tienen diferentes pero igualmente intensos circuitos de recompensa.",
+    ideas: [
+      { level:'easy', text:"Una persona elige absolutamente todo por una hora. Sin consultar, sin pedir permiso." },
+      { level:'med',  text:"Quien tiene el poder da instrucciones específicas que deben seguirse exactamente." },
+      { level:'hot',  text:"Desequilibrio total de poder durante la noche completa, con palabra de seguridad siempre activa." }
+    ],
+    convo: "¿Cuál de los dos roles — quien tiene el poder o quien lo cede — les resulta más intenso emocionalmente? ¿Cambia según el día?"
+  },
+  rol_hot_2: {
+    why: "🔬 La fantasía de dominación y sumisión es la más común en estudios (Lehmiller: 65% de mujeres, 53% de hombres). El BDSM consensuado activa oxitocina y endorfinas, generando un estado de bienestar post-experiencia superior.",
+    ideas: [
+      { level:'easy', text:"Acordar límites claros primero. Una fantasía, una noche, palabra de seguridad definida." },
+      { level:'med',  text:"Quien cede el control no puede tomar iniciativa en ningún momento de la sesión." },
+      { level:'hot',  text:"Escenario completo consensuado de antemano. Roles mantenidos sin interrupciones." }
+    ],
+    convo: "¿Qué condición necesitaría cada uno para sentirse completamente seguro explorando esta dinámica?"
+  },
+  rol_hot_3: {
+    why: "🔬 Adoptar una identidad alternativa reduce la autocensura. El cerebro bajo una 'máscara' identitaria activa menos el sistema de inhibición social, permitiendo expresar deseos que en la identidad normal no emergen.",
+    ideas: [
+      { level:'easy', text:"Solo cambiar el nombre durante la noche. Ese detalle pequeño tiene un efecto sorprendente." },
+      { level:'med',  text:"Personalidad completamente opuesta a la propia. Introvertido se vuelve dominante, etc." },
+      { level:'hot',  text:"Identidades elaboradas con historia, nombre y forma de hablar. Mantenerlas toda la noche." }
+    ],
+    convo: "¿Qué faceta de su personalidad raramente expresan en la intimidad? ¿Qué la inhibe?"
+  },
+  // ═══ PODER ROMÁNTICO (restantes) ═══
+  poder_romantico_1: {
+    why: "🔬 Recibir sin dar activa el sistema parasimpático de manera más profunda que la reciprocidad simultánea. El cerebro puede focalizarse completamente en procesar placer cuando no divide recursos en dar simultáneamente.",
+    ideas: [
+      { level:'easy', text:"30 minutos completos donde una persona solo recibe. No puede tocar, solo sentir." },
+      { level:'med',  text:"Quien recibe describe en voz alta qué quiere que cambie o continúe." },
+      { level:'hot',  text:"Noche completa asimétrica. Uno da todo, el otro recibe todo. Al día siguiente se invierte." }
+    ],
+    convo: "¿Cuál les cuesta más — dar o recibir completamente? ¿Por qué creen que eso pasa?"
+  },
+  poder_romantico_2: {
+    why: "🔬 El ritmo muy lento desactiva la mente rumiante. A menos de 30% de velocidad habitual, el sistema nervioso no puede mantenerse en 'modo planificación' y cede al presente. Es meditación activa.",
+    ideas: [
+      { level:'easy', text:"Poner alarma cada 5 minutos como recordatorio de ir más lento si aceleraron." },
+      { level:'med',  text:"Acordar que cualquiera puede decir 'más lento' y el ritmo baja hasta casi detenerse." },
+      { level:'hot',  text:"Velocidad máxima definida: mitad de lo que considera 'lento'. Mantenerla durante 20 minutos." }
+    ],
+    convo: "¿Cuándo fue la última vez que fueron deliberadamente lentos durante toda una sesión? ¿Qué pasó?"
+  },
+  poder_romantico_3: {
+    why: "🔬 El intercambio de control regular cada 5 minutos mantiene el sistema de alerta activo. El cerebro no puede entrar en piloto automático cuando el rol cambia constantemente, prolongando la atención plena.",
+    ideas: [
+      { level:'easy', text:"Palabra clave para el cambio. Quien dice la palabra pasa el control automáticamente." },
+      { level:'med',  text:"Temporizador de 5 minutos. Al sonar, se invierte quién lidera sin negociación." },
+      { level:'hot',  text:"Los roles se invierten sin aviso, cuando quien lidera decida. La sorpresa es parte del juego." }
+    ],
+    convo: "¿Sienten que siempre tiende a liderar el mismo en la intimidad? ¿Es elección o inercia?"
+  },
+  // ═══ PODER PICANTE (restantes) ═══
+  poder_picante_1: {
+    why: "🔬 La inmovilización suave activa la fantasía de rendición sin los elementos de dominación intensa. El cuerpo inmovilizado libera tensión muscular paradójicamente, y el cerebro focaliza toda su atención en las sensaciones.",
+    ideas: [
+      { level:'easy', text:"Manos sobre la cabeza. Solo la indicación verbal de no moverlas." },
+      { level:'med',  text:"Bufanda suave como atadura. No muy ajustada — la restricción es simbólica pero efectiva." },
+      { level:'hot',  text:"Inmovilización completa con accesorios suaves. Palabra de seguridad siempre activa." }
+    ],
+    convo: "¿Qué diferencia perciben entre 'no poder moverse' y 'elegir no moverse'? ¿Cuál atrae más a cada uno?"
+  },
+  poder_picante_2: {
+    why: "🔬 Seguir instrucciones específicas activa el sistema de atención ejecutiva y reduce la autoconsciencia. Quien obedece no necesita decidir — eso libera energía cognitiva para focalizarse en sentir.",
+    ideas: [
+      { level:'easy', text:"Lista de 5 instrucciones escritas en papel. El otro las sigue en orden sin saltearse ninguna." },
+      { level:'med',  text:"Instrucciones en tiempo real, susurradas. Quien sigue no puede proponer nada propio." },
+      { level:'hot',  text:"Comandos encadenados. Cada instrucción termina con la próxima ya dada. Sin pausas." }
+    ],
+    convo: "¿Hay algo que siempre quisieran pedirle al otro que hiciera específicamente y nunca se animaron a pedir directamente?"
+  },
+  poder_picante_3: {
+    why: "🔬 El sistema de colores (verde/amarillo/rojo) es la herramienta de comunicación sexual más estudiada. Aumenta la satisfacción un 34% y reduce la ansiedad de performance significativamente.",
+    ideas: [
+      { level:'easy', text:"Acordar los tres colores antes de empezar. Usarlos durante la noche aunque no sean necesarios." },
+      { level:'med',  text:"Agregar 'naranja' = me gusta pero más despacio. Cuatro niveles de comunicación." },
+      { level:'hot',  text:"Sistema completo con señas no verbales también. La comunicación fluida como base de la intensidad." }
+    ],
+    convo: "¿Cuán fácil les resulta decir en el momento si algo les gusta o no? ¿Qué hace difícil esa comunicación en tiempo real?"
+  },
+  // ═══ PODER HOT (restantes) ═══
+  poder_hot_1: {
+    why: "🔬 La sumisión voluntaria activa endorfinas y una ligera disociación positiva. En un contexto seguro, ceder el control completamente genera un estado alterado de consciencia que los practicantes describen como 'subspace'.",
+    ideas: [
+      { level:'easy', text:"Definir los límites juntos antes. Qué sí, qué no, cuál es la palabra para parar." },
+      { level:'med',  text:"Una hora de sumisión completa. Quien cede no toma ninguna decisión, ni pequeña." },
+      { level:'hot',  text:"Noche completa. Quien cede no elige ropa, posición, ritmo, duración — nada." }
+    ],
+    convo: "¿Qué necesita cada uno para confiar suficiente en el otro como para ceder el control completamente?"
+  },
+  poder_hot_2: {
+    why: "🔬 Pedir explícitamente lo que se quiere es uno de los mayores predictores de satisfacción sexual según el Journal of Sex Research. La especificidad — 'quiero que...' — activa más el sistema de recompensa que las indicaciones vagas.",
+    ideas: [
+      { level:'easy', text:"Cada uno escribe 3 deseos específicos. Intercambiarlos y elegir uno para empezar." },
+      { level:'med',  text:"Durante la noche, solo se puede pedir con oraciones completas y específicas. Nada implícito." },
+      { level:'hot',  text:"Todo pedido debe ser en voz alta, explícito, y la otra persona debe confirmar verbalmente." }
+    ],
+    convo: "¿Cuál es el deseo más específico que tienen y que nunca pidieron directamente? ¿Qué impide pedirlo?"
+  },
+  poder_hot_3: {
+    why: "🔬 El juego de 'cartas de mando' gamifica la comunicación de deseos. Al escribirlos previamente, el sistema prefrontal (razonamiento) ya los procesó — en la ejecución solo opera el sistema límbico (emoción/placer).",
+    ideas: [
+      { level:'easy', text:"5 cartas cada uno con deseos reales. Barajar y ejecutar en orden aleatorio." },
+      { level:'med',  text:"10 cartas cada uno. Las 5 primeras se conocen; las otras 5 son sorpresa para el momento." },
+      { level:'hot',  text:"Cartas sin límite de intensidad. Todo lo que está escrito se cumple — acordado de antemano." }
+    ],
+    convo: "¿Qué escribirían en una carta si supieran que el otro la va a cumplir sin juzgar? ¿Por qué no lo piden directamente?"
+  },
+  // ═══ TIEMPO ROMÁNTICO (restantes) ═══
+  tiempo_romantico_1: {
+    why: "🔬 Empezar con 20 minutos de abrazo sin contacto sexual activa el sistema de apego (oxitocina) antes que el de excitación. Las parejas que hacen esto reportan mayor satisfacción y conexión emocional.",
+    ideas: [
+      { level:'easy', text:"20 minutos solo abrazados. Sin hablar, sin moverse más de lo necesario para respirar." },
+      { level:'med',  text:"Empezar con respiración sincronizada — 5 ciclos idénticos — antes de cualquier movimiento." },
+      { level:'hot',  text:"30 minutos de calma total. Sin hablar, sin moverse. Solo presencia. Luego dejar fluir." }
+    ],
+    convo: "¿Cuándo fue la última vez que estuvieron en silencio juntos sin que se sintiera incómodo? ¿Qué hace que el silencio sea íntimo?"
+  },
+  tiempo_romantico_2: {
+    why: "🔬 Las sesiones matutinas tienen ventajas biológicas: el testosterone está en su pico (7-9am en ambos sexos) y el cortisol baja después del despertar. El cerebro en modo semi-consciente tiene menor inhibición.",
+    ideas: [
+      { level:'easy', text:"Despertarse 30 minutos antes del horario habitual. El tiempo extra es el regalo." },
+      { level:'med',  text:"Café primero, teléfono nunca. Empezar el día con intimidad antes que con el mundo." },
+      { level:'hot',  text:"Bloquear toda la mañana. Sin compromisos hasta el mediodía. El tiempo es ilimitado." }
+    ],
+    convo: "¿Cuál de los dos es más de mañana para la intimidad? ¿Alguna vez lo intentaron cuando el otro no lo era?"
+  },
+  tiempo_romantico_3: {
+    why: "🔬 Quedarse dormidos después de la intimidad con el otro activa el ciclo completo de oxitocina. El sueño compartido post-coital tiene niveles de vinculación que el sueño separado no reproduce.",
+    ideas: [
+      { level:'easy', text:"Sin teléfono en la cama. La única regla: quedarse abrazados hasta dormir." },
+      { level:'med',  text:"Crear el ritual: cada uno tiene 2 minutos para decirle al otro algo del día antes de dormir." },
+      { level:'hot',  text:"Noche sin límite. Empezar tarde, dormir cuando llegue, sin alarma al día siguiente." }
+    ],
+    convo: "¿Duermen abrazados normalmente o se separan? ¿Fue siempre así o cambió con el tiempo?"
+  },
+  // ═══ TIEMPO PICANTE (restantes) ═══
+  tiempo_picante_0: {
+    why: "🔬 La anticipación acumulada durante el día activa el sistema de deseo espontáneo. Estudios muestran que la tensión consciente durante 8-12 horas previas duplica la intensidad percibida de la experiencia.",
+    ideas: [
+      { level:'easy', text:"Acordar de mañana que la noche será especial. No hablar de qué — solo la anticipación." },
+      { level:'med',  text:"Mensajes durante el día describiendo qué van a hacer. La tensión se construye hora a hora." },
+      { level:'hot',  text:"Sin tocarse en todo el día aunque estén juntos. La restricción total hace la noche más intensa." }
+    ],
+    convo: "¿Cuánto afecta el contexto del día al deseo de noche? ¿Qué les resulta más difícil: esperar o ser pacientes en el momento?"
+  },
+  tiempo_picante_2: {
+    why: "🔬 Los temporizadores externos eliminan la presión cognitiva de decidir cuándo cambiar. El cerebro libre de esa decisión puede focalizarse completamente en la experiencia presente.",
+    ideas: [
+      { level:'easy', text:"Timer de 5 minutos en el teléfono. Cuando suena, cambian de actividad o posición." },
+      { level:'med',  text:"Timer secreto — solo uno lo pone. El cambio es una sorpresa para el otro." },
+      { level:'hot',  text:"Múltiples timers encadenados de duración variable. El ritmo lo decide el reloj, no las personas." }
+    ],
+    convo: "¿Les resulta liberador o limitante que algo externo decida el ritmo? ¿Por qué?"
+  },
+  tiempo_picante_3: {
+    why: "🔬 Construir tensión deliberada durante el día activa el sistema dopaminérgico de anticipación. Cada mensaje se convierte en una microdosis de dopamina que se acumula hasta la noche.",
+    ideas: [
+      { level:'easy', text:"Un mensaje a la mañana que diga solo 'esta noche'. Nada más. La imaginación hace el resto." },
+      { level:'med',  text:"3-4 mensajes durante el día con detalles progresivos de qué va a pasar." },
+      { level:'hot',  text:"Conversación entera por mensajes construyendo la noche en detalle. Llegar ya en tensión máxima." }
+    ],
+    convo: "¿Qué tipo de mensajes durante el día aumentan más el deseo de cada uno? ¿Los saben el uno del otro?"
+  },
+  // ═══ TIEMPO HOT (restantes) ═══
+  tiempo_hot_0: {
+    why: "🔬 Las sesiones nocturnas extendidas activan el ciclo completo de excitación-meseta-orgasmo-resolución más de una vez. Cada ciclo refuerza los circuitos de recompensa y aumenta la intensidad de los siguientes.",
+    ideas: [
+      { level:'easy', text:"Sin alarma al día siguiente. Sin límite de cuándo termina. Ver hasta dónde llegan." },
+      { level:'med',  text:"Múltiples pausas de 15 minutos para hidratarse y recargar. La resistencia es estratégica." },
+      { level:'hot',  text:"Intención de llegar al amanecer. Planificar la noche como un maratón, no como un sprint." }
+    ],
+    convo: "¿Alguna vez tuvieron una noche sin límite de tiempo real? ¿Qué cambió comparado con las noches con horario?"
+  },
+  tiempo_hot_1: {
+    why: "🔬 Las rondas múltiples con descansos mínimos mantienen el sistema nervioso simpático activo durante más tiempo. El período refractario puede reducirse significativamente con estimulación no genital entre rondas.",
+    ideas: [
+      { level:'easy', text:"Descanso de 10 minutos entre rondas con contacto no sexual (abrazo, conversación)." },
+      { level:'med',  text:"3 rondas mínimas. Cada una empieza más intensa que la anterior." },
+      { level:'hot',  text:"Sin descanso entre actividades — solo pausa breve. Mantener el estado activo toda la noche." }
+    ],
+    convo: "¿Cuántas veces seguidas podría cada uno? ¿Alguna vez lo intentaron sin un límite predefinido?"
+  },
+  tiempo_hot_2: {
+    why: "🔬 La velocidad máxima activa el sistema nervioso simpático en su pico. Esta activación fisiológica — taquicardia, hiperventilación, vasodilatación — es idéntica a la respuesta de miedo, pero reinterpretada como placer.",
+    ideas: [
+      { level:'easy', text:"5 minutos de velocidad máxima personal. Sin pensar, sin moderar, sin contenerse." },
+      { level:'med',  text:"Intervalos: 2 minutos máxima intensidad, 1 minuto lento, repetir 4 veces." },
+      { level:'hot',  text:"Todo al límite desde el comienzo hasta el final. Sin frenadas, sin pausas, sin meseta." }
+    ],
+    convo: "¿Qué los frena normalmente de ir a velocidad máxima? ¿Es físico, emocional, o una combinación?"
+  },
+  tiempo_hot_3: {
+    why: "🔬 El patrón de olas (alta intensidad → baja → alta) mantiene el sistema de recompensa activo durante más tiempo que la intensidad constante. Imita el patrón de las terapias de control de excitación más efectivas.",
+    ideas: [
+      { level:'easy', text:"Subir al 80%, bajar al 20%, subir al 90%, bajar. Cada ola más alta que la anterior." },
+      { level:'med',  text:"Quien controla el ritmo decide cuándo sube y cuándo baja. El otro no puede influir." },
+      { level:'hot',  text:"10 ciclos completos de ola. La última ola no tiene techo. Solo se detiene cuando ambos quieren." }
+    ],
+    convo: "¿Pueden reconocer cuándo el otro está llegando al límite sin que lo diga? ¿Cómo? ¿Siempre leen bien las señales?"
+  },
+  // ═══ PALABRAS ROMÁNTICO (restantes) ═══
+  palabras_romantico_1: {
+    why: "🔬 La música a 60-80 BPM sincroniza el ritmo cardíaco y respiratorio. En intimidad, una playlist diseñada actúa como metronomo emocional, guiando inconscientemente el ritmo del encuentro.",
+    ideas: [
+      { level:'easy', text:"Cada uno prepara una playlist de 5 canciones. Reproducirlas mezcladas durante la noche." },
+      { level:'med',  text:"Una playlist que empieza lenta y escala progresivamente. La música guía el ritmo." },
+      { level:'hot',  text:"Prohibido cualquier otro sonido. Solo la música. Que ella marque cada cambio." }
+    ],
+    convo: "¿Hay una canción que represente perfectamente cómo se sienten cuando están más conectados? ¿La conoce el otro?"
+  },
+  palabras_romantico_2: {
+    why: "🔬 El contacto visual sostenido activa las neuronas espejo y el sistema de apego. Cinco minutos de mirada directa producen un efecto de vinculación equivalente a horas de conversación.",
+    ideas: [
+      { level:'easy', text:"5 minutos de contacto visual sin hablar. Quien aparte la mirada primero pierde." },
+      { level:'med',  text:"Durante 15 minutos de contacto, mantener los ojos. El reto es no desviar la mirada." },
+      { level:'hot',  text:"Todo el encuentro con contacto visual. Sin apartar la mirada en ningún momento." }
+    ],
+    convo: "¿Les resulta incómodo el contacto visual sostenido con el otro? ¿Por qué creen que eso pasa o no pasa?"
+  },
+  palabras_romantico_3: {
+    why: "🔬 Narrar las sensaciones en tiempo real activa simultáneamente la corteza somatosensorial (procesa el tacto) y el área de Broca (lenguaje). Esta co-activación profundiza la consciencia corporal.",
+    ideas: [
+      { level:'easy', text:"Quien recibe describe en una palabra cada sensación: 'cálido', 'suave', 'intenso'." },
+      { level:'med',  text:"Narración continua de ambos. Dos voces describiendo la misma experiencia desde ángulos distintos." },
+      { level:'hot',  text:"Narración detallada y sin filtro de cada sensación durante toda la sesión." }
+    ],
+    convo: "¿Qué sensación del cuerpo del otro nunca describieron en palabras? Intenten hacerlo ahora."
+  },
+  // ═══ PALABRAS PICANTE (restantes) ═══
+  palabras_picante_1: {
+    why: "🔬 La narración en tiempo real activa el sistema auditivo y visual simultáneamente. El cerebro procesa las palabras como si estuviera viendo lo que se describe — es una forma de realidad aumentada neurológica.",
+    ideas: [
+      { level:'easy', text:"Uno narra lo que está haciendo en tercera persona. 'Ahora estoy...' como si fuera una historia." },
+      { level:'med',  text:"Narración detallada de cada acción antes y durante. El lenguaje como caricia preliminar." },
+      { level:'hot',  text:"Comentario continuo sin pausas. Quien narra no puede callarse más de 5 segundos." }
+    ],
+    convo: "¿La voz del otro es parte de lo que los atrae? ¿Cuándo escuchan su voz de una manera que los afecta especialmente?"
+  },
+  palabras_picante_2: {
+    why: "🔬 Pedir permiso verbal activa el sistema de consentimiento afirmativo, que según estudios de psicología sexual aumenta la satisfacción de ambas partes. La confirmación verbal del deseo amplifica la experiencia.",
+    ideas: [
+      { level:'easy', text:"Antes de cada acción nueva, preguntar. El otro responde solo 'sí' o 'no'. Simple y efectivo." },
+      { level:'med',  text:"Pedir con detalle: '¿Puedo...? ¿Cómo te gustaría que lo hiciera?' Esperar la respuesta específica." },
+      { level:'hot',  text:"Todo requiere permiso verbal explícito. Cada acción es una negociación en tiempo real." }
+    ],
+    convo: "¿Cuándo fue la última vez que le preguntaron al otro exactamente qué quería en ese momento? ¿Cuál fue la respuesta?"
+  },
+  palabras_picante_3: {
+    why: "🔬 Compartir fantasías durante la intimidad activa la corteza prefrontal y el sistema límbico simultáneamente — imaginación más emoción. La narración de fantasías 'en voz alta' mientras se está en contacto físico crea una experiencia multi-layered.",
+    ideas: [
+      { level:'easy', text:"Contar una fantasía breve en voz alta. El otro escucha sin interrumpir." },
+      { level:'med',  text:"Turnarse: cada uno cuenta una fantasía y el otro responde con la suya. Conversación íntima." },
+      { level:'hot',  text:"Fantasías elaboradas narradas durante el encuentro. La palabra y el cuerpo en simultáneo." }
+    ],
+    convo: "¿Hay una fantasía que pensaron durante la intimidad pero nunca se animaron a decir en voz alta? ¿Por qué?"
+  },
+  palabras_hot_1: {
+    why: "🔬 El volumen sin restricción activa el sistema de desinhibición. La supresión vocal durante la intimidad requiere energía cognitiva activa — liberarla redirige esa energía hacia la experiencia sensorial.",
+    ideas: [
+      { level:'easy', text:"Acordar que esta noche no hay que bajar la voz. Que el sonido sea parte de la experiencia." },
+      { level:'med',  text:"Prohibido el silencio. Algún sonido siempre — gemido, palabras, respiración audible." },
+      { level:'hot',  text:"Sin ningún tipo de autocensura sonora durante toda la noche." }
+    ],
+    convo: "¿Qué hace que se silencien durante la intimidad? ¿Es hábito, autoconsciencia, o algo más? ¿Cambiaría algo si pudieran ser completamente sonoros?"
+  },
+  palabras_hot_2: {
+    why: "🔬 Las palabras específicas acordadas crean anclas lingüísticas. El cerebro aprende a asociar esas palabras con el estado de activación, de manera que solo escucharlas (incluso fuera del contexto) puede activar el deseo.",
+    ideas: [
+      { level:'easy', text:"Elegir dos o tres palabras que normalmente no usan. Solo para esta noche." },
+      { level:'med',  text:"Cada uno elige una palabra que quiere escuchar. Usarlas cuando llegue el momento adecuado." },
+      { level:'hot',  text:"Vocabulario completamente diferente al habitual. Una nueva forma de hablar solo para la intimidad." }
+    ],
+    convo: "¿Hay palabras que el otro usa que les generan una reacción particular? ¿Se las dijeron?"
+  },
+  palabras_hot_3: {
+    why: "🔬 La especificidad en la comunicación sexual es el mayor predictor de satisfacción según Mosher & MacIan. 'Me gusta cuando haces X exactamente así' activa el sistema de refuerzo positivo del oyente y clarifica el mapa de placer.",
+    ideas: [
+      { level:'easy', text:"Una cosa específica cada uno: 'lo que más me gusta es cuando tú...' Terminar la oración." },
+      { level:'med',  text:"Guía verbal en tiempo real: decir exactamente qué, dónde, cómo y a qué velocidad." },
+      { level:'hot',  text:"Todo durante la noche debe pedirse con máxima especificidad. Nada implícito, nada asumido." }
+    ],
+    convo: "¿Qué parte de lo que les gusta en la intimidad nunca pudieron comunicar con precisión? ¿Qué lo hace difícil?"
+  }
+,
+
+  palabras_hot_0: {
+    why: "🔬 La desinhibición verbal es uno de los mayores factores de satisfacción sexual según Masters y Johnson. El lenguaje explícito en un contexto seguro activa zonas del cerebro que el lenguaje neutro no alcanza.",
+    ideas: [
+      { level:'easy', text:"Acordar de antemano palabras que normalmente no dirían. Usarlas solo esta noche." },
+      { level:'med',  text:"Decir exactamente lo que se quiere, sin rodeos, sin vergüenza. La otra persona responde igual." },
+      { level:'hot',  text:"Comunicación completamente abierta durante toda la noche. Sin filtros ni autocensura." }
+    ],
+    convo: "¿Hay algo que quieran decir o escuchar durante la intimidad que nunca se animaron a pedir?"
+  }
+};
+
+function getFantasyExplore(catId, level, itemIdx) {
+  const key = catId + '_' + level + '_' + itemIdx;
+  return FANTASY_EXPLORE[key] || null;
+}
+
+function toggleMatchExpand(el) {
+  el.closest('.fantasy-match-item-new').classList.toggle('expanded');
+}
 
 // ── EL AMBIENTE ───
 let checkinA = null;
@@ -2771,6 +3740,16 @@ function storageRemove(key) {
 function initChallenge() {
   const saved = storageGet('challenge_' + currentHeat) || {completed:[], startDay:0};
   renderChallenge(saved);
+  // Mostrar reto de fantasías pendiente si existe
+  const retoPendiente = storageGet('fantasy_reto_pendiente');
+  const retoEl = document.getElementById('fantasyRetoPendiente');
+  if (retoPendiente && retoEl) {
+    retoEl.style.display = 'block';
+    document.getElementById('retoMatchNames').textContent = retoPendiente.matches.slice(0,2).join(' · ');
+    document.getElementById('retoMatchLevel').textContent = retoPendiente.level === 'romantico' ? '🌹' : retoPendiente.level === 'picante' ? '🌶️' : '🔥';
+  } else if (retoEl) {
+    retoEl.style.display = 'none';
+  }
 }
 
 function renderChallenge(saved) {
@@ -2804,7 +3783,7 @@ function renderChallenge(saved) {
       </div>
       <div class="cday-title">${c.title}</div>
       ${unlocked && c.why ? `<div style="font-size:0.58rem;color:#9b6dff;line-height:1.5;margin-bottom:6px;font-style:italic;padding:6px 8px;background:rgba(155,109,255,0.08);border-radius:8px;border-left:2px solid #9b6dff">🔬 ${c.why}</div>` : ''}
-      <div class="cday-desc">${unlocked ? c.desc : 'Completa los días anteriores para desbloquear.'}</div>
+      <div class="cday-desc">${unlocked ? c.desc : '🔒 Se desbloquea ' + (i === dayIndex + 1 ? 'mañana' : 'en ' + (i - dayIndex) + ' días') + '.'}</div>
       ${isToday ? `<button class="cday-complete-btn" onclick="completeDay(${i})">✓ MARCAR COMO COMPLETADO</button>` : ''}
     </div>`;
   }).join('');
@@ -3401,18 +4380,40 @@ if ('serviceWorker' in navigator) {
     <!-- PANTALLA DE SELECCIÓN -->
     <div id="fantasySelectionScreen">
 
+      <!-- Selector de modo -->
+      <div style="display:flex;gap:8px;padding:12px 16px 0;">
+        <button onclick="setFantasyMode('full')" id="fantasyModeFull" style="flex:1;padding:8px;border-radius:10px;border:1px solid var(--gold);background:rgba(201,169,110,0.12);color:var(--gold);font-size:0.6rem;letter-spacing:1px;cursor:pointer;">✦ Completo (6 cat.)</button>
+        <button onclick="setFantasyMode('quick')" id="fantasyModeQuick" style="flex:1;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:0.6rem;letter-spacing:1px;cursor:pointer;">⚡ Rápido (3 cat.)</button>
+      </div>
+
       <!-- Card de seguridad emocional -->
       <div class="fantasy-safety-card">
         <div class="fantasy-safety-title">✦ El Juego del Deseo</div>
         <div class="fantasy-safety-rule">🔒 Lo que no coincide, nunca se revela</div>
         <div class="fantasy-safety-sub">Cada uno elige en secreto. Sin juicios, sin presión. Solo se muestran los deseos que ambos comparten.</div>
+        <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;">
+          <button onclick="startFantasyFull()" style="flex:1;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.6rem;letter-spacing:1px;cursor:pointer;">
+            🗂️ 6 categorías
+          </button>
+          <button onclick="startFantasyQuick()" style="flex:1;padding:8px;border-radius:10px;border:1px solid var(--rose);background:rgba(232,132,154,0.1);color:var(--rose2);font-size:0.6rem;letter-spacing:1px;cursor:pointer;">
+            ⚡ Ronda rápida (3)
+          </button>
+        </div>
       </div>
 
       <!-- Barra de persona activa -->
       <div class="fantasy-person-bar" id="fantasyPersonBar"></div>
 
       <!-- Tabs de categorías -->
-      <div class="fantasy-cat-tabs" id="fantasyCatTabs"></div>
+      <div class="fantasy-tabs-wrapper">
+        <div class="fantasy-cat-tabs" id="fantasyCatTabs"></div>
+      </div>
+      <div id="fantasyTabsTip" style="display:none;text-align:center;font-size:0.58rem;color:var(--rose);letter-spacing:1px;padding:0 16px 4px;animation:fadeIn .5s ease;">
+        ← Desliza para ver las 6 categorías →
+      </div>
+      <div id="fantasyTabsHint" style="text-align:right;padding:0 18px 4px;font-size:0.55rem;color:var(--muted);letter-spacing:1px;display:none;">
+        desliza para más categorías →
+      </div>
 
       <!-- Grid de fantasías -->
       <div class="fantasy-items-grid" id="fantasyItemsGrid"></div>
@@ -3454,6 +4455,16 @@ if ('serviceWorker' in navigator) {
       <div class="challenge-week-title">✦ Semana de Conexión</div>
       <div class="challenge-week-sub">Un reto diferente cada día</div>
       <div class="challenge-progress" id="challengeProgress"></div>
+    </div>
+    <!-- Card reto de fantasías -->
+    <div id="fantasyRetoPendiente" style="display:none;background:linear-gradient(135deg,rgba(155,109,255,0.12),rgba(232,132,154,0.08));border:1px solid rgba(155,109,255,0.3);border-radius:18px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:0.55rem;color:#c084fc;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;"><span id="retoMatchLevel">✨</span> RETO DE FANTASÍAS GUARDADO</div>
+      <div style="font-size:0.82rem;font-family:'Cormorant Garamond',serif;color:var(--gold);font-style:italic;margin-bottom:8px;" id="retoMatchNames">—</div>
+      <div style="font-size:0.65rem;color:var(--text);line-height:1.5;margin-bottom:10px;">Tienen un match guardado del Match de Fantasías. ¿Esta semana lo hacen realidad?</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="goTo('fantasy')" style="flex:1;padding:10px;border-radius:10px;border:none;background:rgba(155,109,255,0.2);color:#c084fc;font-size:0.62rem;letter-spacing:1px;cursor:pointer;">Ver match</button>
+        <button onclick="storageRemove('fantasy_reto_pendiente');initChallenge();" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:0.62rem;letter-spacing:1px;cursor:pointer;">Descartar</button>
+      </div>
     </div>
     <div id="challengeDays"></div>
     <button class="challenge-reset" onclick="resetChallenge()">↺ Reiniciar desafío</button>
@@ -3544,7 +4555,7 @@ if ('serviceWorker' in navigator) {
       <div class="checkin-title" style="margin-top:4px;">¿CÓMO ESTÁ</div>
       <div class="checkin-title" style="color:var(--rose);margin-top:-4px;">EL AMBIENTE?</div>
       <div class="checkin-sub" style="margin-bottom:8px;">Cada uno elige en secreto 🤫</div>
-      <div style="font-size:0.58rem;color:var(--muted);letter-spacing:1px;text-align:center;margin-bottom:16px;">↓ Toca una carta para elegir</div>
+      <div style="font-size:0.58rem;color:var(--muted);letter-spacing:1px;text-align:center;margin-bottom:16px;">↓ Elige UNA opción — las demás se ocultarán</div>
 
       <div class="ambient-grid">
         <!-- Persona A -->
